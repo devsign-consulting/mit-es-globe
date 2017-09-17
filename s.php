@@ -10,6 +10,8 @@ for ($n=1;$n<count($qs);$n++){
 	       };
 	       }
 $arglist=$arglist . "}";
+
+error_log(print_r($arglist, TRUE));
 ?>
   <head>
     <style>
