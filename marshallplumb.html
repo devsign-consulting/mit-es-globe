@@ -1,0 +1,27 @@
+<html>
+<head>
+<script>
+function set_nosee(d){
+  document.getElementById('work').style.display=d;
+  }
+function clearurl(){
+  document.getElementById('urltext').value='';
+}
+</script>
+</head>
+<body>
+<form action="http:/esglobe/marshallplumb.php" method="POST" target="nosee">
+<b>Copy the image location and paste here</b><br/>
+<button onclick='clearurl();return false;'>Clear</button>
+<input id='urltext' type="text" size=80 name="url"/>
+<input type="submit" value="Show">
+<div id="work" style="display:none" width="600" height="100">
+<iframe name="nosee"></iframe>
+<a href="javascript:set_nosee('none')">hide</a>
+</div>
+<a href="javascript:set_nosee('')">+</a>
+</form>
+<p>
+<iframe src="http://marshallplumb.mit.edu" width="100%" height="92%"></iframe>
+</body>
+</html>

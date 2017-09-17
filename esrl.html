@@ -1,0 +1,124 @@
+<html>
+<head>
+<script>
+function set_nosee(d){
+  document.getElementById('work').style.display=d;
+  }
+function fexec(q) {
+  myid=document.getElementById("form");
+  myid.submit();
+  return false;
+  }
+</script>
+</head>
+<body>
+<h2>Atmospheric Climatology from ESRL</h2>
+<p>
+<button type="button" onClick="fexec('show');">Show now</button>
+</p>
+
+<form id="form" method="POST" target="nosee" action="esrl.php">
+<input type="hidden" name="model" value="clim2.py">
+<p>
+<b>Time range for movie:</b>
+<select name="time" onChange="fexec('show')">
+<option selected>year
+<option>Jan
+<option>Feb
+<option>Mar
+<option>Apr
+<option>May
+<option>Jun
+<option>Jul
+<option>Aug
+<option>Sep
+<option>Oct
+<option>Nov
+<option>Dec
+</select>
+
+<p><b>Pressure levels:</b>
+
+<select name="press" onChange="fexec('show')">
+<option selected>1000
+<option>925
+<option>850
+<option>700
+<option>600
+<option>500
+<option>400
+<option>300
+<option>250
+<option>200
+<option>150
+<option>100
+<option>70
+<option>50
+<option>30
+<option>20
+<option>10
+<option>vertical movie
+</select>
+</p>
+
+<hr>
+
+<p>
+<b>Sphere:</b>
+
+Field=
+<select name="field" onChange="fexec('show')">
+<option selected>pottmp
+<option>hgt
+<option>uwnd
+<option>vwnd
+<option>omega
+</select>
+</p>
+
+<p>
+Center at Lat=<input type="text" size="10" name="lat" value="30"
+onChange="fexec('cent')">
+&nbsp;&nbsp;&nbsp;&nbsp;
+Lon=<input type="text" size="10" name="lon" value="0"
+onChange="fexec('cent')">
+</p>
+
+<hr/>
+
+<p>
+<b>Sections (not operational):</b>
+Field=
+<select name="field2"
+onChange="fexec('showf')">
+<option selected>none
+<option>pottmp
+<option>hgt
+<option>uwnd
+<option>vwnd
+<option>omega
+</select>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Lat range=
+<input type="text" name="flatr" size="10" value="0,90">
+&nbsp;&nbsp;&nbsp;&nbsp;
+Lon =
+<input type="text" name="flon" size="10" value="zonal av">
+<br/>
+</p>
+<p>
+Pressure range=
+<input type="text" name="fpress" size="10" value="1000,200">
+Contour=
+<input type="text" name="fcontour" width="10" value="5"><p>
+<button  type="button" onClick="fexec('fadd');">Add</button>
+<button type="button" onClick="fexec('fclear');">Clear</button>
+</p>
+<div id="work" style="display:none" width="600" height="100">
+<iframe name="nosee"></iframe>
+<a href="javascript:set_nosee('none')">hide</a>
+</div>
+<a href="javascript:set_nosee('')">+</a>
+</form>
+</body>
+</html>
