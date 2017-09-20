@@ -1,5 +1,5 @@
 <?php
-header("Content-type: image/jpeg");
+header("Content-type: image/png");
 $qs=$_SERVER["QUERY_STRING"];
 $pi=$_SERVER["PATH_INFO"];
 $a=explode('/',$pi,3);
@@ -21,9 +21,9 @@ switch($a[1]){
   case "image":
   case "flat":
   default:
-    $cmd="cat ".$a[2];
+    $cmd="cat /".$a[2];
     break;
     };
-//echo $cmd,"\n";
+error_log($cmd);
 passthru($cmd);
 ?>

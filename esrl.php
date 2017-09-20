@@ -19,12 +19,12 @@ foreach ($_POST as $pk => $p)
   $k[$nn]='${' . $pk . '}';
   $r[$nn++]=$p;
  };
-print_r($k);
-print_r($r);
+error_log(print_r($k, true));
+error_log(print_r($r, true));
 $snew=str_replace($k,$r,$s);
 $dn="/tmp/esglobe.program";
 //print_r($dn);
-//print_r($snew);
+error_log(print_r($snew, true));
 //exit(0);
 file_put_contents($dn,$snew);
 passthru("chmod +x /tmp/esglobe.program;/tmp/esglobe.program")

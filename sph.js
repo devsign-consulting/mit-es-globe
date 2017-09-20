@@ -91,15 +91,15 @@ function dragInSphere(mx,my){
 function clickInSphere(mx,my){
     xz=mouse2xz(mx,my);
     if (xz[0]*xz[0]+xz[1]*xz[1]<=1){
-	if(sph.sphereClick){
-	    latlon=xy2latlon(xz);
-	    sph.sphereClick(xz,latlon);
-	};
-    } else {
-	if(sph.sphereClick){
-	    sph.sphereClick([-999,-999],[0,0]);
-	};
-    };
+        if(sph.sphereClick){
+            latlon=xy2latlon(xz);
+            sph.sphereClick(xz,latlon);
+        }
+        } else {
+            if(sph.sphereClick){
+                sph.sphereClick([-999,-999],[0,0]);
+        }
+    }
 //    var typ="u";
 //    if (yt>0) typ="l";
 //    if (xt>0) typ=typ+"r";
@@ -169,6 +169,7 @@ function myevent(e){
 
 function setup(){
     maincanvas=createCanvas(sz, sz, WEBGL);
+    // maincanvas.parent('canvas-container');
     ortho(-width/2,width/2,-height/2,height/2,-1000,1000);
     pg = createGraphics(res[0],res[1]);
     loadSphere(0);
@@ -197,15 +198,30 @@ function orient(lat,lon){
     phi=lat*pi/180;
 }
 function show(fn){
-   playing=false;
+    playing=false;
     url="iglobe.php/"+fn;
+
     if(url.indexOf("#") >= 0)
-	movie=true;
+	    movie=true;
     else
-	movie=false;
+	    movie=false;
+
     currentFrame=0;
     loadSphere(0);
-//    loadFlat(0);
+    playing=true;
+}
+
+function showLocal(fn){
+    playing=false;
+    url="/graphics/"+fn;
+
+    if(url.indexOf("#") >= 0)
+        movie=true;
+    else
+        movie=false;
+
+    currentFrame=0;
+    loadSphere(0);
     playing=true;
 }
 
@@ -217,7 +233,7 @@ var sph={
     rot:rot,
     tilt:tilt,
     orient:orient,
-    show:show,
+    show:showLocal,
     skip:1,
     sphereClick:null,
     sphereDrag:null,
@@ -226,5 +242,5 @@ var sph={
     url:url,
     online:online,
     res:res,
-    showcanvas:showcanvas,
+    showcanvas:showcanvas
 };

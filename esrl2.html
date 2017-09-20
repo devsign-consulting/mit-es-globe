@@ -1,0 +1,85 @@
+<html>
+    <head>
+        <script>
+            function set_nosee(d) {
+                document.getElementById('work').style.display = d;
+            }
+
+            function fexec(q) {
+                myid = document.getElementById("form");
+                myid.submit();
+                return false;
+            }
+        </script>
+
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/main.css">
+
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.js"></script>
+    </head>
+    <body ng-app='app' ng-controller="MainCtrl">
+        <!--<h2>Atmospheric Climatology from ESRL</h2>
+        <p>
+            <button type="button" onClick="fexec('show');">Show now</button>
+        </p>-->
+
+        <form id="form" method="POST" target="nosee" action="esrl.php">
+            <div class="row gutter">
+                <div class="col-xs-12">
+                    <h3>Atmospheric Climatology from ESRL</h3>
+                </div>
+            </div>
+            <div class="row gutter">
+                <div class="col-xs-6">
+                    <form name="myForm">
+                        <div class="form-group">
+                            <label>Time Range for movie</label>
+                            <select class="form-control" name="timeRange" id="timeRange" ng-model="timeRange">
+                                <option value="Year" selected>Year</option>
+                                <option value="Feb">Feb</option>
+                                <option value="Mar">Mar</option>
+                                <option value="Apr">Apr</option>
+                                <option value="May">May</option>
+                                <option value="Jun">Jun</option>
+                                <option value="Jul">Jul</option>
+                                <option value="Aug">Aug</option>
+                                <option value="Sep">Sep</option>
+                                <option value="Oct">Oct</option>
+                                <option value="Nov">Nov</option>
+                                <option value="Dec">Dec</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label>Pressure Levels</label>
+                        <select class="form-control" name="pressureLevels" id="pressureLevels" ng-model="pressureLevels">
+                            <option selected>1000</option>
+                            <option>925</option>
+                            <option>850</option>
+                            <option>700</option>
+                            <option>600</option>
+                            <option>500</option>
+                            <option>400</option>
+                            <option>300</option>
+                            <option>250</option>
+                            <option>200</option>
+                            <option>150</option>
+                            <option>100</option>
+                            <option>70</option>
+                            <option>50</option>
+                            <option>30</option>
+                            <option>20</option>
+                            <option>10</option>
+                            <option>vertical movie</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <script src="js/main.js"></script>
+    </body>
+</html>
