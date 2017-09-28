@@ -39,3 +39,7 @@ div.ext {
 
 #canvas-container {
 }
+
+.row.margin-bottom-05em {
+    margin-bottom: 0.5em !important;
+}

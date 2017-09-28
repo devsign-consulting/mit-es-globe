@@ -56,6 +56,7 @@ error_log(print_r($arglist, TRUE));
     <script src="sph.js"></script>
   </head>
   <body>
+  <div id="canvas-container"></div>
   <div class='ext'>
     <iframe src="http:<?php echo $url?>" height=970px width=1050px></iframe>
   </div>

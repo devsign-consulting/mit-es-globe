@@ -18,6 +18,9 @@ switch($a[1]){
   case "zipcut":
     $cmd="unzip -p /home/glenn/Movies/".$a[2].".zip sphere-".sprintf("%04d",$qs+1).".jpg|jpegtopnm|pnmscale -reduce 2|pnmtojpeg";
     break;
+  case "local":
+    $cmd= "cat ./graphics/".$a[2];
+    break;
   case "image":
   case "flat":
   default:

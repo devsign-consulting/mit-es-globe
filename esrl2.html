@@ -1,4 +1,4 @@
-<html>
+<html ng-app='app-esrl'>
     <head>
         <script>
             function set_nosee(d) {
@@ -13,19 +13,24 @@
         </script>
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
         <link rel="stylesheet" href="css/main.css">
 
+        <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-resource/1.5.6/angular-resource.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.js"></script>
+        <script src="js/esrl.js"></script>
     </head>
-    <body ng-app='app' ng-controller="MainCtrl">
+    <body ng-controller="EsrlChildController">
         <!--<h2>Atmospheric Climatology from ESRL</h2>
         <p>
             <button type="button" onClick="fexec('show');">Show now</button>
         </p>-->
 
-        <form id="form" method="POST" target="nosee" action="esrl.php">
+        <form id="myForm" method="POST" name="myForm">
             <div class="row gutter">
                 <div class="col-xs-12">
                     <h3>Atmospheric Climatology from ESRL</h3>
@@ -33,50 +38,85 @@
             </div>
             <div class="row gutter">
                 <div class="col-xs-6">
-                    <form name="myForm">
-                        <div class="form-group">
-                            <label>Time Range for movie</label>
-                            <select class="form-control" name="timeRange" id="timeRange" ng-model="timeRange">
-                                <option value="Year" selected>Year</option>
-                                <option value="Feb">Feb</option>
-                                <option value="Mar">Mar</option>
-                                <option value="Apr">Apr</option>
-                                <option value="May">May</option>
-                                <option value="Jun">Jun</option>
-                                <option value="Jul">Jul</option>
-                                <option value="Aug">Aug</option>
-                                <option value="Sep">Sep</option>
-                                <option value="Oct">Oct</option>
-                                <option value="Nov">Nov</option>
-                                <option value="Dec">Dec</option>
-                            </select>
-                        </div>
-                    </form>
+                    <div class="form-group">
+                        <label>Time Range for movie</label>
+                        <select class="form-control" name="time" id="time" ng-model="esrl.input.time">
+                            <option value="Year" selected>Year</option>
+                            <option value="Jan">Jan</option>
+                            <option value="Feb">Feb</option>
+                            <option value="Mar">Mar</option>
+                            <option value="Apr">Apr</option>
+                            <option value="May">May</option>
+                            <option value="Jun">Jun</option>
+                            <option value="Jul">Jul</option>
+                            <option value="Aug">Aug</option>
+                            <option value="Sep">Sep</option>
+                            <option value="Oct">Oct</option>
+                            <option value="Nov">Nov</option>
+                            <option value="Dec">Dec</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="col-xs-6">
                     <div class="form-group">
                         <label>Pressure Levels</label>
-                        <select class="form-control" name="pressureLevels" id="pressureLevels" ng-model="pressureLevels">
-                            <option selected>1000</option>
-                            <option>925</option>
-                            <option>850</option>
-                            <option>700</option>
-                            <option>600</option>
-                            <option>500</option>
-                            <option>400</option>
-                            <option>300</option>
-                            <option>250</option>
-                            <option>200</option>
-                            <option>150</option>
-                            <option>100</option>
-                            <option>70</option>
-                            <option>50</option>
-                            <option>30</option>
-                            <option>20</option>
-                            <option>10</option>
-                            <option>vertical movie</option>
+                        <select class="form-control" name="press" id="press" ng-model="esrl.input.press">
+                            <option selected value="1000">1000</option>
+                            <option value="925">925</option>
+                            <option value="850">850</option>
+                            <option value="700">700</option>
+                            <option value="600">600</option>
+                            <option value="500">500</option>
+                            <option value="400">400</option>
+                            <option value="300">300</option>
+                            <option value="250">250</option>
+                            <option value="200">200</option>
+                            <option value="150">150</option>
+                            <option value="100">100</option>
+                            <option value="70">70</option>
+                            <option value="50">50</option>
+                            <option value="30">30</option>
+                            <option value="20">20</option>
+                            <option value="10">10</option>
+                            <option option="vertical movie">vertical movie</option>
                         </select>
                     </div>
+                </div>
+            </div>
+            <div class="row gutter">
+                <div class="col-xs-6">
+                    <div class="form-group">
+                        <label>Field</label>
+                        <select class="form-control" name="field" id="field" ng-model="esrl.input.field">
+                            <option selected value="pottmp">pottmp</option>
+                            <option value="hgt">hgt</option>
+                            <option value="uwnd">uwnd</option>
+                            <option value="vwnd">vwnd</option>
+                            <option value="omega">omega</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="row gutter">
+                <div class="col-xs-12">
+                    <h4>Center At</h4>
+                </div>
+            </div>
+            <div class="row gutter margin-bottom-05em">
+                <div class="form-group">
+                    <div class="col-xs-6">
+                        <label>Lat</label>
+                        <input class="form-control" ng-model="esrl.input.lat" type="number" min="-90" max="90" required>
+                    </div>
+                    <div class="col-xs-6">
+                        <label>Long</label>
+                        <input class="form-control" ng-model="esrl.input.lon" type="number" min="-180" max="180" required>
+                    </div>
+                </div>
+            </div>
+            <div class="row gutter">
+                <div class="col-xs-8">
+                    <button class='btn btn-default' ng-click="esrl.submit()" ng-disabled="myForm.$invalid || isLoading">Show Now <span ng-show="isLoading" class="fa fa-spin fa-spinner"></span></button>
                 </div>
             </div>
         </form>

@@ -151,12 +151,13 @@ function mouseDragged(){
 
 function mouseReleased(){
     msx=mouseX;msy=mouseY;
+    var latlng = xy2latlon([msx,msy]);
     if(sph.mouseUp){
-	r=sph.mouseUp([msx,msy],xy2latlon([msx,msy]));
-	if(!r)return;
+        r=sph.mouseUp([msx,msy],latlng);
+        if(!r)return;
     };
     if ((msx-x00)*(msx-x00)+(msy-y00)*(msy-y00)>16)return false;
-    console.log("click "+msx+", "+msy);
+    console.log("click "+msx+", "+msy, latlng);
     clickInSphere(msx,msy);
     return false;
 }
@@ -169,7 +170,7 @@ function myevent(e){
 
 function setup(){
     maincanvas=createCanvas(sz, sz, WEBGL);
-    // maincanvas.parent('canvas-container');
+    maincanvas.parent('canvas-container');
     ortho(-width/2,width/2,-height/2,height/2,-1000,1000);
     pg = createGraphics(res[0],res[1]);
     loadSphere(0);
@@ -233,7 +234,7 @@ var sph={
     rot:rot,
     tilt:tilt,
     orient:orient,
-    show:showLocal,
+    show:show,
     skip:1,
     sphereClick:null,
     sphereDrag:null,
