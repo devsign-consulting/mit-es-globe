@@ -198,6 +198,7 @@ function orient(lat,lon){
     theta=(180-lon)*pi/180;
     phi=lat*pi/180;
 }
+
 function show(fn){
     playing=false;
     url="iglobe.php/"+fn;

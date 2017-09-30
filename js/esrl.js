@@ -34,7 +34,11 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
                 $scope.isLoading = false;
             });
         });
+
+        $scope.esrl.input.showNow = true;
     };
+
+    $scope.$watchCollection('')
 
     $scope.message = function () {
         $parentScope.$apply(function () {
