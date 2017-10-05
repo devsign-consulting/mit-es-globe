@@ -38,7 +38,9 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
         $scope.esrl.input.showNow = true;
     };
 
-    $scope.$watchCollection('')
+    $scope.$watchCollection('input', function () {
+        console.log("=== inputs updated ==", $scope.input);
+    });
 
     $scope.message = function () {
         $parentScope.$apply(function () {
