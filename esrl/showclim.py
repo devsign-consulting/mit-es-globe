@@ -19,6 +19,8 @@ yrday=nc['time'][:];
 theta=nc[field][:,:,:,:];
 #nc0.close()
 
+fn='/tmp/'+fn
+
 os.environ[ 'MPLCONFIGDIR' ] = '/tmp/'
 import matplotlib
 matplotlib.use('Agg')
@@ -49,7 +51,7 @@ def splotit(theta,n,lev):
   #  plt.axis('off')
   #  plt.axis('equal')
   #plt.show(block=False)
-  plt.savefig(fn)
+  plt.savefig(fn+'-'+str(n)+'.png')
   #  img=subprocess.check_output(["../pngmunge"])
 #  sys.stdout.write(img)
 #  sys.stdout.flush()

@@ -12,7 +12,7 @@
         $nn=0;
         $k[$nn]='${QUERY_STRING}';
         $r[$nn++]=$_SERVER['QUERY_STRING'];
-        $fn=sprintf("/tmp/es-%04d.png",rand(0,9999));
+        $fn=sprintf("es-%04d",rand(0,9999));
         $k[$nn]='${fn}';
         $r[$nn++]=$fn;
         //print_r($_POST);
@@ -38,16 +38,9 @@
         // execute the temp program file
         passthru("chmod +x /tmp/esglobe.program;/tmp/esglobe.program");
         echo json_encode(array(
-            "filename" => $fn,
+            "filename" => $fn."-0.png",
             "lat" => $_POST['lat'],
             "lon" => $_POST['lon']
-        ));
-    }
-
-    if ($method === 'GET') {
-        echo json_encode(array(
-                "foo" => "bar",
-                "foo2"=> "bar2"
         ));
     }
 ?>

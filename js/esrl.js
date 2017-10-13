@@ -7,6 +7,7 @@ esrl.factory('$parentScope', function ($window) {
 esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResource) {
     $scope.esrl = {};
     $scope.esrl.input = {};
+    $scope.esrl.flags = {};
 
     $scope.esrl.input.time = "Jan";
     $scope.esrl.input.press = "1000";
@@ -15,6 +16,16 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
     $scope.esrl.input.lon = 0;
 
     $scope.esrl.submit = function () {
+        $scope.esrl.flags.showNow = false;
+        $scope.submitForm()
+            .then(function () {
+                $scope.esrl.flags.showNow = true;
+            });
+
+    };
+
+    $scope.submitForm = function () {
+        console.log("=== submit form ===");
         var res = new EsrlResource();
         res.time = $scope.esrl.input.time;
         res.press = $scope.esrl.input.press;
@@ -28,18 +39,40 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
         res.fcontour = 5;
         res.model = "clim2.py";
         $scope.isLoading = true;
-        res.$submitForm().then(function (results) {
-            $parentScope.$apply(function () {
-                $parentScope.iframeMessage = results;
-                $scope.isLoading = false;
-            });
-        });
 
-        $scope.esrl.input.showNow = true;
+        if ($scope.esrl.input.time !== "Year") {
+            return res.$submitForm().then(function (results) {
+                $parentScope.$apply(function () {
+                    if ($scope.esrl.flags.showNow)
+                        results.bypassOrient = true;
+
+                    if ($scope.esrl.input.time === "year")
+                        results.movie = true;
+
+                    $parentScope.iframeMessage = results;
+                    $scope.isLoading = false;
+                });
+
+                return;
+            });
+        } else {
+            var time = ['Jan', 'Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+        }
+
     };
 
-    $scope.$watchCollection('input', function () {
-        console.log("=== inputs updated ==", $scope.input);
+    $scope.$watchCollection('esrl.input', function () {
+        console.log("=== inputs updated ==", $scope.esrl.input);
+        if ($scope.esrl.flags.showNow) {
+            // trigger a refresh
+            $scope.submitForm();
+        }
+    });
+
+    $scope.$on('from-parent', function(e, message) {
+        console.log("== from parent ===", message);
+        $scope.loop = message;
     });
 
     $scope.message = function () {
