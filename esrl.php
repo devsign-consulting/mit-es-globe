@@ -35,10 +35,13 @@
         // write the temp program file
         file_put_contents($dn,$snew);
 
+        $time = array("Jan"=>0,"Feb"=>1,"Mar"=>2,"Apr"=>3,"May"=>4,"Jun"=>5,"Jul"=>6,"Aug"=>7,"Sep"=>8,"Oct"=>9,"Nov"=>10,"Dec"=>11,"year"=>-1);
+        $t0 = $time[$_POST['time']];
+
         // execute the temp program file
         passthru("chmod +x /tmp/esglobe.program;/tmp/esglobe.program");
         echo json_encode(array(
-            "filename" => $fn."-0.png",
+            "filename" => $fn."-".$t0.".png",
             "lat" => $_POST['lat'],
             "lon" => $_POST['lon']
         ));

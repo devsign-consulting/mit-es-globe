@@ -8,12 +8,14 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
     $scope.esrl = {};
     $scope.esrl.input = {};
     $scope.esrl.flags = {};
+    $scope.esrl.flags.moviePlay = true;
 
     $scope.esrl.input.time = "Jan";
     $scope.esrl.input.press = "1000";
     $scope.esrl.input.field = 'pottmp';
     $scope.esrl.input.lat = 30;
     $scope.esrl.input.lon = 0;
+    $scope.esrl.flags.delay = 1000;
 
     $scope.esrl.submit = function () {
         $scope.esrl.flags.showNow = false;
@@ -40,44 +42,79 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
         res.model = "clim2.py";
         $scope.isLoading = true;
 
-        if ($scope.esrl.input.time !== "Year") {
-            return res.$submitForm().then(function (results) {
-                $parentScope.$apply(function () {
-                    if ($scope.esrl.flags.showNow)
-                        results.bypassOrient = true;
+        return res.$submitForm().then(function (results) {
+            $parentScope.$apply(function () {
+                if ($scope.esrl.flags.showNow)
+                    results.bypassOrient = true;
 
-                    if ($scope.esrl.input.time === "year")
-                        results.movie = true;
+                if ($scope.esrl.input.time === "year") {
+                    results.movie = true;
+                    $scope.esrl.flags.movie = true;
+                    $scope.esrl.flags.moviePlay = true;
+                }
 
-                    $parentScope.iframeMessage = results;
-                    $scope.isLoading = false;
-                });
 
-                return;
+                $parentScope.iframeMessage = results;
+                $scope.isLoading = false;
             });
-        } else {
-            var time = ['Jan', 'Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-        }
+            return;
+        });
 
     };
 
+    $scope.toggleMoviePause = function () {
+        $scope.esrl.flags.moviePlay = !$scope.esrl.flags.moviePlay;
+        $scope.message({
+            action: $scope.esrl.flags.moviePlay ? 'play' : 'pause'
+        });
+    };
+
+    $scope.stepBack = function () {
+        $scope.message({
+            action: 'stepBack'
+        });
+    };
+
+    $scope.stepForward = function () {
+        $scope.message({
+            action: 'stepForward'
+        });
+    };
+
+    $scope.setDelay = function () {
+        $scope.message({
+            action: "setDelay",
+            value: $scope.esrl.flags.delay
+        });
+    };
+
+    /*------ Watches ----*/
     $scope.$watchCollection('esrl.input', function () {
         console.log("=== inputs updated ==", $scope.esrl.input);
         if ($scope.esrl.flags.showNow) {
             // trigger a refresh
+            // restart movie if false;
+            $scope.esrl.flags.movie = false;
+            $scope.esrl.flags.moviePlay = true;
+
+            // pause the main view
+            $scope.message({
+                action: 'pause'
+            });
             $scope.submitForm();
         }
     });
 
     $scope.$on('from-parent', function(e, message) {
-        console.log("== from parent ===", message);
-        $scope.loop = message;
+        if (message && message.frame) {
+            $scope.loop = message.frame;
+        }
     });
 
-    $scope.message = function () {
+    $scope.message = function (data) {
         $parentScope.$apply(function () {
-            $parentScope.iframeMessage = "Hello World";
+            $parentScope.iframeMessage = data;
         });
     };
 

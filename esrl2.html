@@ -16,8 +16,9 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
         <link rel="stylesheet" href="css/main.css">
-
+        <script>document.write('<base href="' + document.location + '" />');</script>
         <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-resource/1.5.6/angular-resource.min.js"></script>
         <script src="js/esrl.js"></script>
@@ -114,10 +115,27 @@
             </div>
             <div class="row gutter">
                 <div class="col-xs-8">
-                    <button class='btn btn-default' ng-click="esrl.submit()" ng-disabled="myForm.$invalid || isLoading">Show Now <span ng-show="isLoading" class="fa fa-spin fa-spinner"></span></button> {{loop.i}}
+                    <button class='btn btn-default' ng-click="esrl.submit()" ng-disabled="myForm.$invalid || isLoading">Show Now <span ng-show="isLoading" class="fa fa-spin fa-spinner"></span></button>
+                    <div ng-show='esrl.flags.movie' class="btn btn-default" ng-click="toggleMoviePause()">
+                        <span ng-show='esrl.flags.moviePlay' class="fa fa-pause"></span>
+                        <span ng-show='!esrl.flags.moviePlay' class="fa fa-play"></span> (Month: {{loop}})
+                    </div>
+
+                    <div ng-show='esrl.flags.movie && !esrl.flags.moviePlay' class="btn btn-default" ng-click="stepBack()">
+                        <span class="fa fa-step-backward"></span>
+                    </div>
+
+                    <div ng-show='esrl.flags.movie && !esrl.flags.moviePlay' class="btn btn-default" ng-click="stepForward()">
+                        <span class="fa fa-step-forward"></span>
+                    </div>
+                </div>
+                <div class="col-xs-4">
+                    <div class="input-group" ng-show='esrl.flags.movie'>
+                        <input class='form-control' type="number" min="200" max="2000" step="100" ng-model="esrl.flags.delay" ng-change="setDelay()">
+                        <div class="input-group-addon">ms</div>
+                    </div>
                 </div>
             </div>
-        </form>
         <script src="js/main.js"></script>
     </body>
 </html>
