@@ -17,16 +17,19 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
     $scope.esrl.input.lon = 0;
     $scope.esrl.flags.delay = 1000;
 
+    $scope.section = {};
+    $scope.section.input = {};
+
     $scope.esrl.submit = function () {
         $scope.esrl.flags.showNow = false;
-        $scope.submitForm()
+        $scope.submitEsrlForm()
             .then(function () {
                 $scope.esrl.flags.showNow = true;
             });
 
     };
 
-    $scope.submitForm = function () {
+    $scope.submitEsrlForm = function () {
         console.log("=== submit form ===");
         var res = new EsrlResource();
         res.time = $scope.esrl.input.time;
@@ -40,6 +43,43 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
         res.fpress = "1000, 200";
         res.fcontour = 5;
         res.model = "clim2.py";
+        res.action = "esrl";
+        $scope.isLoading = true;
+
+        return res.$submitForm().then(function (results) {
+            $parentScope.$apply(function () {
+                if ($scope.esrl.flags.showNow)
+                    results.bypassOrient = true;
+
+                if ($scope.esrl.input.time === "year") {
+                    results.movie = true;
+                    $scope.esrl.flags.movie = true;
+                    $scope.esrl.flags.moviePlay = true;
+                }
+
+
+                $parentScope.iframeMessage = results;
+                $scope.isLoading = false;
+            });
+
+            return;
+        });
+
+    };
+
+    $scope.submitSectionForm = function () {
+        var res = new EsrlResource();
+        res.time = $scope.esrl.input.time;
+        res.press = $scope.esrl.input.press;
+        res.field = $scope.esrl.input.field;
+        res.lat= $scope.esrl.input.lat;
+        res.lon = $scope.esrl.input.lon || 0;
+        res.field2 = "none";
+        res.flatr = "0, 90";
+        res.flon = "zonal av";
+        res.fpress = "1000, 200";
+        res.fcontour = 5;
+        res.action = "section";
         $scope.isLoading = true;
 
         return res.$submitForm().then(function (results) {
@@ -102,7 +142,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
             $scope.message({
                 action: 'pause'
             });
-            $scope.submitForm();
+            $scope.submitEsrlForm();
         }
     });
 

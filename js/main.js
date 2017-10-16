@@ -13,7 +13,7 @@ app.controller('MainCtrl', function ($scope, $log, $window, $timeout) {
     };
 
     $scope.timeoutLoop = function (filename) {
-        setTimeout(function() {
+        $scope.input.movieLoop = setTimeout(function() {
             if (!$scope.pause) {
                 $scope.getFrame(filename, $scope.loop.i);
                 $scope.loop.i++;
@@ -24,13 +24,16 @@ app.controller('MainCtrl', function ($scope, $log, $window, $timeout) {
 
             if (!$scope.pause)
                 $scope.timeoutLoop(filename);
+            else {
+                clearTimeout($scope.input.movieLoop);
+            }
         }, $scope.input.delay);
     };
 
     $scope.getFrame = function (filename, frame) {
         var filename_frame = filename+"-"+frame+".png";
         var sph = parent.parent.sph;
-        sph.show("image/tmp/"+ filename_frame);
+        sph.show(filename_frame);
         $timeout(function () {
             $scope.message({ frame: frame+1 });
         });
@@ -40,14 +43,15 @@ app.controller('MainCtrl', function ($scope, $log, $window, $timeout) {
         if (newVal && newVal.filename) {
             // if it's a movie
             if(newVal.movie) {
-                var filename = newVal.filename.slice(0,7);
+                var filename = newVal.filename.split("-")[0];
                 $scope.input.filename = filename;
                 $scope.loop.i = 0;
                 $scope.pause = false;
+                clearTimeout($scope.input && $scope.input.movieLoop);
                 $scope.timeoutLoop(filename, $scope.input.delay)
             } else {
                 var sph = parent.parent.sph;
-                sph.show("image/tmp/"+ newVal.filename);
+                sph.show(newVal.filename);
                 if (!newVal.bypassOrient)
                     sph.orient(newVal.lat, newVal.lon);
             }

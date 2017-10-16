@@ -201,7 +201,7 @@ function orient(lat,lon){
 
 function show(fn){
     playing=false;
-    url="iglobe.php/"+fn;
+    url="/esrl/output/"+fn;
 
     if(url.indexOf("#") >= 0)
 	    movie=true;
