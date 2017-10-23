@@ -213,22 +213,20 @@ function show(fn){
     playing=true;
 }
 
-function showLocal(fn){
-    playing=false;
-    url="/graphics/"+fn;
-
-    if(url.indexOf("#") >= 0)
-        movie=true;
-    else
-        movie=false;
-
-    currentFrame=0;
-    loadSphere(0);
-    playing=true;
-}
-
 function showcanvas(c){
     pg.elt=c;
+}
+
+function doclick(xy,latlon){
+// returns [x,y] on a -1 to 1 and [lat,lon]
+    lat=rnd(latlon[0],10);
+    lon=rnd(latlon[1],10);
+    sph.orient(lat,lon);
+    console.log("=== dlick ===", { lat, lon });
+}
+
+function rnd(v,n){
+    return Math.round(v*n)/n;
 }
 
 var sph={
@@ -237,7 +235,7 @@ var sph={
     orient:orient,
     show:show,
     skip:1,
-    sphereClick:null,
+    sphereClick:doclick,
     sphereDrag:null,
     mouseDown:null,
     mouseUp:null,

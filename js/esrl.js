@@ -19,12 +19,28 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
 
     $scope.section = {};
     $scope.section.input = {};
+    $scope.section.input.time = "Jan";
+    $scope.section.input.press = 200;
+    $scope.section.input.field = "pottmp";
+    $scope.section.input.lon = 0;
+    $scope.section.input.contour = 5;
+    $scope.section.flags = {};
+    $scope.section.flags.showNow = false;
 
     $scope.esrl.submit = function () {
         $scope.esrl.flags.showNow = false;
         $scope.submitEsrlForm()
             .then(function () {
                 $scope.esrl.flags.showNow = true;
+            });
+
+    };
+
+    $scope.section.submit = function () {
+        $scope.esrl.flags.showNow = false;
+        $scope.submitSectionForm()
+            .then(function () {
+                $scope.section.flags.showNow = true;
             });
 
     };
@@ -69,35 +85,18 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
 
     $scope.submitSectionForm = function () {
         var res = new EsrlResource();
-        res.time = $scope.esrl.input.time;
-        res.press = $scope.esrl.input.press;
-        res.field = $scope.esrl.input.field;
-        res.lat= $scope.esrl.input.lat;
-        res.lon = $scope.esrl.input.lon || 0;
-        res.field2 = "none";
-        res.flatr = "0, 90";
-        res.flon = "zonal av";
-        res.fpress = "1000, 200";
-        res.fcontour = 5;
         res.action = "section";
+        res.time = $scope.section.input.time;
+        res.press = $scope.section.input.press;
+        res.field = $scope.section.input.field;
+        res.lon = $scope.section.input.lon;
+        res.contour = $scope.section.input.contour;
+
         $scope.isLoading = true;
 
         return res.$submitForm().then(function (results) {
-            $parentScope.$apply(function () {
-                if ($scope.esrl.flags.showNow)
-                    results.bypassOrient = true;
-
-                if ($scope.esrl.input.time === "year") {
-                    results.movie = true;
-                    $scope.esrl.flags.movie = true;
-                    $scope.esrl.flags.moviePlay = true;
-                }
-
-
-                $parentScope.iframeMessage = results;
-                $scope.isLoading = false;
-            });
-
+            $scope.section.filename = "./esrl/output/" + results.filename;
+            $scope.isLoading = false;
             return;
         });
 
@@ -146,9 +145,24 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
         }
     });
 
+    $scope.$watchCollection('section.input', function () {
+        if ($scope.section.flags.showNow) {
+            $scope.submitSectionForm();
+        }
+    });
+
     $scope.$on('from-parent', function(e, message) {
         if (message && message.frame) {
             $scope.loop = message.frame;
+        }
+
+        if (message && message.latlon) {
+            // set the lat and lon to where the user clicked
+            console.log("== esrl message ==", message);
+            var latlon = message.latlon.latlon;
+            $scope.esrl.input.lat = latlon[0];
+            $scope.esrl.input.lon = latlon[1];
+            $scope.section.input.lon = Math.round(latlon[1]);
         }
     });
 

@@ -1,4 +1,4 @@
-<html ng-app='app-esrl'>
+<html ng-app='app-esrl' style="overflow-x: hidden;">
     <head>
         <script>
             function set_nosee(d) {
@@ -24,11 +24,6 @@
         <script src="js/esrl.js"></script>
     </head>
     <body ng-controller="EsrlChildController">
-        <!--<h2>Atmospheric Climatology from ESRL</h2>
-        <p>
-            <button type="button" onClick="fexec('show');">Show now</button>
-        </p>-->
-
         <form id="myForm" method="POST" name="myForm">
             <div class="row gutter">
                 <div class="col-xs-12">
@@ -87,11 +82,11 @@
                     <div class="form-group">
                         <label>Field</label>
                         <select class="form-control" name="field" id="field" ng-model="esrl.input.field">
-                            <option selected value="pottmp">pottmp</option>
-                            <option value="hgt">hgt</option>
-                            <option value="uwnd">uwnd</option>
-                            <option value="vwnd">vwnd</option>
-                            <option value="omega">omega</option>
+                            <option selected value="pottmp">Potential Temperature</option>
+                            <option value="hgt">Geopotential Height</option>
+                            <option value="uwnd">U-wind</option>
+                            <option value="vwnd">V-wind</option>
+                            <option value="omega">Omega</option>
                         </select>
                     </div>
                 </div>
@@ -133,6 +128,77 @@
                     <div class="input-group" ng-show='esrl.flags.movie'>
                         <input class='form-control' type="number" min="200" max="2000" step="100" ng-model="esrl.flags.delay" ng-change="setDelay()">
                         <div class="input-group-addon">ms</div>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <form>
+            <div class="row gutter">
+                <div class="col-xs-12">
+                    <h3>Section Plots</h3>
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <div class="form-group">
+                                <label>Month</label>
+                                <select class="form-control" ng-model="section.input.time">
+                                    <option value="Jan">Jan</option>
+                                    <option value="Feb">Feb</option>
+                                    <option value="Mar">Mar</option>
+                                    <option value="Apr">Apr</option>
+                                    <option value="May">May</option>
+                                    <option value="Jun">Jun</option>
+                                    <option value="Jul">Jul</option>
+                                    <option value="Aug">Aug</option>
+                                    <option value="Sep">Sep</option>
+                                    <option value="Oct">Oct</option>
+                                    <option value="Nov">Nov</option>
+                                    <option value="Dec">Dec</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="form-group">
+                                <label>Min Pressure</label>
+                                <input type='number' min=0 max=1000 step=1 class="form-control" ng-model="section.input.press">
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="form-group">
+                                <label>Longitude</label>
+                                <input ng-model="section.input.lon" class="form-control" type="number" min="-90" max="90" step="1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-8">
+                            <div class="form-group">
+                                <label>Field</label>
+                                <select class="form-control" name="field" id="field" ng-model="section.input.field">
+                                    <option selected value="pottmp">Potential Temperature</option>
+                                    <option value="hgt">Geopotential Height</option>
+                                    <option value="uwnd">U-wind</option>
+                                    <option value="vwnd">V-wind</option>
+                                    <option value="omega">Omega</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-xs-4">
+                            <div class="form-group">
+                                <label>Contour Spacing</label>
+                                <input ng-model="section.input.contour" class="form-control" type="number" min="1" max="100">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <button class="form-control" ng-click="section.submit()" ng-disabled="isLoading">Show Section <span ng-show="isLoading" class="fa fa-spin fa-spinner"></span></button>
+                        </div>
+                    </div>
+                    <div class="row" ng-if="section.filename">
+                        <div class="col-xs-12">
+                            <img style='width:100%; padding:20px;'; src="{{section.filename}}">
+                        </div>
                     </div>
                 </div>
             </div>

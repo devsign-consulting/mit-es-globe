@@ -43,3 +43,9 @@ div.ext {
 .row.margin-bottom-05em {
     margin-bottom: 0.5em !important;
 }
+
+#esrl2 {
+    overflow-x:hidden;
+    height: 100%;
+    padding-bottom: 80px;
+}

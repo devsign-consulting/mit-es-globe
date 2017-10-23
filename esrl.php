@@ -26,19 +26,31 @@
 
             echo json_encode(array(
                 "filename" => $filename,
+                "form" => "esrl",
                 "lat" => $_POST['lat'],
                 "lon" => $_POST['lon']
             ));
-        }
-
-        if ($_POST['action'] === "section") {
-            $minpress = $_POST['minpress'];
-            $month = $_POST['month'];
+        } else if ($_POST['action'] === "section") {
+            $press = $_POST['press'];
+            $time = $_POST['time'];
             $field = $_POST['field'];
             $contour = $_POST['contour'];
+            $lon = $_POST['lon'];
 
-            $fn="section-".md5($minpress.$month.$field.$contour);
-            passthru("esrl/showsection.py --filename $fn --field $field --time $time --press $press");
+            $fn="section-".md5($press.$time.$field.$contour.$lon).".png";
+            if (!file_exists("./esrl/output/$fn")) {
+                error_log("===== executing program=====");
+                error_log("esrl/showsection.py --filename $fn --field $field --month $time --minpress $press --lon $lon --contour $contour");
+                passthru("esrl/showsection.py --filename $fn --field $field --month $time --minpress $press --lon $lon --contour $contour");
+            }
+
+            echo json_encode(array(
+                "filename" =>$fn,
+                "form" => "section"
+            ));
+        } else {
+            // execute any generic script with command line arguments
+            // Construct the arguments from the $_POST variable
 
         }
 

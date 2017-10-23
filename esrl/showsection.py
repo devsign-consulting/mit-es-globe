@@ -15,10 +15,12 @@ parser = argparse.ArgumentParser(description='ShowClim image generator')
 parser.add_argument('--minpress',
                     action="store",
                     dest="minpress",
-                    default=100)
+                    type=int,
+                    default=200)
 parser.add_argument('--lon',
                     action="store",
                     dest="lon",
+                    type=int,
                     default=0)
 parser.add_argument('--month',
                     action="store",
@@ -34,6 +36,7 @@ parser.add_argument('--contour',
                     action="store",
                     dest="contour",
                     default=5,
+                    type=int,
                     help='Contour density')
 parser.add_argument('--filename',
                     action="store",
@@ -56,8 +59,8 @@ def read_nc(type):
     yrday=nc['time'][:]
     theta=nc[type][:,:,:,:]
 
-    for dimobj in nc0.dimensions.values():
-        print (dimobj)
+    #for dimobj in nc0.dimensions.values():
+    #    print (dimobj)
 
     nc0.close()
     return [lat, lon, level, theta]
@@ -65,12 +68,11 @@ def read_nc(type):
 [lat1, lon1, level1, theta] = read_nc(args.field)
 
 logging.debug("======= level1 =========")
-print (level1)
+#print (level1)
 
 latr=[-90,90]
 lat1 = np.asarray(lat1)
 latind = np.where((lat1 <= latr[1]) & (lat1 >= latr[0]))
-
 lon0 = args.lon+360*(args.lon<0)
 
 lon2 = abs(lon1-lon0)
@@ -80,23 +82,10 @@ lonind = lon2.tolist().index(lv)
 level1 = np.asarray(level1)
 vind = np.where(level1 >= args.minpress)
 
-logging.debug("======= th:mon =========")
-print (mon)
-
-logging.debug("======= th:level1 =========")
-print (level1)
-
-logging.debug("======= th:vind =========")
-print (vind)
-
-logging.debug("======= th:lonind =========")
-print (lonind)
-
 # the expression below only works if the 2nd and 3rd argument have the same dimensions
 # However, the 2nd argument is an array of indicies for the pressure, and the 3rd argument is an array of
 # indices for latitude, so I don't know what to do here to make this work.
 th=np.squeeze(theta[mon,vind,:,lonind])
-print (th.shape)
 
 lev = level1[vind]
 

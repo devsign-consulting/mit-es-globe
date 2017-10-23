@@ -16,9 +16,12 @@
         <script>document.write('<base href="' + document.location + '" />');</script>
         <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+        <script src="p5.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.js"></script>
+        <script src="./bower_components/angular-p5/angular-p5.js"></script>
+
         <script src="js/main.js"></script>
 
     </head>
@@ -26,8 +29,6 @@
         <!--[if lte IE 9]>
         <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
         <![endif]-->
-
-        <script src="p5.min.js"></script>
         <script>
             var sz = 950;
             var w = 500;
@@ -48,9 +49,11 @@
                 var online=0;
             }
         </script>
-        <script src="sph.js"></script>
+        <!--<script src="sph.js"></script>-->
         <div class="container-fluid">
-            <div id="canvas-container" class="col-xs-8"></div>
+            <div id="canvas-container" class="col-xs-8">
+                <p5 sketch="globeSketch"></p5>
+            </div>
             <div class="col-xs-4 container-input no-gutter">
                 <nav class="navbar navbar-default">
                     <div class="container-fluid">
@@ -70,7 +73,7 @@
                         </ul>
                     </div>
                 </nav>
-                <iframe style='border:0px' id='esrl2' src="esrl2.html" height=970px width=100%></iframe>
+                <iframe style='border:0px' id='esrl2' src="esrl2.html" height=970px width=100% style="overflow-x:hidden;"></iframe>
 
             </div>
         </div>
