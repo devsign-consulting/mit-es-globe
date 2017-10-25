@@ -49,3 +49,8 @@ div.ext {
     height: 100%;
     padding-bottom: 80px;
 }
+
+.btn.btn-primary:disabled {
+    background-color: #87afd9;
+    border: none;
+}

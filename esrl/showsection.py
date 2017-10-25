@@ -32,9 +32,20 @@ parser.add_argument('--field',
                     dest="field",
                     default="pottmp",
                     help='pottmp, hgt, uwnd, vwnd, omega')
+parser.add_argument('--field2',
+                    action="store",
+                    dest="field2",
+                    default="none",
+                    help='pottmp, hgt, uwnd, vwnd, omega')
 parser.add_argument('--contour',
                     action="store",
                     dest="contour",
+                    default=5,
+                    type=int,
+                    help='Contour density')
+parser.add_argument('--contour2',
+                    action="store",
+                    dest="contour2",
                     default=5,
                     type=int,
                     help='Contour density')
@@ -49,6 +60,12 @@ fn='./output/' + args.fn
 
 months={"Jan":0,"Feb":1,"Mar":2,"Apr":3,"May":4,"Jun":5,"Jul":6,"Aug":7,"Sep":8,"Oct":9,"Nov":10,"Dec":11,"year":-1}
 mon=months[args.month_str]
+
+titles = { "pottmp": "Potential Temperature (K)", "omega": "Omega", "hgt":"Geopotential Height", "uwnd":"UWND", "vwnd":"VWND" }
+fieldTitle = titles[args.field]
+
+if args.field2 != 'none':
+    field2Title = titles[args.field2]
 
 def read_nc(type):
     nc0=netcdf_file('ESRL-'+type+'.mon.1981-2010.ltm.nc','r')
@@ -66,6 +83,8 @@ def read_nc(type):
     return [lat, lon, level, theta]
 
 [lat1, lon1, level1, theta] = read_nc(args.field)
+if args.field2 != 'none':
+    [lat2, lon2, level2, theta2] = read_nc(args.field2)
 
 logging.debug("======= level1 =========")
 #print (level1)
@@ -87,25 +106,29 @@ vind = np.where(level1 >= args.minpress)
 # indices for latitude, so I don't know what to do here to make this work.
 th=np.squeeze(theta[mon,vind,:,lonind])
 
+if args.field2 != 'none':
+    th2=np.squeeze(theta2[mon,vind,:,lonind])
+
 lev = level1[vind]
 
 import matplotlib
 matplotlib.use('Agg')
-import matplotlib.mlab as mlab
+from matplotlib import cm
 import matplotlib.pyplot as plt
 
-delta = 0.025
-x = np.arange(-3.0, 3.0, delta)
-y = np.arange(-2.0, 2.0, delta)
-X, Y = np.meshgrid(x, y)
-Z1 = mlab.bivariate_normal(X, Y, 1.0, 1.0, 0.0, 0.0)
-Z2 = mlab.bivariate_normal(X, Y, 1.5, 0.5, 1, 1)
-# difference of Gaussians
-Z = 10.0 * (Z2 - Z1)
-
 plt.figure()
-CS = plt.contour(lat1[latind], lev, th, np.arange(100,800,args.contour))
-plt.clabel(CS, inline=1, fontsize=10)
-plt.title('Section Plot at Longitude ' + str(args.lon))
+CS = plt.contour(lat1[latind], lev, th, np.arange(0,800,args.contour))
+
+if args.field2 != 'none':
+    CS2 = plt.contour(lat2[latind], lev, th2, np.arange(0,800, args.contour2),cmap=cm.gray)
+    plt.clabel(CS2, CS2.levels, inline=True, fmt="%0.0f", fontsize=10)
+
+plt.gca().invert_yaxis()
+plt.clabel(CS, CS.levels, inline=True, fmt="%0.0f", fontsize=10)
+
+if args.field2 != 'none':
+    plt.title(fieldTitle + ' and ' + field2Title +' at lon ' + str(args.lon))
+else:
+    plt.title(fieldTitle + ' at lon ' + str(args.lon))
 
 plt.savefig(fn)

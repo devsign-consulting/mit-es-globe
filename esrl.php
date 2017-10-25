@@ -34,14 +34,25 @@
             $press = $_POST['press'];
             $time = $_POST['time'];
             $field = $_POST['field'];
+            $field2 = $_POST['field2'];
             $contour = $_POST['contour'];
+            $contour2 = $_POST['contour2'];
             $lon = $_POST['lon'];
 
-            $fn="section-".md5($press.$time.$field.$contour.$lon).".png";
+            $fn="section-".md5($press.$time.$field.$contour.$lon.$field2.$contour2).".png";
             if (!file_exists("./esrl/output/$fn")) {
                 error_log("===== executing program=====");
-                error_log("esrl/showsection.py --filename $fn --field $field --month $time --minpress $press --lon $lon --contour $contour");
-                passthru("esrl/showsection.py --filename $fn --field $field --month $time --minpress $press --lon $lon --contour $contour");
+
+                if ($field2) {
+                    $cmd = "esrl/showsection.py --filename $fn --field $field --field2 $field2 --month $time --minpress $press --lon $lon --contour $contour --contour2 $contour2";
+                    error_log($cmd);
+                    passthru($cmd);
+                } else {
+                    $cmd = "esrl/showsection.py --filename $fn --field $field --month $time --minpress $press --lon $lon --contour $contour";
+                    error_log($cmd);
+                    passthru($cmd);
+                }
+
             }
 
             echo json_encode(array(

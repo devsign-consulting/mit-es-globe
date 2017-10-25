@@ -24,6 +24,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
     $scope.section.input.field = "pottmp";
     $scope.section.input.lon = 0;
     $scope.section.input.contour = 5;
+    $scope.section.input.contour2 = 5;
     $scope.section.flags = {};
     $scope.section.flags.showNow = false;
 
@@ -89,8 +90,15 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
         res.time = $scope.section.input.time;
         res.press = $scope.section.input.press;
         res.field = $scope.section.input.field;
+
+        if ($scope.section.input.field2)
+            res.field2 = $scope.section.input.field2;
+
         res.lon = $scope.section.input.lon;
         res.contour = $scope.section.input.contour;
+
+        if ($scope.section.input.contour2)
+            res.contour2 = $scope.section.input.contour2;
 
         $scope.isLoading = true;
 
@@ -127,6 +135,16 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
             value: $scope.esrl.flags.delay
         });
     };
+
+    $scope.downloadSection = function (){
+        $scope.toJSON = '';
+        $scope.toJSON = angular.toJson($scope.data);
+        var blob = new Blob([$scope.toJSON], { type:"application/json;charset=utf-8;" });
+        var downloadLink = angular.element('<a></a>');
+        downloadLink.attr('href',window.URL.createObjectURL(blob));
+        downloadLink.attr('download', 'fileName.json');
+        downloadLink[0].click();
+    }
 
     /*------ Watches ----*/
     $scope.$watchCollection('esrl.input', function () {
