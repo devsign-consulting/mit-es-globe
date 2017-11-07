@@ -5,6 +5,7 @@ import os, argparse
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 from scipy.io.netcdf import netcdf_file
+import json
 
 
 abspath = os.path.abspath(__file__)
@@ -12,6 +13,14 @@ dname = os.path.dirname(abspath)
 os.chdir(dname)
 
 parser = argparse.ArgumentParser(description='ShowClim image generator')
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
 parser.add_argument('--minpress',
                     action="store",
                     dest="minpress",
@@ -53,6 +62,32 @@ parser.add_argument('--filename',
                     action="store",
                     help='Output filename',
                     dest="fn")
+parser.add_argument('--logscale',
+                    type=str2bool, nargs='?',
+                    const=True,
+                    default=True,
+                    help='log scale on y-axis')
+
+parser.add_argument('--min',
+                    action="store",
+                    dest="min",
+                    help="min data range")
+
+parser.add_argument('--max',
+                    action="store",
+                    dest="max",
+                    help="max data range")
+
+parser.add_argument('--min2',
+                    action="store",
+                    dest="min2",
+                    help="min2 data range")
+
+parser.add_argument('--max2',
+                    action="store",
+                    dest="max2",
+                    help="max2 data range")
+
 args = parser.parse_args()
 # typ1="uwnd"; % second set
 
@@ -86,8 +121,6 @@ def read_nc(type):
 if args.field2 != 'none':
     [lat2, lon2, level2, theta2] = read_nc(args.field2)
 
-logging.debug("======= level1 =========")
-#print (level1)
 
 latr=[-90,90]
 lat1 = np.asarray(lat1)
@@ -122,6 +155,7 @@ matplotlib.rc('ytick', labelsize=18)
 
 plt.figure(figsize=(12, 10))
 
+# field 1 logic
 if args.field == 'omega':
     th = th*1000
     fieldTitle = fieldTitle + " x 1E-3"
@@ -130,10 +164,21 @@ if (args.field == 'vwnd') or (args.field == 'uwnd'):
     th = th*10
     fieldTitle = fieldTitle + " x 1E-1"
 
-min = math.floor(th.min())
-max = math.ceil(th.max())
+# argument min/max overrides
+if args.min:
+    min = float(args.min)
+else:
+    min = math.floor(th.min())
+
+if args.max:
+    max = float(args.max)
+else:
+    max = math.ceil(th.max())
+
 contour = (max - min) / args.contour
 
+
+# field 2 logic
 if args.field2 == 'omega':
     th2 = th2*1000
     field2Title = field2Title + " x 1E-3"
@@ -142,10 +187,19 @@ if (args.field2 == 'vwnd') or (args.field2 == 'uwnd'):
     th2 = th2*10
     field2Title = field2Title + " x 1E-1"
 
+
 if args.field2 != 'none':
-    min2 = math.floor(th2.min())
-    max2 = math.ceil(th2.max())
-    contour2 = (max - min) / args.contour2
+    # argument min/max overrides
+    if args.min2:
+        min2 = float(args.min2)
+    else:
+        min2 = math.floor(th2.min())
+
+    if args.max2:
+        max2 = float(args.max2)
+    else:
+        max2 = math.ceil(th2.max())
+    contour2 = (max2 - min2) / args.contour2
 
 # print (max, min, contour)
 
@@ -169,4 +223,29 @@ axis_font = {'fontname':'Arial', 'size':'20'}
 plt.xlabel("Longitude", **axis_font)
 plt.ylabel("Pressure", **axis_font)
 
+if args.logscale:
+    plt.yscale('log')
+
 plt.savefig(fn)
+
+if args.field2 != 'none':
+    print (json.dumps({
+        'field': {
+            'min': min,
+            'max': max,
+            'contour': contour
+        },
+        'field2': {
+            'min': min2,
+            'max': max2,
+            'contour': contour2
+        }
+    }))
+else:
+    print (json.dumps({
+        'field': {
+            'min': min,
+            'max': max,
+            'contour': contour
+        }
+    }))
