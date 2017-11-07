@@ -1,5 +1,5 @@
 var app = angular.module('app', ['angular-p5', 'ui.bootstrap']);
-app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout, globeSketch) {
+app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout, $uibModal, globeSketch) {
     $scope.loop = {};
     $scope.input = {};
     $scope.input.delay = 1000;
@@ -30,14 +30,42 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
         }, $scope.input.delay);
     };
 
+    $scope.showGlobeImage = function (filename) {
+        globeSketch.sph.show(filename, "/graphics");
+    };
+
     $scope.getFrame = function (filename, frame) {
         var filename_frame = filename+"-"+frame+".png";
-        var sph = parent.parent.sph;
-        sph.show(filename_frame);
+        globeSketch.sph.show(filename_frame);
         $timeout(function () {
             $scope.message({ frame: frame+1 });
         });
     };
+
+
+    $scope.openLightboxModal = function (input, filename) {
+        console.log("===openLightboxModal ", {input, filename });
+        var modalInstance = $uibModal.open({
+            animation: true,
+            templateUrl: 'lightboxModal.html',
+            controller: 'LightboxModalCtrl',
+            controllerAs: 'ctrl',
+            size: "lg",
+            appendTo: angular.element(".modal-parent"),
+            resolve: {
+                input: function () {
+                    return input;
+                },
+                filename: function () {
+                    return filename;
+                }
+            }
+        });
+
+        modalInstance.result.then(function () {
+            $ctrl.selected = selectedItem;
+        });
+    }
 
     $rootScope.$on('latlon', function(event, data) {
         console.log("===latlon angular data===", data);
@@ -89,11 +117,21 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                         $scope.input.delay = newVal.value;
                     }
                     break;
+                case "lightboxModal":
+                    $scope.openLightboxModal(newVal.input, newVal.filename);
+                    break;
+
             }
         }
 
     });
 });
+
+app.controller("LightboxModalCtrl", function ($uibModalInstance, input, filename) {
+    console.log("=== LightboxModalCtrl input ==", input, filename);
+    this.filename = filename;
+    this.input = input;
+})
 
 app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window, $rootScope) {
     var factory = {};
@@ -327,9 +365,12 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 phi = lat * pi / 180;
             }
 
-            p.show = function (fn) {
+            p.show = function (fn, path) {
                 playing = false;
-                url = "/esrl/output/" + fn;
+                if (!path)
+                    url = "/esrl/output/" + fn;
+                else
+                    url = path + "/" + fn;
 
                 if (url.indexOf("#") >= 0)
                     movie = true;

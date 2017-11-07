@@ -44,11 +44,11 @@
                 error_log("===== executing program=====");
 
                 if ($field2) {
-                    $cmd = "esrl/showsection.py --filename $fn --field $field --field2 $field2 --month $time --minpress $press --lon $lon --contour $contour --contour2 $contour2";
+                    $cmd = "python esrl/showsection.py --filename $fn --field $field --field2 $field2 --month $time --minpress $press --lon $lon --contour $contour --contour2 $contour2";
                     error_log($cmd);
                     passthru($cmd);
                 } else {
-                    $cmd = "esrl/showsection.py --filename $fn --field $field --month $time --minpress $press --lon $lon --contour $contour";
+                    $cmd = "python esrl/showsection.py --filename $fn --field $field --month $time --minpress $press --lon $lon --contour $contour";
                     error_log($cmd);
                     passthru($cmd);
                 }

@@ -1,10 +1,10 @@
 // http://plnkr.co/edit/EYpEATLGd0B54WpEr7II?p=preview
-var esrl = angular.module('app-esrl', ['ngResource', 'app-esrl.services']);
+var esrl = angular.module('app-esrl', ['ngResource', 'app-esrl.services','ui.bootstrap','ngAnimate']);
 esrl.factory('$parentScope', function ($window) {
     return $window.parent.angular.element($window.frameElement).scope();
 });
 
-esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResource) {
+esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout, $uibModal, EsrlResource) {
     $scope.esrl = {};
     $scope.esrl.input = {};
     $scope.esrl.flags = {};
@@ -15,7 +15,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
     $scope.esrl.input.field = 'pottmp';
     $scope.esrl.input.lat = 30;
     $scope.esrl.input.lon = 0;
-    $scope.esrl.flags.delay = 1000;
+    $scope.esrl.flags.delay = 1;
 
     $scope.section = {};
     $scope.section.input = {};
@@ -23,10 +23,15 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
     $scope.section.input.press = 200;
     $scope.section.input.field = "pottmp";
     $scope.section.input.lon = 0;
-    $scope.section.input.contour = 5;
-    $scope.section.input.contour2 = 5;
+    $scope.section.input.contour = 10;
+    $scope.section.input.contour2 = 10;
     $scope.section.flags = {};
-    $scope.section.flags.showNow = false;
+    $scope.section.flags.showNow = true;
+
+    // Functions to execute on load
+    $timeout(function () {
+        $scope.submitSectionForm();
+    });
 
     $scope.esrl.submit = function () {
         $scope.esrl.flags.showNow = false;
@@ -105,6 +110,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
         return res.$submitForm().then(function (results) {
             $scope.section.filename = "./esrl/output/" + results.filename;
             $scope.isLoading = false;
+            $scope.section.flags.showNow = true;
             return;
         });
 
@@ -132,7 +138,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
     $scope.setDelay = function () {
         $scope.message({
             action: "setDelay",
-            value: $scope.esrl.flags.delay
+            value: 1 / $scope.esrl.flags.delay * 1000
         });
     };
 
@@ -188,6 +194,10 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
         $parentScope.$apply(function () {
             $parentScope.iframeMessage = data;
         });
+    };
+
+    $scope.openLightboxModal = function (filename) {
+        $scope.message({ action: "lightboxModal", input: $scope.section.input, filename });
     };
 
     $parentScope.esrlScope = $scope;

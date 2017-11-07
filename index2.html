@@ -18,8 +18,11 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
         <script src="p5.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.js"></script>
+
         <script src="./bower_components/angular-p5/angular-p5.js"></script>
 
         <script src="js/main.js"></script>
@@ -51,10 +54,10 @@
         </script>
         <!--<script src="sph.js"></script>-->
         <div class="container-fluid">
-            <div id="canvas-container" class="col-xs-8">
+            <div id="canvas-container" class="col-xs-7">
                 <p5 sketch="globeSketch"></p5>
             </div>
-            <div class="col-xs-4 container-input no-gutter">
+            <div class="col-xs-5 container-input no-gutter">
                 <nav class="navbar navbar-default">
                     <div class="container-fluid">
                         <ul class="nav navbar-nav">
@@ -64,10 +67,10 @@
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Marshall & Plumb<span class="caret"></span></a>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href='javascript:sph.show("local/mp.png")'>Surface Air Temperature</a></li>
-                                    <li><a href='javascript:sph.show("local/mp3.png")'>OLR</a></li>
-                                    <li><a href='javascript:sph.show("local/mp3a.png")'>OLR(2048)</a></li>
-                                    <li><a href='javascript:sph.show("local/mp4.jpg")'>SSH</a></li>
+                                    <li><a ng-click="showGlobeImage('mp.png')">Surface Air Temperature</a></li>
+                                    <li><a ng-click="showGlobeImage('mp3.png')">OLR</a></li>
+                                    <li><a ng-click="showGlobeImage('mp3a.png')">OLR(2048)</a></li>
+                                    <li><a ng-click="showGlobeImage('mp4.jpg')">SSH</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -78,6 +81,19 @@
             </div>
         </div>
 
+        <!--- Modal ---->
+        <div class="modal-parent">
+        </div>
+        <script type="text/ng-template" id="lightboxModal.html">
+            <div class="modal-body" id="modal-body">
+                <img style='width:100%; padding:0; margin-top: 0px'; src="{{ctrl.filename}}">
+                <p style="text-align:center">
+                    <a ng-if="!input.field2" href="{{ctrl.filename}}" download="{{ctrl.input.field}}-{{ctrl.input.time}}-{{ctrl.input.press}}-lon{{ctrl.input.lon}}.png">Download file</a>
+                    <a ng-if="input.field2" href="{{ctrl.filename}}" download="{{ctrl.input.field}}-{{ctrl.input.field2}}-{{ctrl.input.time}}-{{ctrl.input.press}}-lon{{ctrl.input.lon}}.png">Download file</a>
+                </p>
+
+            </div>
+        </script>
 
     </body>
 </html>

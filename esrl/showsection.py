@@ -112,23 +112,61 @@ if args.field2 != 'none':
 lev = level1[vind]
 
 import matplotlib
+import math
 matplotlib.use('Agg')
 from matplotlib import cm
 import matplotlib.pyplot as plt
 
-plt.figure()
-CS = plt.contour(lat1[latind], lev, th, np.arange(0,800,args.contour))
+matplotlib.rc('xtick', labelsize=18)
+matplotlib.rc('ytick', labelsize=18)
+
+plt.figure(figsize=(12, 10))
+
+if args.field == 'omega':
+    th = th*1000
+    fieldTitle = fieldTitle + " x 1E-3"
+
+if (args.field == 'vwnd') or (args.field == 'uwnd'):
+    th = th*10
+    fieldTitle = fieldTitle + " x 1E-1"
+
+min = math.floor(th.min())
+max = math.ceil(th.max())
+contour = (max - min) / args.contour
+
+if args.field2 == 'omega':
+    th2 = th2*1000
+    field2Title = field2Title + " x 1E-3"
+
+if (args.field2 == 'vwnd') or (args.field2 == 'uwnd'):
+    th2 = th2*10
+    field2Title = field2Title + " x 1E-1"
 
 if args.field2 != 'none':
-    CS2 = plt.contour(lat2[latind], lev, th2, np.arange(0,800, args.contour2),cmap=cm.gray)
-    plt.clabel(CS2, CS2.levels, inline=True, fmt="%0.0f", fontsize=10)
+    min2 = math.floor(th2.min())
+    max2 = math.ceil(th2.max())
+    contour2 = (max - min) / args.contour2
+
+# print (max, min, contour)
+
+CS = plt.contour(lat1[latind], lev, th, np.arange(min, max, contour))
+
+# print (th)
+
+if args.field2 != 'none':
+    CS2 = plt.contour(lat2[latind], lev, th2, np.arange(min2,max2, contour2),cmap=cm.gray)
+    plt.clabel(CS2, CS2.levels[::2], inline=True, fmt="%0.0f", fontsize=14)
 
 plt.gca().invert_yaxis()
-plt.clabel(CS, CS.levels, inline=True, fmt="%0.0f", fontsize=10)
+plt.clabel(CS, CS.levels[::2], inline=True, fmt="%0.0f", fontsize=14)
 
 if args.field2 != 'none':
-    plt.title(fieldTitle + ' and ' + field2Title +' at lon ' + str(args.lon))
+    plt.title(fieldTitle + ' and ' + field2Title +' at lon ' + str(args.lon), fontsize=20)
 else:
-    plt.title(fieldTitle + ' at lon ' + str(args.lon))
+    plt.title(fieldTitle + ' at lon ' + str(args.lon), fontsize=20)
+
+axis_font = {'fontname':'Arial', 'size':'20'}
+plt.xlabel("Longitude", **axis_font)
+plt.ylabel("Pressure", **axis_font)
 
 plt.savefig(fn)
