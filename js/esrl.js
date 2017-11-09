@@ -1,10 +1,10 @@
 // http://plnkr.co/edit/EYpEATLGd0B54WpEr7II?p=preview
-var esrl = angular.module('app-esrl', ['ngResource', 'app-esrl.services']);
+var esrl = angular.module('app-esrl', ['ngResource', 'app-esrl.services','ui.bootstrap','ngAnimate','ui.toggle']);
 esrl.factory('$parentScope', function ($window) {
     return $window.parent.angular.element($window.frameElement).scope();
 });
 
-esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResource) {
+esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout, $uibModal, EsrlResource) {
     $scope.esrl = {};
     $scope.esrl.input = {};
     $scope.esrl.flags = {};
@@ -15,7 +15,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
     $scope.esrl.input.field = 'pottmp';
     $scope.esrl.input.lat = 30;
     $scope.esrl.input.lon = 0;
-    $scope.esrl.flags.delay = 1000;
+    $scope.esrl.flags.delay = 1;
 
     $scope.section = {};
     $scope.section.input = {};
@@ -23,10 +23,16 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
     $scope.section.input.press = 200;
     $scope.section.input.field = "pottmp";
     $scope.section.input.lon = 0;
-    $scope.section.input.contour = 5;
-    $scope.section.input.contour2 = 5;
+    $scope.section.input.contour = 10;
+    $scope.section.input.contour2 = 10;
+    $scope.section.input.logScale = true;
     $scope.section.flags = {};
-    $scope.section.flags.showNow = false;
+    $scope.section.flags.showNow = true;
+
+    // Functions to execute on load
+    $timeout(function () {
+        $scope.submitSectionForm();
+    });
 
     $scope.esrl.submit = function () {
         $scope.esrl.flags.showNow = false;
@@ -90,6 +96,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
         res.time = $scope.section.input.time;
         res.press = $scope.section.input.press;
         res.field = $scope.section.input.field;
+        res.logScale = $scope.section.input.logScale ? 'True' : 'False';
 
         if ($scope.section.input.field2)
             res.field2 = $scope.section.input.field2;
@@ -100,11 +107,45 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
         if ($scope.section.input.contour2)
             res.contour2 = $scope.section.input.contour2;
 
+        if ($scope.section.input.max) {
+            res.max = $scope.section.input.max
+        }
+        if ($scope.section.input.min) {
+            res.min = $scope.section.input.min
+        }
+
+        if ($scope.section.input.max2) {
+            res.max2 = $scope.section.input.max2
+        }
+        if ($scope.section.input.min2) {
+            res.min2 = $scope.section.input.min2
+        }
         $scope.isLoading = true;
 
         return res.$submitForm().then(function (results) {
             $scope.section.filename = "./esrl/output/" + results.filename;
             $scope.isLoading = false;
+            $scope.section.flags.showNow = true;
+
+            console.log("==== results ===", results);
+            if (results.output && results.output.field) {
+                if (results.output.field.min) {
+                    $scope.section.input.min = results.output.field.min
+                }
+
+                if (results.output.field.max) {
+                    $scope.section.input.max = results.output.field.max
+                }
+
+                if (results.output.field2.min) {
+                    $scope.section.input.min2 = results.output.field2.min
+                }
+
+                if (results.output.field2.max) {
+                    $scope.section.input.max2 = results.output.field2.max
+                }
+
+            }
             return;
         });
 
@@ -132,7 +173,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
     $scope.setDelay = function () {
         $scope.message({
             action: "setDelay",
-            value: $scope.esrl.flags.delay
+            value: 1 / $scope.esrl.flags.delay * 1000
         });
     };
 
@@ -147,7 +188,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
     }
 
     /*------ Watches ----*/
-    $scope.$watchCollection('esrl.input', function () {
+    $scope.$watchCollection('esrl.input', function (newVal, oldVal) {
         console.log("=== inputs updated ==", $scope.esrl.input);
         if ($scope.esrl.flags.showNow) {
             // trigger a refresh
@@ -163,7 +204,18 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
         }
     });
 
-    $scope.$watchCollection('section.input', function () {
+    $scope.$watchCollection('section.input', function (newVal, oldVal) {
+        if (oldVal && newVal) {
+            if (oldVal.field && newVal.field && oldVal.field !== newVal.field) {
+                $scope.section.input.min = null;
+                $scope.section.input.max = null;
+            }
+
+            if (oldVal.field2 && newVal.field2 && oldVal.field2 !== newVal.field2) {
+                $scope.section.input.min2 = null;
+                $scope.section.input.max2 = null;
+            }
+        }
         if ($scope.section.flags.showNow) {
             $scope.submitSectionForm();
         }
@@ -188,6 +240,10 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, EsrlResou
         $parentScope.$apply(function () {
             $parentScope.iframeMessage = data;
         });
+    };
+
+    $scope.openLightboxModal = function (filename) {
+        $scope.message({ action: "lightboxModal", input: $scope.section.input, filename });
     };
 
     $parentScope.esrlScope = $scope;

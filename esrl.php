@@ -37,32 +37,47 @@
             $field2 = $_POST['field2'];
             $contour = $_POST['contour'];
             $contour2 = $_POST['contour2'];
+            $logscale = $_POST['logScale'];
+            $min = $_POST['min'];
+            $max = $_POST['max'];
+            $min2 = $_POST['min2'];
+            $max2 = $_POST['max2'];
+
             $lon = $_POST['lon'];
 
-            $fn="section-".md5($press.$time.$field.$contour.$lon.$field2.$contour2).".png";
-            if (!file_exists("./esrl/output/$fn")) {
+            $fn="section-".md5($press.$time.$field.$contour.$lon.$field2.$contour2.$logscale.$max.$min.$max2.$min2).".png";
+            // if (!file_exists("./esrl/output/$fn")) {
                 error_log("===== executing program=====");
+                $cmd = "python esrl/showsection.py --filename $fn --field $field --month $time --minpress $press --lon $lon --contour $contour --logscale $logscale";
+
+                if ($min)
+                    $cmd .= " --min $min";
+                if ($max)
+                    $cmd .= " --max $max";
 
                 if ($field2) {
-                    $cmd = "esrl/showsection.py --filename $fn --field $field --field2 $field2 --month $time --minpress $press --lon $lon --contour $contour --contour2 $contour2";
-                    error_log($cmd);
-                    passthru($cmd);
-                } else {
-                    $cmd = "esrl/showsection.py --filename $fn --field $field --month $time --minpress $press --lon $lon --contour $contour";
-                    error_log($cmd);
-                    passthru($cmd);
+                    $cmd .= " --field2 $field2 --contour2 $contour2";
+
+                    if ($min2)
+                        $cmd .= " --min2 $min2";
+                    if ($max2)
+                        $cmd .= " --max2 $max2";
                 }
 
-            }
+                error_log($cmd);
+                $output = exec($cmd);
+                $output = json_decode($output);
+
+            // }
 
             echo json_encode(array(
                 "filename" =>$fn,
-                "form" => "section"
+                "form" => "section",
+                "output" => $output
             ));
         } else {
             // execute any generic script with command line arguments
             // Construct the arguments from the $_POST variable
-
         }
 
     }
