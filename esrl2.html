@@ -262,6 +262,21 @@
                         <input class="form-control" ng-model="esrl.input.lon" ng-model-options="{debounce:500}" type="number" min="-180" max="180" required>
                     </div>
                 </div>
+                <!---- GLOBE SHOW CONTOUR ---->
+                <div class="row gutter">
+                    <div class="col-xs-2">
+                        <div class="form-group">
+                            <label style="clear:both;">Contour?</label>
+                            <toggle type='checkbox' ng-model="esrl.input.contour"></toggle>
+                        </div>
+                    </div>
+                    <div class="col-xs-3">
+                        <div class="form-group">
+                            <label>Density</label>
+                            <input ng-model="esrl.input.contourDensity" ng-model-options="{debounce:500}" class="form-control" type="number" min="1" max="100">
+                        </div>
+                    </div>
+                </div>
                 <div class="row gutter">
                     <div class="col-xs-3">
                         <button class='form-control btn btn-primary' ng-click="esrl.submit()" ng-disabled="myForm.$invalid || isLoading">Show on Globe <span ng-show="isLoading" class="fa fa-spin fa-spinner"></span></button>

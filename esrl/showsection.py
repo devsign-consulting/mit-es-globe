@@ -203,7 +203,8 @@ if args.field2 != 'none':
 
 # print (max, min, contour)
 
-CS = plt.contour(lat1[latind], lev, th, np.arange(min, max, contour))
+CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour))
+b = plt.colorbar(CS, orientation='vertical')
 
 # print (th)
 

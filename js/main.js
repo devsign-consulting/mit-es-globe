@@ -83,7 +83,7 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                 clearTimeout($scope.input && $scope.input.movieLoop);
                 $scope.timeoutLoop(filename, $scope.input.delay)
             } else {
-                console.log("===globeSketch===", globeSketch);
+                console.log("===globeSketch===", newVal);
                 globeSketch.sph.show(newVal.filename);
                 if (!newVal.bypassOrient)
                     globeSketch.sph.orient(newVal.lat, newVal.lon);

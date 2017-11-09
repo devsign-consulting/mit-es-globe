@@ -15,7 +15,11 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     $scope.esrl.input.field = 'pottmp';
     $scope.esrl.input.lat = 30;
     $scope.esrl.input.lon = 0;
+    $scope.esrl.input.contour = false;
+    $scope.esrl.input.contourDensity = 20;
+
     $scope.esrl.flags.delay = 1;
+    $scope.esrl.flags.showNow = true;
 
     $scope.section = {};
     $scope.section.input = {};
@@ -32,6 +36,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     // Functions to execute on load
     $timeout(function () {
         $scope.submitSectionForm();
+        $scope.submitEsrlForm();
     });
 
     $scope.esrl.submit = function () {
@@ -67,6 +72,12 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         res.fcontour = 5;
         res.model = "clim2.py";
         res.action = "esrl";
+        if ($scope.esrl.input.contour) {
+            res.contour = $scope.esrl.input.contour;
+            res.contourDensity = $scope.esrl.input.contourDensity;
+        }
+
+        res.action = "esrl";
         $scope.isLoading = true;
 
         return res.$submitForm().then(function (results) {
@@ -83,6 +94,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
 
                 $parentScope.iframeMessage = results;
                 $scope.isLoading = false;
+                $scope.section.flags.showNow = true;
             });
 
             return;
@@ -137,11 +149,11 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                     $scope.section.input.max = results.output.field.max
                 }
 
-                if (results.output.field2.min) {
+                if (results.output.field2 && results.output.field2.min) {
                     $scope.section.input.min2 = results.output.field2.min
                 }
 
-                if (results.output.field2.max) {
+                if (results.output.field2 && results.output.field2.max) {
                     $scope.section.input.max2 = results.output.field2.max
                 }
 
@@ -189,7 +201,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
 
     /*------ Watches ----*/
     $scope.$watchCollection('esrl.input', function (newVal, oldVal) {
-        console.log("=== inputs updated ==", $scope.esrl.input);
+        console.log("=== inputs updated ==", newVal);
         if ($scope.esrl.flags.showNow) {
             // trigger a refresh
             // restart movie if false;
@@ -200,7 +212,14 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
             $scope.message({
                 action: 'pause'
             });
-            $scope.submitEsrlForm();
+
+            // do not update if lat lon changes for ESRL
+            if (newVal.lat !== oldVal.lat || newVal.lon !== oldVal.lon) {
+                // do nothing
+            } else {
+                if (!$scope.esrlForm.$invalid)
+                    $scope.submitEsrlForm();
+            }
         }
     });
 

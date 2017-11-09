@@ -8,6 +8,14 @@ abspath = os.path.abspath(__file__)
 dname = os.path.dirname(abspath)
 os.chdir(dname)
 
+def str2bool(v):
+    if v.lower() in ('yes', 'true', 't', 'y', '1'):
+        return True
+    elif v.lower() in ('no', 'false', 'f', 'n', '0'):
+        return False
+    else:
+        raise argparse.ArgumentTypeError('Boolean value expected.')
+
 parser = argparse.ArgumentParser(description='ShowClim image generator')
 parser.add_argument('--time',
                     action="store",
@@ -28,6 +36,18 @@ parser.add_argument('--filename',
                     action="store",
                     help='Output filename',
                     dest="fn")
+parser.add_argument('--contour',
+                    type=str2bool, nargs='?',
+                    const=True,
+                    default=False,
+                    help='plot contour')
+parser.add_argument('--contour-density',
+                    action="store",
+                    dest="contour_density",
+                    default=10,
+                    help='contour line density')
+
+
 args = parser.parse_args()
 execfile("map.py")
 
@@ -43,12 +63,14 @@ level=nc['level'][:];
 yrday=nc['time'][:];
 theta=nc[args.field][:,:,:,:];
 
+if args.contour:
+    args.contour_density = int(args.contour_density)
 
 fn='./output/'+args.fn
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-
+import math
 
 
 def splotit(theta,n,lev):
@@ -58,7 +80,16 @@ def splotit(theta,n,lev):
   fig=plt.figure(figsize=(20.48,10.24))
   ax=fig.add_axes((0,0,1,1))
   ax.set_axis_off()
-  ax.pcolormesh(lon,lat,th)
+
+  if args.contour:
+    min = math.floor(th.min())
+    max = math.floor(th.max())
+    contour = (max - min) / args.contour_density
+    CS = ax.contour(lon,lat,th, np.arange(min, max, contour))
+    ax.clabel(CS, CS.levels, inline=True, fmt="%0.0f", fontsize=9)
+  else:
+    ax.pcolormesh(lon,lat,th)
+
   lonx=[]
   latx=[]
   for i in range(0,len(lonm)):
