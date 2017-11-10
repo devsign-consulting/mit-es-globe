@@ -132,6 +132,11 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         if ($scope.section.input.min2) {
             res.min2 = $scope.section.input.min2
         }
+
+        if ($scope.section.input.fillContour) {
+            res.fillContour = $scope.section.input.fillContour
+        }
+
         $scope.isLoading = true;
 
         return res.$submitForm().then(function (results) {

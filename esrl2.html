@@ -51,8 +51,9 @@
                                 <a ng-if="section.input.field2" href="{{section.filename}}" download="{{section.input.field}}-{{section.input.field2}}-{{section.input.time}}-{{section.input.press}}-lon{{section.input.lon}}.png">Download file</a>
                             </div>
                         </div>
+
                         <div class="row">
-                            <div class="col-xs-5">
+                            <div class="col-xs-3">
                                 <div class="form-group">
                                     <label>Month</label>
                                     <select class="form-control" ng-model="section.input.time" ng-model-options="{debounce:500}">
@@ -87,6 +88,12 @@
                                 <div class="form-group">
                                     <label>Log Scale</label>
                                     <toggle type='checkbox' ng-model="section.input.logScale"></toggle>
+                                </div>
+                            </div>
+                            <div class="col-xs-2">
+                                <div class="form-group">
+                                    <label>Fill Contour</label>
+                                    <toggle type='checkbox' ng-model="section.input.fillContour"></toggle>
                                 </div>
                             </div>
                         </div>

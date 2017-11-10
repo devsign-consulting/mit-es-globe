@@ -68,6 +68,13 @@ parser.add_argument('--logscale',
                     default=True,
                     help='log scale on y-axis')
 
+parser.add_argument('--fill-contour',
+                    type=str2bool, nargs='?',
+                    dest="fillcontour",
+                    const=True,
+                    default=False,
+                    help='draws a fill contour')
+
 parser.add_argument('--min',
                     action="store",
                     dest="min",
@@ -188,6 +195,7 @@ if (args.field2 == 'vwnd') or (args.field2 == 'uwnd'):
     field2Title = field2Title + " x 1E-1"
 
 
+
 if args.field2 != 'none':
     # argument min/max overrides
     if args.min2:
@@ -203,8 +211,15 @@ if args.field2 != 'none':
 
 # print (max, min, contour)
 
-CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour))
-b = plt.colorbar(CS, orientation='vertical')
+if args.fillcontour:
+    CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour))
+    b = plt.colorbar(CS, orientation='vertical')
+else:
+    CS = plt.contour(lat1[latind], lev, th, np.arange(min, max, contour))
+    plt.clabel(CS, CS.levels[::2], inline=True, fmt="%0.0f", fontsize=14)
+
+plt.gca().invert_yaxis()
+
 
 # print (th)
 
@@ -212,8 +227,6 @@ if args.field2 != 'none':
     CS2 = plt.contour(lat2[latind], lev, th2, np.arange(min2,max2, contour2),cmap=cm.gray)
     plt.clabel(CS2, CS2.levels[::2], inline=True, fmt="%0.0f", fontsize=14)
 
-plt.gca().invert_yaxis()
-plt.clabel(CS, CS.levels[::2], inline=True, fmt="%0.0f", fontsize=14)
 
 if args.field2 != 'none':
     plt.title(fieldTitle + ' and ' + field2Title +' at lon ' + str(args.lon), fontsize=20)

@@ -44,6 +44,7 @@
             $contour = $_POST['contour'];
             $contour2 = $_POST['contour2'];
             $logscale = $_POST['logScale'];
+            $fillcontour = $_POST['fillContour'];
             $min = $_POST['min'];
             $max = $_POST['max'];
             $min2 = $_POST['min2'];
@@ -51,7 +52,7 @@
 
             $lon = $_POST['lon'];
 
-            $fn="section-".md5($press.$time.$field.$contour.$lon.$field2.$contour2.$logscale.$max.$min.$max2.$min2).".png";
+            $fn="section-".md5($press.$time.$field.$contour.$lon.$field2.$contour2.$logscale.$max.$min.$max2.$min2.$fillcontour).".png";
             // if (!file_exists("./esrl/output/$fn")) {
                 error_log("===== executing program=====");
                 $cmd = "python esrl/showsection.py --filename $fn --field $field --month $time --minpress $press --lon $lon --contour $contour --logscale $logscale";
@@ -60,6 +61,8 @@
                     $cmd .= " --min $min";
                 if ($max)
                     $cmd .= " --max $max";
+                if ($fillcontour)
+                    $cmd .= " --fill-contour";
 
                 if ($field2) {
                     $cmd .= " --field2 $field2 --contour2 $contour2";
