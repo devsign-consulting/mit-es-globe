@@ -70,12 +70,14 @@ fn='./output/'+args.fn
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-import math
+import math, json
 
+def getTheta(theta, n, lev):
+    th1=np.roll(theta[n,lev,:,:],72,axis=1)
+    th=np.hstack((th1,th1[:,0:1]))
+    return th
 
-def splotit(theta,n,lev):
-  th1=np.roll(theta[n,lev,:,:],72,axis=1)
-  th=np.hstack((th1,th1[:,0:1]))
+def splotit(th, overrideMin=False, overrideMax=False):
   #  plt.figure(1,figsize=[8.125*3.253/2,6.125*3.253/2])
   fig=plt.figure(figsize=(20.48,10.24))
   ax=fig.add_axes((0,0,1,1))
@@ -85,6 +87,11 @@ def splotit(theta,n,lev):
     min = math.floor(th.min())
     max = math.floor(th.max())
     contour = (max - min) / args.contour_density
+    if overrideMin:
+      min = overrideMin
+    if overrideMax:
+      max = overrideMax
+
     CS = ax.contour(lon,lat,th, np.arange(min, max, contour))
     ax.clabel(CS, CS.levels, inline=True, fmt="%0.0f", fontsize=9)
   else:
@@ -130,8 +137,26 @@ else:
 if lev1<0:
   nr=range(t0,t1+1)
   for n in nr:
-    splotit(theta,n,lev0)
+    if t1 > 0 and n == 0:
+        print "first loop"
+        th = getTheta(theta,n,lev0)
+        min = th.min()
+        max = th.max()
+        splotit(th, min, max)
+    else:
+      th = getTheta(theta,n,lev0)
+      if t1 > 0:
+        print min
+        print max
+        splotit(th, min, max)
+      else:
+        splotit(th)
 else:
   nr=range(lev0,lev1)
   for lev in nr:
-    splotit(theta,t0,lev)
+    th = getTheta(theta,t0,lev)
+    splotit(th)
+
+print (json.dumps({
+    'output': 'ok'
+}))
