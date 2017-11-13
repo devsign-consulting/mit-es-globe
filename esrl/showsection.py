@@ -215,7 +215,7 @@ if args.field2 != 'none':
 
 if args.fillcontour:
     CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour))
-    b = plt.colorbar(CS, orientation='vertical')
+    # b = plt.colorbar(CS, orientation='vertical')
 else:
     CS = plt.contour(lat1[latind], lev, th, np.arange(min, max, contour))
     plt.clabel(CS, CS.levels[::2], inline=True, fmt="%0.0f", fontsize=14)
@@ -225,14 +225,14 @@ plt.gca().invert_yaxis()
 # print (th)
 
 if args.field2 != 'none':
-    CS2 = plt.contour(lat2[latind], lev, th2, np.arange(min2,max2, contour2),cmap=cm.gray)
+    CS2 = plt.contour(lat2[latind], lev, th2, np.arange(min2,max2, contour2), colors='k')
     plt.clabel(CS2, CS2.levels[::2], inline=True, fmt="%0.0f", fontsize=14)
 
 
 if args.field2 != 'none':
-    plt.title(fieldTitle + ' and ' + field2Title +' at lon ' + str(args.lon), fontsize=20)
+    plt.title(fieldTitle + ' and ' + field2Title +' at lon ' + str(args.lon), fontsize=20, y=1.08)
 else:
-    plt.title(fieldTitle + ' at lon ' + str(args.lon), fontsize=20)
+    plt.title(fieldTitle + ' at lon ' + str(args.lon), fontsize=20, y=1.08)
 
 axis_font = {'fontname':'Arial', 'size':'20'}
 plt.xlabel("Longitude", **axis_font)

@@ -110,8 +110,22 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         res.field = $scope.section.input.field;
         res.logScale = $scope.section.input.logScale ? 'True' : 'False';
 
-        if ($scope.section.input.field2)
+        if ($scope.section.input.field2) {
             res.field2 = $scope.section.input.field2;
+            if ($scope.section.input.max2) {
+                res.max2 = $scope.section.input.max2
+            }
+            if ($scope.section.input.min2) {
+                res.min2 = $scope.section.input.min2
+            }
+        } else {
+            res.fillContour = true;
+            res.field2 = $scope.section.input.field;
+            if ($scope.section.input.min)
+                res.min2 = $scope.section.input.min;
+            if ($scope.section.input.max)
+                res.max2 = $scope.section.input.max;
+        }
 
         res.lon = $scope.section.input.lon;
         res.contour = $scope.section.input.contour;
@@ -124,13 +138,6 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         }
         if ($scope.section.input.min) {
             res.min = $scope.section.input.min
-        }
-
-        if ($scope.section.input.max2) {
-            res.max2 = $scope.section.input.max2
-        }
-        if ($scope.section.input.min2) {
-            res.min2 = $scope.section.input.min2
         }
 
         if ($scope.section.input.fillContour) {
