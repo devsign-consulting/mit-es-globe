@@ -53,15 +53,15 @@ execfile("map.py")
 
 nc0=netcdf_file('ESRL-'+args.field+'.mon.1981-2010.ltm.nc','r')
 nc=nc0.variables
-lat=nc['lat'][:];
-lon=nc['lon'][:];
+lat=nc['lat'][:]
+lon=nc['lon'][:]
 # roll and duplicate
 ind=(lon>=180)
 lon1=np.roll(lon-360*ind,72)
 lon=np.append(lon1,180)
-level=nc['level'][:];
-yrday=nc['time'][:];
-theta=nc[args.field][:,:,:,:];
+level=nc['level'][:]
+yrday=nc['time'][:]
+theta=nc[args.field][:,:,:,:]
 
 if args.contour:
     args.contour_density = int(args.contour_density)
@@ -92,8 +92,9 @@ def splotit(th, overrideMin=False, overrideMax=False):
     if overrideMax:
       max = overrideMax
 
-    CS = ax.contour(lon,lat,th, np.arange(min, max, contour))
-    ax.clabel(CS, CS.levels, inline=True, fmt="%0.0f", fontsize=9)
+    CS = ax.contourf(lon,lat,th, np.arange(min, max, contour))
+    CS2 = ax.contour(lon,lat,th, np.arange(min,max, contour), colors='0.5')
+    ax.clabel(CS2, CS2.levels, inline=True, fmt="%0.0f", fontsize=9)
   else:
     ax.pcolormesh(lon,lat,th)
 
@@ -101,14 +102,14 @@ def splotit(th, overrideMin=False, overrideMax=False):
   latx=[]
   for i in range(0,len(lonm)):
     if lonm[i]<-180:
-      ax.plot(lonx,latx,"#777777")
+      ax.plot(lonx,latx,"#000000")
       lonx=[];
       latx=[];
     else:
       lonx.append(lonm[i])
       latx.append(latm[i])
 
-  ax.plot(lonx,latx,"#777777")
+  ax.plot(lonx,latx,"#000000")
   ax.axis('tight')
   #  plt.axis('off')
   #  plt.axis('equal')
@@ -144,10 +145,10 @@ if lev1<0:
         splotit(th, min, max)
     else:
       th = getTheta(theta,n,lev0)
-      if t1 > 0:
-        splotit(th, min, max)
-      else:
+      if t1 == t0:
         splotit(th)
+      else:
+        splotit(th, min, max)
 else:
   nr=range(lev0,lev1)
   for lev in nr:

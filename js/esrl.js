@@ -15,7 +15,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     $scope.esrl.input.field = 'pottmp';
     $scope.esrl.input.lat = 30;
     $scope.esrl.input.lon = 0;
-    $scope.esrl.input.contour = false;
+    $scope.esrl.input.contour = true;
     $scope.esrl.input.contourDensity = 20;
 
     $scope.esrl.flags.delay = 1;
@@ -72,10 +72,10 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         res.fcontour = 5;
         res.model = "clim2.py";
         res.action = "esrl";
-        if ($scope.esrl.input.contour) {
-            res.contour = $scope.esrl.input.contour;
-            res.contourDensity = $scope.esrl.input.contourDensity;
-        }
+        // if ($scope.esrl.input.contour) {
+        res.contour = true;
+        res.contourDensity = $scope.esrl.input.contourDensity;
+        //}
 
         res.action = "esrl";
         $scope.isLoading = true;
@@ -118,6 +118,10 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
             if ($scope.section.input.min2) {
                 res.min2 = $scope.section.input.min2
             }
+            if ($scope.section.input.contour2) {
+                res.contour2 = $scope.section.input.contour2;
+            }
+
         } else {
             res.fillContour = true;
             res.field2 = $scope.section.input.field;
@@ -125,13 +129,12 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                 res.min2 = $scope.section.input.min;
             if ($scope.section.input.max)
                 res.max2 = $scope.section.input.max;
+
+            res.contour2 = $scope.section.input.contour;
         }
 
         res.lon = $scope.section.input.lon;
         res.contour = $scope.section.input.contour;
-
-        if ($scope.section.input.contour2)
-            res.contour2 = $scope.section.input.contour2;
 
         if ($scope.section.input.max) {
             res.max = $scope.section.input.max
