@@ -156,11 +156,13 @@ import math
 matplotlib.use('Agg')
 from matplotlib import cm
 import matplotlib.pyplot as plt
+from matplotlib.ticker import ScalarFormatter
 
 matplotlib.rc('xtick', labelsize=18)
 matplotlib.rc('ytick', labelsize=18)
 
-plt.figure(figsize=(12, 10))
+fig = plt.figure(figsize=(12, 10))
+ax = fig.add_subplot(1,1,1)
 
 # field 1 logic
 if args.field == 'omega':
@@ -220,7 +222,6 @@ else:
 
 plt.gca().invert_yaxis()
 
-
 # print (th)
 
 if args.field2 != 'none':
@@ -238,7 +239,12 @@ plt.xlabel("Longitude", **axis_font)
 plt.ylabel("Pressure", **axis_font)
 
 if args.logscale:
-    plt.yscale('log')
+    ax1 = plt.axes()
+    ax1.set_yscale('log')
+    ax1.set_yticks([200, 300, 400, 500, 600, 700, 800, 900, 1000])
+    ax1.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    # https://stackoverflow.com/questions/46498157/overlapping-axis-tick-labels-in-logarithmic-plots/46498658#46498658
+    ax1.minorticks_off()
 
 plt.savefig(fn)
 

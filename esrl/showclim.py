@@ -138,7 +138,6 @@ if lev1<0:
   nr=range(t0,t1+1)
   for n in nr:
     if t1 > 0 and n == 0:
-        print "first loop"
         th = getTheta(theta,n,lev0)
         min = th.min()
         max = th.max()
@@ -146,8 +145,6 @@ if lev1<0:
     else:
       th = getTheta(theta,n,lev0)
       if t1 > 0:
-        print min
-        print max
         splotit(th, min, max)
       else:
         splotit(th)

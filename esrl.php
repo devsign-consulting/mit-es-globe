@@ -20,15 +20,15 @@
             else
                 $filename=$fn."-0.png";
 
-            if (!file_exists("./esrl/output/$filename")) {
+            // if (!file_exists("./esrl/output/$filename")) {
                 error_log("==== executing program ====");
                 error_log("esrl/showclim.py --filename $fn --field $fieldInput --time $timeInput --press $pressInput");
-                $cmd = "esrl/showclim.py --filename $fn --field $fieldInput --time $timeInput --press $pressInput";
+                $cmd = "python esrl/showclim.py --filename $fn --field $fieldInput --time $timeInput --press $pressInput";
                 if ($contour) {
                     $cmd .= " --contour true --contour-density $contourDensity";
                 }
                 exec($cmd);
-            }
+            // }
 
             echo json_encode(array(
                 "filename" => $filename,

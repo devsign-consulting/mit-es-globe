@@ -41,8 +41,11 @@
                     <div class="col-xs-12">
                         <h3 style="margin-bottom:5px;margin-top:0px;">Section Plot</h3>
                         <div class="row" ng-if="section.filename">
+                            <!-- Section plot image -->
                             <div class="col-xs-12">
-                                <a href="#" ng-click="openLightboxModal(section.filename)"><img style='width:100%; padding: 0;'; src="{{section.filename}}"></a>
+                                <a href="#" ng-click="openLightboxModal(section.filename)">
+                                    <img style='width:100%; padding: 0;'; ng-src="{{section.filename}}" err-src="/images/placeholder.jpg">
+                                </a>
                             </div>
                         </div>
                         <div class="row" ng-if="section.filename">
