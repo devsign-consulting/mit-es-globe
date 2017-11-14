@@ -157,6 +157,7 @@ matplotlib.use('Agg')
 from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
+import matplotlib.ticker as ticker
 
 matplotlib.rc('xtick', labelsize=18)
 matplotlib.rc('ytick', labelsize=18)
@@ -211,11 +212,16 @@ if args.field2 != 'none':
         max2 = math.ceil(th2.max())
     contour2 = (max2 - min2) / args.contour2
 
-# print (max, min, contour)
 
+# color bar formatter
+def colorbarFmt(x, pos):
+    return int(x)
+
+# print (max, min, contour)
 if args.fillcontour:
     CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour))
-    # b = plt.colorbar(CS, orientation='vertical')
+    if args.field2 and args.field2 != args.field:
+        b = plt.colorbar(CS, orientation='vertical', format = ticker.FuncFormatter(colorbarFmt), pad=0.02)
 else:
     CS = plt.contour(lat1[latind], lev, th, np.arange(min, max, contour))
     plt.clabel(CS, CS.levels[::2], inline=True, fmt="%0.0f", fontsize=14)
@@ -228,14 +234,13 @@ if args.field2 != 'none':
     CS2 = plt.contour(lat2[latind], lev, th2, np.arange(min2,max2, contour2), colors='k')
     plt.clabel(CS2, CS2.levels[::2], inline=True, fmt="%0.0f", fontsize=14)
 
-
-if args.field2 != 'none':
-    plt.title(fieldTitle + ' and ' + field2Title +' at lon ' + str(args.lon), fontsize=20, y=1.08)
+if args.field2 != 'none' and args.field2 != args.field:
+    plt.title(fieldTitle + ' and ' + field2Title +' at lon ' + str(args.lon), fontsize=20, y=1.04)
 else:
     plt.title(fieldTitle + ' at lon ' + str(args.lon), fontsize=20, y=1.08)
 
 axis_font = {'fontname':'Arial', 'size':'20'}
-plt.xlabel("Longitude", **axis_font)
+plt.xlabel("Latitude", **axis_font)
 plt.ylabel("Pressure", **axis_font)
 
 if args.logscale:
@@ -246,7 +251,7 @@ if args.logscale:
     # https://stackoverflow.com/questions/46498157/overlapping-axis-tick-labels-in-logarithmic-plots/46498658#46498658
     ax1.minorticks_off()
 
-plt.savefig(fn)
+plt.savefig(fn, bbox_inches='tight', transparent = True)
 
 if args.field2 != 'none':
     print (json.dumps({

@@ -5,6 +5,15 @@ esrl.factory('$parentScope', function ($window) {
 });
 
 esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout, $uibModal, EsrlResource) {
+    $scope.data = {};
+    $scope.data.fields = {
+        pottmp: "Potential Temperature",
+        hgt: "Geopotential Height",
+        uwnd: "U-wind",
+        vwnd: "V-wind",
+        omega: "Omega",
+    };
+
     $scope.esrl = {};
     $scope.esrl.input = {};
     $scope.esrl.flags = {};
@@ -72,13 +81,18 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         res.fcontour = 5;
         res.model = "clim2.py";
         res.action = "esrl";
-        // if ($scope.esrl.input.contour) {
+
         res.contour = true;
         res.contourDensity = $scope.esrl.input.contourDensity;
-        //}
 
         res.action = "esrl";
         $scope.isLoading = true;
+
+        $scope.message({
+            titleWidget: {
+                title: $scope.data.fields[res.field]
+            }
+        });
 
         return res.$submitForm().then(function (results) {
             $parentScope.$apply(function () {
@@ -109,6 +123,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         res.press = $scope.section.input.press;
         res.field = $scope.section.input.field;
         res.logScale = $scope.section.input.logScale ? 'True' : 'False';
+        res.fillContour = true;
 
         if ($scope.section.input.field2) {
             res.field2 = $scope.section.input.field2;
@@ -216,7 +231,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
 
     /*------ Watches ----*/
     $scope.$watchCollection('esrl.input', function (newVal, oldVal) {
-        console.log("=== inputs updated ==", newVal);
+        // console.log("=== inputs updated ==", newVal);
         if ($scope.esrl.flags.showNow) {
             // trigger a refresh
             // restart movie if false;
@@ -239,6 +254,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     });
 
     $scope.$watchCollection('section.input', function (newVal, oldVal) {
+        // console.log("===section.input===", newVal, oldVal);
         if (oldVal && newVal) {
             if (oldVal.field && newVal.field && oldVal.field !== newVal.field) {
                 $scope.section.input.min = null;
@@ -249,6 +265,12 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                 $scope.section.input.min2 = null;
                 $scope.section.input.max2 = null;
             }
+
+            if (!oldVal.field2 && newVal.field2) {
+                $scope.section.input.min2 = null;
+                $scope.section.input.max2 = null;
+            }
+
         }
         if ($scope.section.flags.showNow) {
             $scope.submitSectionForm();

@@ -14,7 +14,6 @@
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-        <script>document.write('<base href="' + document.location + '" />');</script>
         <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
@@ -135,7 +134,7 @@
                         <div class="row">
                             <div class="col-xs-5">
                                 <div class="form-group">
-                                    <label>Second Field</label>
+                                    <label>Second Field <span ng-if="section.input.field2">(<a href="#" ng-click="section.input.field2=null">clear</a>)</span></label>
                                     <select class="form-control" name="field2" id="field2" ng-model="section.input.field2" ng-model-options="{debounce:500}">
                                         <option selected value="pottmp">Potential Temperature</option>
                                         <option value="hgt">Geopotential Height</option>

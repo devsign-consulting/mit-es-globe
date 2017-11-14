@@ -40,6 +40,10 @@ div.ext {
 #canvas-container {
 }
 
+#canvas-container canvas {
+    pointer-events: none;
+}
+
 .row.margin-bottom-05em {
     margin-bottom: 0.5em !important;
 }
@@ -75,3 +79,50 @@ input::-webkit-inner-spin-button {
 }
 
 .fa-spinner.ng-animate { -webkit-animation: none 0s; }
+
+.widget#title-widget {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    width: 200px;
+    height: 80px;
+    background-color: transparent;
+    border: none;
+}
+
+.iframe.title {
+    background-color: transparent;
+}
+
+.iframe.title h1 {
+    color: white;
+    padding: 0px;
+    margin:0px;
+    font-size:18px;
+    font-family: 'Helvetica Neue';
+}
+
+.widget#globe-control-widget {
+    position: absolute;
+    width: 100%;
+    height: 80px;
+    background-color: transparent;
+    border: none;
+    bottom: -90px;
+    left: 20px;
+}
+
+.iframe.globe-controls {
+    background-color: transparent;
+}
+
+
+.iframe.globe-controls label {
+    color: white;
+}
+
+
+.form-control.sm {
+    height: 28px;
+    padding: 0px 5px;
+}

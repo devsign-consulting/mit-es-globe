@@ -1,0 +1,84 @@
+<html ng-app='globeControlsWidget' style="overflow-x: hidden;">
+    <head>
+        <link rel="stylesheet" href="/css/main.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-resource/1.5.6/angular-resource.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.6/angular-animate.min.js"></script>
+        <script src="title.js"></script>
+    </head>
+
+    <body class="iframe globe-controls" ng-controller="GlobeControlsWidgetController">
+        <div class="row">
+            <div class="col-xs-3">
+                <div class="form-group">
+                    <label>Field</label>
+                    <select class="form-control sm" name="field" id="field" ng-model="input.field" ng-model-options="{debounce:500}">
+                        <option selected value="pottmp">Potential Temperature</option>
+                        <option value="hgt">Geopotential Height</option>
+                        <option value="uwnd">U-wind</option>
+                        <option value="vwnd">V-wind</option>
+                        <option value="omega">Omega</option>
+                    </select>
+
+                </div>
+            </div>
+            <div class="col-xs-2">
+                <div class="form-group">
+                    <label>Time</label>
+                    <select class="form-control sm" name="time" id="time" ng-model="input.time" ng-model-options="{debounce:500}">
+                        <option value="year" selected>Year</option>
+                        <option value="Jan">Jan</option>
+                        <option value="Feb">Feb</option>
+                        <option value="Mar">Mar</option>
+                        <option value="Apr">Apr</option>
+                        <option value="May">May</option>
+                        <option value="Jun">Jun</option>
+                        <option value="Jul">Jul</option>
+                        <option value="Aug">Aug</option>
+                        <option value="Sep">Sep</option>
+                        <option value="Oct">Oct</option>
+                        <option value="Nov">Nov</option>
+                        <option value="Dec">Dec</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-xs-2">
+                <div class="form-group">
+                    <label>Levels</label>
+                    <select class="form-control sm" name="press" id="press" ng-model="esrl.input.press" ng-model-options="{debounce:500}">
+                        <option selected value="1000">1000</option>
+                        <option value="925">925</option>
+                        <option value="850">850</option>
+                        <option value="700">700</option>
+                        <option value="600">600</option>
+                        <option value="500">500</option>
+                        <option value="400">400</option>
+                        <option value="300">300</option>
+                        <option value="250">250</option>
+                        <option value="200">200</option>
+                        <option value="150">150</option>
+                        <option value="100">100</option>
+                        <option value="70">70</option>
+                        <option value="50">50</option>
+                        <option value="30">30</option>
+                        <option value="20">20</option>
+                        <option value="10">10</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-xs-1">
+                <div class="form-group">
+                    <label>Setup</label>
+                    <button class="btn btn-default"><span class="fa fa-gear"></span></button>
+                </div>
+
+            </div>
+        </div>
+
+    </body>
+</html>

@@ -12,6 +12,14 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
         });
     };
 
+    $scope.messageTitleWidget = function (data) {
+        // get child scope, we do not use factory since frame is not there yet in that phase
+        $childScope = document.getElementById("title-widget").contentWindow.angular.element('body').scope();
+        $childScope.$apply(function () {
+            $childScope.$emit('from-parent', data);
+        });
+    };
+
     $scope.timeoutLoop = function (filename) {
         $scope.input.movieLoop = setTimeout(function() {
             if (!$scope.pause) {
@@ -68,7 +76,7 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
     }
 
     $rootScope.$on('latlon', function(event, data) {
-        console.log("===latlon angular data===", data);
+        // console.log("===latlon angular data===", data);
         $scope.message({ latlon: data});
     });
 
@@ -83,7 +91,6 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                 clearTimeout($scope.input && $scope.input.movieLoop);
                 $scope.timeoutLoop(filename, $scope.input.delay)
             } else {
-                console.log("===globeSketch===", newVal);
                 globeSketch.sph.show(newVal.filename);
                 if (!newVal.bypassOrient)
                     globeSketch.sph.orient(newVal.lat, newVal.lon);
@@ -124,6 +131,10 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
             }
         }
 
+        if (newVal && newVal.titleWidget) {
+            $scope.messageTitleWidget(newVal.titleWidget);
+        }
+
     });
 });
 
@@ -137,7 +148,7 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
     var factory = {};
     var sph = {};
     factory.sketch = function (p) {
-            var sz = 950;
+            var sz = 900;
             var w = 500;
             var args = {};
             if ("res" in args) {
@@ -188,7 +199,7 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 }
                 ;
                 return nm;
-            }
+            };
 
             p.drawSphere = function () {
                 //    pg.image(simg,0,0,simg.width,simg.height,0,0,1024,512);
@@ -200,7 +211,7 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 p.rotateY(theta);
                 p.ellipsoid(w, w, w, 40, 24);
                 theta += rottheta;
-            }
+            };
 
             p.checkSphere = function (im) {
                 simg = im;
@@ -213,7 +224,7 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 console.log("stop " + imgnum + "\n");
                 sphereok = true;
                 playing = false;
-            }
+            };
 
             // get an image with callback to draw it
             p.loadSphere = function (j) {
@@ -223,8 +234,7 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 if (j == 0 || movie) {
                     p.loadImage(p.convfn(url, j + 1), p.checkSphere, p.stopSphere);
                 }
-                ;
-            }
+            };
 
             var x0 = 0;
             var y0 = 0;
@@ -247,7 +257,7 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 x0 = mx;
                 y0 = my;
                 return;
-            }
+            };
 
             p.clickInSphere = function (mx, my) {
                 xz = p.mouse2xz(mx, my);
@@ -267,20 +277,20 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 //    else typ=typ+"l";
                 //    clickOutside(typ);
                 return false;
-            }
+            };
 
             p.mouse2xz = function (mx, my) {
                 xt = (mx - sz / 2) / (sz / 2 - 20);
                 zt = (sz / 2 - my) / (sz / 2 - 20);
                 return [xt, zt];
-            }
+            };
             p.latlon2xy = function (latlon) {
                 lat = latlon[0];
                 lon = latlon[1];
                 if (lon < -180) lon += 360;
                 if (lon > 180) lon -= 360;
                 return [(float(lon) + 180) / 360.0 * res[0], (90 - float(lat)) / 180.0 * res[1]];
-            }
+            };
             p.xy2latlon = function (xz) {
                 xt = xz[0];
                 zt = xz[1];
@@ -292,7 +302,7 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 lat = radtodeg * p.asin(zn);
                 lon = radtodeg * p.atan2(xn, -yn);
                 return [lat, lon];
-            }
+            };
 
             p.mousePressed = function () {
                 x00 = x0 = p.mouseX;
@@ -303,14 +313,14 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 }
                 ;
                 return false;
-            }
+            };
 
             p.mouseDragged = function () {
                 msx = p.mouseX;
                 msy = p.mouseY;
                 p.dragInSphere(msx, msy);
                 return false;
-            }
+            };
 
             p.mouseReleased = function () {
                 msx = p.mouseX;
@@ -320,7 +330,7 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                     r = sph.mouseUp([msx, msy], latlng);
                     if (!r) return;
                 }
-                ;
+
                 if ((msx - x00) * (msx - x00) + (msy - y00) * (msy - y00) > 16) return false;
 
                 p.clickInSphere(msx, msy);
@@ -390,7 +400,7 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 lat = p.rnd(latlon[0], 10);
                 lon = p.rnd(latlon[1], 10);
                 // sph.orient(lat,lon);
-                console.log("=== dlick ===", latlon);
+                console.log("=== click ===", latlon);
                 $rootScope.$broadcast("latlon", {latlon: [lat, lon]});
             }
 
