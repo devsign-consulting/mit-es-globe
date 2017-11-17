@@ -20,6 +20,14 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
         });
     };
 
+    $scope.messageGlobeControlsWidget = function (data) {
+        // get child scope, we do not use factory since frame is not there yet in that phase
+        $childScope = document.getElementById("globe-controls-widget").contentWindow.angular.element('body').scope();
+        $childScope.$apply(function () {
+            $childScope.$emit('from-parent', data);
+        });
+    };
+
     $scope.timeoutLoop = function (filename) {
         $scope.input.movieLoop = setTimeout(function() {
             if (!$scope.pause) {
@@ -46,7 +54,7 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
         var filename_frame = filename+"-"+frame+".png";
         globeSketch.sph.show(filename_frame);
         $timeout(function () {
-            $scope.message({ frame: frame+1 });
+            $scope.messageGlobeControlsWidget({ frame: frame+1 });
         });
     };
 
@@ -148,8 +156,8 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
     var factory = {};
     var sph = {};
     factory.sketch = function (p) {
-            var sz = 900;
-            var w = 500;
+            var sz = 850;
+            var w = 450;
             var args = {};
             if ("res" in args) {
                 var res = args.res;

@@ -8,7 +8,7 @@ body {
 }
 
 
-.gutter {
+    .gutter {
     padding: 0px 20px;
 }
 
@@ -27,6 +27,32 @@ body {
 
 .no-gutter {
     padding: 0;
+}
+
+.gutter-sm [class^="col-"]{
+    padding: 0px 5px;
+}
+
+.row.gutter-sm {
+    margin-left: -5px;
+}
+
+.background-primary {
+    background-color: #337ab7;
+    color: white;
+}
+
+
+.margin-right-5px {
+    margin-right: 5px;
+}
+
+.block {
+    display: block;
+}
+
+input.ng-dirty.ng-invalid {
+    border: 1px solid red;
 }
 
 div.ext {
@@ -74,6 +100,13 @@ input::-webkit-inner-spin-button {
     margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
 }
 
+input.show-controls::-webkit-outer-spin-button,
+input.show-controls::-webkit-inner-spin-button {
+    /* display: none; <- Crashes Chrome on hover */
+    -webkit-appearance: normal;
+    margin: inherit; /* <-- Apparently some margin are still there even though it's hidden */
+}
+
 .toggle-group {
     bottom: -3px;
 }
@@ -102,13 +135,13 @@ input::-webkit-inner-spin-button {
     font-family: 'Helvetica Neue';
 }
 
-.widget#globe-control-widget {
-    position: absolute;
-    width: 100%;
+.widget#globe-controls-widget {
+    position: fixed;
+    width: 60%;
     height: 80px;
     background-color: transparent;
     border: none;
-    bottom: -90px;
+    bottom: -8px;
     left: 20px;
 }
 
@@ -125,4 +158,19 @@ input::-webkit-inner-spin-button {
 .form-control.sm {
     height: 28px;
     padding: 0px 5px;
+}
+
+.form-group.multiple-inline > label {
+    display: block;
+}
+
+.form-group.multiple-inline span {
+    position: relative;
+    float: left;
+    margin-right: 4px;
+}
+
+.movie-month-text {
+    margin-top: -1px;
+    font-size: 11px;
 }
