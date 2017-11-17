@@ -19,6 +19,7 @@
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-resource/1.5.6/angular-resource.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.6/angular-animate.min.js"></script>
 
         <!-- angular boostrap toggle -->
@@ -32,14 +33,13 @@
     <body ng-controller="EsrlChildController">
         <div class="row gutter">
             <div class="col-xs-12">
-                <h2 style="margin-top:0px;">Atmospheric Climatology from ESRL</h2>
+                <h2 style="margin-top:8px; text-align: center; ">Atmospheric Climatology from ESRL</h2>
             </div>
         </div>
         <form name="esrlForm">
             <fieldset ng-disabled="isLoading">
                 <div class="row gutter">
                     <div class="col-xs-12">
-                        <h3 style="margin-bottom:5px;margin-top:0px;">Section Plot</h3>
                         <div class="row" ng-if="section.filename">
                             <!-- Section plot image -->
                             <div class="col-xs-12">
@@ -50,16 +50,16 @@
                         </div>
                         <div class="row" ng-if="section.filename">
                             <div class="col-xs-12">
-                                <a ng-if="!section.input.field2" href="{{section.filename}}" download="{{section.input.field}}-{{section.input.time}}-{{section.input.press}}-lon{{section.input.lon}}.png">Download file</a>
-                                <a ng-if="section.input.field2" href="{{section.filename}}" download="{{section.input.field}}-{{section.input.field2}}-{{section.input.time}}-{{section.input.press}}-lon{{section.input.lon}}.png">Download file</a>
+                                <a ng-if="!section.input.field2" href="{{section.filename}}" download="{{section.input.field}}-{{section.input.time}}-{{section.input.press}}-lon{{section.input.lon}}.png">Download Image</a>
+                                <a ng-if="section.input.field2" href="{{section.filename}}" download="{{section.input.field}}-{{section.input.field2}}-{{section.input.time}}-{{section.input.press}}-lon{{section.input.lon}}.png">Download Image</a>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-xs-3">
+                            <div class="col-xs-4">
                                 <div class="form-group">
                                     <label>Month</label>
-                                    <select class="form-control" ng-model="section.input.time" ng-model-options="{debounce:500}">
+                                    <select class="form-control sm" ng-model="section.input.time" ng-model-options="{debounce:500}">
                                         <option value="Jan">Jan</option>
                                         <option value="Feb">Feb</option>
                                         <option value="Mar">Mar</option>
@@ -75,20 +75,20 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-xs-3">
+                            <div class="col-xs-4">
                                 <div class="form-group">
                                     <label>Min Pressure</label>
-                                    <input type='number' min=0 max=1000 step=1 class="form-control" ng-model="section.input.press" ng-model-options="{debounce:500}" required>
+                                    <input type='number' min=0 max=1000 step=1 class="form-control sm" ng-model="section.input.press" ng-model-options="{debounce:500}" required>
                                 </div>
                             </div>
                             <div class="col-xs-2">
                                 <div class="form-group">
                                     <label>Lon</label>
-                                    <input ng-model="section.input.lon" ng-model-options="{debounce:500}" class="form-control" type="number" min="-90" max="90" step="1">
+                                    <input ng-model="section.input.lon" ng-model-options="{debounce:500}" class="form-control sm" type="number" min="-180" max="180" step="1" required>
                                 </div>
                             </div>
-                            <div class="col-xs-3">
-                                <div class="form-group">
+                            <div class="col-xs-2">
+                                <div class="form-group sm">
                                     <label class="block">Log Scale</label>
                                     <toggle type='checkbox' ng-model="section.input.logScale"></toggle>
                                 </div>
@@ -101,10 +101,10 @@
                             </div>-->
                         </div>
                         <div class="row">
-                            <div class="col-xs-5">
+                            <div class="col-xs-4">
                                 <div class="form-group">
                                     <label>Field</label>
-                                    <select class="form-control" name="field" id="field" ng-model="section.input.field" ng-model-options="{debounce:500}">
+                                    <select class="form-control sm" name="field" id="field" ng-model="section.input.field" ng-model-options="{debounce:500}">
                                         <option selected value="pottmp">Potential Temperature</option>
                                         <option value="hgt">Geopotential Height</option>
                                         <option value="uwnd">U-wind</option>
@@ -113,30 +113,10 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-xs-3">
-                                <div class="form-group">
-                                    <label>Contour Density</label>
-                                    <input ng-model="section.input.contour" ng-model-options="{debounce:500}" class="form-control" type="number" min="1" max="100">
-                                </div>
-                            </div>
-                            <div class="col-xs-2">
-                                <div class="form-group">
-                                    <label>Min</label>
-                                    <input ng-model="section.input.min" ng-model-options="{debounce:500}" class="form-control" type="number">
-                                </div>
-                            </div>
-                            <div class="col-xs-2">
-                                <div class="form-group">
-                                    <label>Max</label>
-                                    <input ng-model="section.input.max" ng-model-options="{debounce:500}" class="form-control" type="number">
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-5">
+                            <div class="col-xs-4">
                                 <div class="form-group">
                                     <label>Second Field <span ng-if="section.input.field2">(<a href="#" ng-click="section.input.field2=null">clear</a>)</span></label>
-                                    <select class="form-control" name="field2" id="field2" ng-model="section.input.field2" ng-model-options="{debounce:500}">
+                                    <select class="form-control sm" name="field2" id="field2" ng-model="section.input.field2" ng-model-options="{debounce:500}">
                                         <option selected value="pottmp">Potential Temperature</option>
                                         <option value="hgt">Geopotential Height</option>
                                         <option value="uwnd">U-wind</option>
@@ -145,34 +125,78 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-xs-3" ng-show="section.input.field2">
+                            <div class="col-xs-3">
                                 <div class="form-group">
-                                    <label>Contour Density</label>
-                                    <input ng-model="section.input.contour2" ng-model-options="{debounce:500}" class="form-control" type="number" min="1" max="100">
-                                </div>
-                            </div>
-                            <div class="col-xs-2" ng-show="section.input.field2">
-                                <div class="form-group">
-                                    <label>Min</label>
-                                    <input ng-model="section.input.min2" ng-model-options="{debounce:500}" class="form-control" type="number">
-                                </div>
-                            </div>
-                            <div class="col-xs-2" ng-show="section.input.field2">
-                                <div class="form-group">
-                                    <label>Max</label>
-                                    <input ng-model="section.input.max2" ng-model-options="{debounce:500}" class="form-control" type="number">
+                                    <label class="block">Settings</label>
+                                    <button class="btn btn-default" ng-click="openSettingsModal()">
+                                        <span class="fa fa-gear"></span>
+                                    </button>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-xs-3">
-                                <button class="form-control btn btn-primary" ng-click="section.submit()" ng-disabled="isLoading">Show Section <span ng-show="isLoading" class="fa fa-spin fa-spinner"></span></button>
+                                <button class="btn btn-primary btn-sm" ng-click="section.submit()" ng-disabled="isLoading">Show Section <span ng-show="isLoading" class="fa fa-spin fa-spinner"></span></button>
                             </div>
                         </div>
                     </div>
                 </div>
             </fieldset>
+            <div class="modal-parent">
+            </div>
         </form>
+
+
+        <!--- ESRL additional parameters input Modal ---->
+        <script type="text/ng-template" id="sectionSettingsModal.html">
+            <div class="modal-body" id="modal-body">
+                <h3>Field 1: {{ctrl.input.field}}</h3>
+                <div class="row">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label for="contourDensity">Contour Density</label>
+                            <input class="form-control" id="contourDensity" ng-model="ctrl.input.contour" ng-model-options="{debounce: 500}" required>
+                        </div>
+                    </div>
+                    <div class="col-xs-3">
+                        <div class="form-group">
+                            <label for="contourDensity">Min</label>
+                            <input class="form-control" id="min" ng-model="ctrl.input.min" ng-model-options="{debounce: 500}">
+                        </div>
+                    </div>
+                    <div class="col-xs-3">
+                        <div class="form-group">
+                            <label for="contourDensity">Max</label>
+                            <input class="form-control" id="max" ng-model="ctrl.input.min" ng-model-options="{debounce: 500}">
+                        </div>
+                    </div>
+                </div>
+                <h3 ng-if="ctrl.input.field2">Field 2: {{ctrl.input.field}}</h3>
+                <div class="row" ng-if="ctrl.input.field2">
+                    <div class="col-xs-6">
+                        <div class="form-group">
+                            <label for="contourDensity">Contour Density</label>
+                            <input class="form-control" id="contourDensity2" ng-model="ctrl.input.contour2" ng-model-options="{debounce: 500}" required>
+                        </div>
+                    </div>
+                    <div class="col-xs-3">
+                        <div class="form-group">
+                            <label for="min2">Min</label>
+                            <input class="form-control" id="min2" ng-model="ctrl.input.min2" ng-model-options="{debounce: 500}">
+                        </div>
+                    </div>
+                    <div class="col-xs-3">
+                        <div class="form-group">
+                            <label for="max2">Max</label>
+                            <input class="form-control" id="max2" ng-model="ctrl.input.min2" ng-model-options="{debounce: 500}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer" id="modal-footer">
+                <button class="btn btn-primary" ng-click="ctrl.ok()">Close</button>
+            </div>
+        </script>
 
         <script src="js/main.js"></script>
     </body>

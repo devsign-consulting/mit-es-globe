@@ -55,11 +55,11 @@
                             <label>Movie Controls</label>
                             <div class="input-group pull-left margin-right-5px" ng-show='esrl.flags.movie' style="width: 35%;">
                                 <select class='form-control sm' ng-model="esrl.flags.delay" ng-model-options='{debounce: 500}' ng-change="setDelay()">
-                                    <options value="1">1</options>
-                                    <options value="2">2</options>
-                                    <options value="3">3</options>
-                                    <options value="4">4</options>
-                                    <options value="5">5</options>
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
                                 </select>
                                 <div class="input-group-addon background-primary">FPS</div>
                             </div>
@@ -104,10 +104,15 @@
                         </div>
                     </div>
                     <div class="col-xs-1">
-                        <div class="form-group">
-                            <label>Setup</label>
+                        <!--<div class="form-group">
+                            <label class="block">Setup</label>
                             <button class="btn btn-default"><span class="fa fa-gear"></span></button>
                             <span ng-if='isLoading' class="fa fa-spinner fa-spin fa-2x" style="position: absolute; right: -8px; color: lightgray;"></span>
+                        </div>-->
+                        <div class="form-group">
+                            <label>Contour</label>
+                            <input type="number" min="1" max="100" ng-model="esrl.input.contourDensity" class="form-control sm" ng-model-options="{debounce: 500}" required>
+                            <span ng-if='isLoading' class="fa fa-spinner fa-spin fa-2x" style="position: absolute; right: -28px; top: 22px; color: lightgray;"></span>
                         </div>
                     </div>
                 </div>

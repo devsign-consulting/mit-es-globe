@@ -8,8 +8,10 @@ titleWidget.controller('TitleWidgetController', function ($scope, $parentScope, 
     $scope.title = "Potential Temperature";
 
     $scope.$on('from-parent', function(e, message) {
-        console.log("=== titleWidget: from parent ===", message);
         if(message && message.title) {
+            if (message.title === "Omega") {
+                message.title += " (x 1E-3)"
+            }
             $scope.title = message.title;
         }
     });

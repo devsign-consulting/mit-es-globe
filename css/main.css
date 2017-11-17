@@ -93,6 +93,19 @@ div.ext {
     margin-bottom: 2px;
 }
 
+.form-group.sm .toggle.btn {
+    height: 28px !important;
+    min-height: 28px !important;
+}
+
+.form-group.sm .toggle-group .btn {
+    margin-top: -3px !important;
+}
+
+.navbar {
+    margin: 0;
+}
+
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
     /* display: none; <- Crashes Chrome on hover */
