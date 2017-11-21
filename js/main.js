@@ -7,25 +7,32 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
     $scope.message = function (data) {
         // get child scope, we do not use factory since frame is not there yet in that phase
         $childScope = document.getElementById("esrl2").contentWindow.angular.element('body').scope();
-        $childScope.$apply(function () {
-            $childScope.$emit('from-parent', data);
-        });
+        if ($childScope) {
+            $childScope.$apply(function () {
+                $childScope.$emit('from-parent', data);
+            });
+        }
     };
 
     $scope.messageTitleWidget = function (data) {
         // get child scope, we do not use factory since frame is not there yet in that phase
         $childScope = document.getElementById("title-widget").contentWindow.angular.element('body').scope();
-        $childScope.$apply(function () {
-            $childScope.$emit('from-parent', data);
-        });
+        if ($childScope) {
+            $childScope.$apply(function () {
+                $childScope.$emit('from-parent', data);
+            });
+        }
+
     };
 
     $scope.messageGlobeControlsWidget = function (data) {
         // get child scope, we do not use factory since frame is not there yet in that phase
         $childScope = document.getElementById("globe-controls-widget").contentWindow.angular.element('body').scope();
-        $childScope.$apply(function () {
-            $childScope.$emit('from-parent', data);
-        });
+        if ($childScope) {
+            $childScope.$apply(function () {
+                $childScope.$emit('from-parent', data);
+            });
+        }
     };
 
     $scope.timeoutLoop = function (filename) {
@@ -263,6 +270,18 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 }
             };
 
+            p.getcanvas = function(c) {
+                if(!pg) return false;
+                return pg.elt;
+            };
+
+            p.putcanvas = function(c) {
+                context=pg.elt.getContext('2d');
+                pg.elt.width=c.width;
+                pg.elt.height=c.height;
+                context.drawImage(c, 0, 0);
+            };
+
             var x0 = 0;
             var y0 = 0;
             var x00 = 0;
@@ -361,6 +380,8 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 if ((msx - x00) * (msx - x00) + (msy - y00) * (msy - y00) > 16) return false;
 
                 p.clickInSphere(msx, msy);
+                var canvas = p.getcanvas();
+                console.log("=== canvas ===", canvas);
                 return false;
             };
 
@@ -434,6 +455,22 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
             p.rnd = function (v, n) {
                 return Math.round(v * n) / n;
             };
+
+            p.drawLon = function(xp,yp,x,y){
+                canvas = document.getElementById(cn);
+                ctx = canvas.getContext("2d");
+                var img = document.getElementById(imgn);
+                ctx.drawImage(img,0,0);
+                ctx.lineJoin = ctx.lineCap = 'round';
+
+                ctx.lineWidth=20;
+                ctx.beginPath();
+                ctx.moveTo(xp,0);
+                //ctx.lineTo(x,0);
+                //ctx.lineTo(x,1024);
+                ctx.lineTo(xp,1024);
+                ctx.stroke();
+            }
 
             sph = {
                 rot: p.rot,
