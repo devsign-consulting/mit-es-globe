@@ -83,6 +83,10 @@ def splotit(th, overrideMin=False, overrideMax=False):
   ax=fig.add_axes((0,0,1,1))
   ax.set_axis_off()
 
+  if args.field == 'omega':
+    th = th*1000
+
+
   if args.contour:
     min = math.floor(th.min())
     max = math.floor(th.max())

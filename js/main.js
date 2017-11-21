@@ -81,7 +81,7 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
         modalInstance.result.then(function () {
             $ctrl.selected = selectedItem;
         });
-    }
+    };
 
     $rootScope.$on('latlon', function(event, data) {
         // console.log("===latlon angular data===", data);
@@ -91,6 +91,7 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
     $scope.$watch('iframeMessage', function (newVal, oldVal) {
         if (newVal && newVal.form === 'esrl' && newVal.filename) {
             // if it's a movie
+            console.log("===iframeMessage esrl ===", newVal);
             if(newVal.movie) {
                 var filename = newVal.filename.split("-")[0];
                 $scope.input.filename = filename;
@@ -99,6 +100,12 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                 clearTimeout($scope.input && $scope.input.movieLoop);
                 $scope.timeoutLoop(filename, $scope.input.delay)
             } else {
+                // updates from globe-controls
+                if (newVal.time) {
+                    // sync the time w/ section plot
+                    $scope.message({ time: newVal.time });
+                }
+
                 globeSketch.sph.show(newVal.filename);
                 if (!newVal.bypassOrient)
                     globeSketch.sph.orient(newVal.lat, newVal.lon);
@@ -135,7 +142,9 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                 case "lightboxModal":
                     $scope.openLightboxModal(newVal.input, newVal.filename);
                     break;
-
+                case "sectionTimeChanged":
+                    $scope.messageGlobeControlsWidget({ time: newVal.time });
+                    break;
             }
         }
 
@@ -150,13 +159,13 @@ app.controller("LightboxModalCtrl", function ($uibModalInstance, input, filename
     console.log("=== LightboxModalCtrl input ==", input, filename);
     this.filename = filename;
     this.input = input;
-})
+});
 
 app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window, $rootScope) {
     var factory = {};
     var sph = {};
     factory.sketch = function (p) {
-            var sz = 850;
+            var sz = 870;
             var w = 450;
             var args = {};
             if ("res" in args) {
@@ -223,10 +232,12 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
 
             p.checkSphere = function (im) {
                 simg = im;
-                pg.image(simg, 0, 0, simg.width, simg.height, 0, 0, res[0], res[1]);
+                if (pg && pg.image) {
+                    pg.image(simg, 0, 0, simg.width, simg.height, 0, 0, res[0], res[1]);
+                }
                 nSphere += skp;
                 if (!movie) playing = false;
-            }
+            };
 
             p.stopSphere = function () {
                 console.log("stop " + imgnum + "\n");
@@ -312,15 +323,15 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 return [lat, lon];
             };
 
-            p.mousePressed = function () {
+            p.mousePressed = function (evt) {
                 x00 = x0 = p.mouseX;
                 y00 = y0 = p.mouseY;
                 if (sph.mouseDown) {
                     xz = p.mouse2xz(x0, y0);
                     p.mouseDown(xz, p.xy2latlon(xz));
                 }
-                ;
-                return false;
+                console.log("mouse pressed", evt);
+                return true;
             };
 
             p.mouseDragged = function () {
@@ -343,13 +354,13 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
 
                 p.clickInSphere(msx, msy);
                 return false;
-            }
+            };
 
             var maincanvas;
 
             p.myevent = function (e) {
                 alert(e.type);
-            }
+            };
 
             p.setup = function () {
                 maincanvas = p.createCanvas(sz, sz, p.WEBGL);
@@ -358,7 +369,7 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 pg = p.createGraphics(res[0], res[1]);
                 p.loadSphere(0);
                 //    maincanvas.elt.addEventListener('keydown', myevent, false);
-            }
+            };
 
             p.draw = function () {
                 //    if(keyIsPressed)console.log(key);
@@ -368,20 +379,20 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                     currentFrame += sph.skip;
                     p.loadSphere(currentFrame);
                 }
-                ;
-            }
+            };
 
             p.rot = function (f) {
                 rottheta += f;
-            }
+            };
             p.tilt = function (f) {
                 phi += f;
-            }
+            };
+
             p.orient = function (lat, lon) {
                 rottheta = 0;
                 theta = (180 - lon) * pi / 180;
                 phi = lat * pi / 180;
-            }
+            };
 
             p.show = function (fn, path) {
                 playing = false;
@@ -398,11 +409,11 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 currentFrame = 0;
                 p.loadSphere(0);
                 playing = true;
-            }
+            };
 
             p.showcanvas = function (c) {
                 pg.elt = c;
-            }
+            };
 
             p.doclick = function (xy, latlon) {
                 lat = p.rnd(latlon[0], 10);
@@ -410,11 +421,11 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 // sph.orient(lat,lon);
                 console.log("=== click ===", latlon);
                 $rootScope.$broadcast("latlon", {latlon: [lat, lon]});
-            }
+            };
 
             p.rnd = function (v, n) {
                 return Math.round(v * n) / n;
-            }
+            };
 
             sph = {
                 rot: p.rot,
@@ -431,8 +442,6 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 res: res,
                 showcanvas: p.showcanvas
             };
-
-            console.log("=== setting sph ===", sph);
             factory.sph = sph;
             return p;
         };

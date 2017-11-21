@@ -35,7 +35,8 @@
                 "filename" => $filename,
                 "form" => "esrl",
                 "lat" => $_POST['lat'],
-                "lon" => $_POST['lon']
+                "lon" => $_POST['lon'],
+                "time" => $_POST['time']
             ));
         } else if ($_POST['action'] === "section") {
             $press = $_POST['press'];

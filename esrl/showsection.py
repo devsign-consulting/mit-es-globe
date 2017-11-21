@@ -235,7 +235,7 @@ if args.field2 != 'none':
     plt.clabel(CS2, CS2.levels[::2], inline=True, fmt="%0.0f", fontsize=14)
 
 if args.field2 != 'none' and args.field2 != args.field:
-    plt.title(fieldTitle + ' and ' + field2Title +' at lon ' + str(args.lon), fontsize=20, y=1.04)
+    plt.title(fieldTitle + ' and ' + field2Title +' at lon ' + str(args.lon), fontsize=20)
 else:
     plt.title(fieldTitle + ' at lon ' + str(args.lon), fontsize=20, y=1.08)
 

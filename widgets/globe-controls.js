@@ -29,7 +29,7 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
     $scope.esrl.input.contour = true;
     $scope.esrl.input.contourDensity = 20;
 
-    $scope.esrl.flags.delay = 1;
+    $scope.esrl.flags.delay = "1";
     $scope.esrl.flags.showNow = true;
 
     // Functions to execute on load
@@ -123,7 +123,7 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
 
     /*------ Watches ----*/
     $scope.$watchCollection('esrl.input', function (newVal, oldVal) {
-        // console.log("=== inputs updated ==", newVal);
+        console.log("=== globeControls inputs updated ==", newVal);
         if ($scope.esrl.flags.showNow) {
             // trigger a refresh
             // restart movie if false;
@@ -158,6 +158,12 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
             $scope.esrl.input.lat = latlon[0];
             $scope.esrl.input.lon = latlon[1];
             $scope.section.input.lon = Math.round(latlon[1]);
+        }
+
+        if (message && message.time) {
+            $timeout(function () {
+                $scope.esrl.input.time = message.time;
+            });
         }
     });
 

@@ -32,12 +32,10 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     });
 
     $scope.section.submit = function () {
-        $scope.esrl.flags.showNow = false;
         $scope.submitSectionForm()
             .then(function () {
                 $scope.section.flags.showNow = true;
             });
-
     };
 
     $scope.submitSectionForm = function () {
@@ -145,24 +143,40 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                 $scope.section.input.min2 = null;
                 $scope.section.input.max2 = null;
             }
-
         }
 
-        if ($scope.section.flags.showNow && !$scope.esrlForm.$invalid) {
+        if (!$scope.esrlForm.$invalid) {
+            if ($scope.section.input.time) {
+                $scope.message({
+                    action: "sectionTimeChanged",
+                    time: $scope.section.input.time
+                });
+            }
             $scope.submitSectionForm();
         }
     });
 
     $scope.$on('from-parent', function(e, message) {
+        console.log("== esrl from parent ==", message);
+
         if (message && message.frame) {
             $scope.loop = message.frame;
         }
 
         if (message && message.latlon) {
             // set the lat and lon to where the user clicked
-            console.log("== esrl message ==", message);
             var latlon = message.latlon.latlon;
             $scope.section.input.lon = Math.round(latlon[1]);
+        }
+
+        if (message && message.time) {
+            $timeout(function () {
+                $scope.section.input.time = message.time;
+            });
+        }
+
+        if (message && message.input) {
+            _.merge($scope.section.input, message.input);
         }
     });
 
@@ -176,6 +190,36 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         $scope.message({ action: "lightboxModal", input: $scope.section.input, filename });
     };
 
+    $scope.openSettingsModal = function () {
+        var input = $scope.section.input;
+        var modalInstance = $uibModal.open({
+            animation: true,
+            templateUrl: 'sectionSettingsModal.html',
+            controller: 'SectionSettingsModalCtrl',
+            controllerAs: 'ctrl',
+            size: "md",
+            appendTo: angular.element(".modal-parent"),
+            resolve: {
+                input: function () {
+                    return input;
+                }
+            }
+        });
+
+        modalInstance.result.then(function (result) {});
+    };
+
     $parentScope.esrlScope = $scope;
 
+});
+
+esrl.controller("SectionSettingsModalCtrl", function ($uibModalInstance, input) {
+    this.input = input;
+    this.ok = function () {
+        $uibModalInstance.close();
+    };
+
+    this.cancel = function () {
+        $uibModalInstance.dismiss();
+    };
 });
