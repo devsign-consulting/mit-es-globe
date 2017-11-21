@@ -106,6 +106,11 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                     $scope.message({ time: newVal.time });
                 }
 
+                if (newVal.field) {
+                    // sync the time w/ section plot
+                    $scope.message({ field: newVal.field });
+                }
+
                 globeSketch.sph.show(newVal.filename);
                 if (!newVal.bypassOrient)
                     globeSketch.sph.orient(newVal.lat, newVal.lon);
@@ -144,6 +149,9 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                     break;
                 case "sectionTimeChanged":
                     $scope.messageGlobeControlsWidget({ time: newVal.time });
+                    break;
+                case "sectionFieldChanged":
+                    $scope.messageGlobeControlsWidget({ field: newVal.field });
                     break;
             }
         }

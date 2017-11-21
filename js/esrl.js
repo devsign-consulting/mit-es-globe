@@ -152,6 +152,13 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                     time: $scope.section.input.time
                 });
             }
+
+            if ($scope.section.input.field) {
+                $scope.message({
+                    action: "sectionFieldChanged",
+                    field: $scope.section.input.field
+                });
+            }
             $scope.submitSectionForm();
         }
     });
@@ -172,6 +179,12 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         if (message && message.time) {
             $timeout(function () {
                 $scope.section.input.time = message.time;
+            });
+        }
+
+        if (message && message.field) {
+            $timeout(function () {
+                $scope.section.input.field = message.field;
             });
         }
 

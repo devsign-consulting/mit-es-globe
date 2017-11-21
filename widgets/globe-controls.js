@@ -146,7 +146,7 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
     });
 
     $scope.$on('from-parent', function(e, message) {
-        console.log("==== globe-controls from-parent===");
+        console.log("==== globe-controls from-parent===", message);
         if (message && message.frame) {
             $scope.loop = message.frame;
         }
@@ -163,6 +163,12 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
         if (message && message.time) {
             $timeout(function () {
                 $scope.esrl.input.time = message.time;
+            });
+        }
+
+        if (message && message.field) {
+            $timeout(function () {
+                $scope.esrl.input.field = message.field;
             });
         }
     });

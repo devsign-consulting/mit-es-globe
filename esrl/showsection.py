@@ -237,7 +237,7 @@ if args.field2 != 'none':
 if args.field2 != 'none' and args.field2 != args.field:
     plt.title(fieldTitle + ' and ' + field2Title +' at lon ' + str(args.lon), fontsize=20)
 else:
-    plt.title(fieldTitle + ' at lon ' + str(args.lon), fontsize=20, y=1.08)
+    plt.title(fieldTitle + ' at lon ' + str(args.lon), fontsize=20, y=1.02)
 
 axis_font = {'fontname':'Arial', 'size':'20'}
 plt.xlabel("Latitude", **axis_font)
