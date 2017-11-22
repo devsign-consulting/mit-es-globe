@@ -23,6 +23,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     $scope.section.input.contour = 10;
     $scope.section.input.contour2 = 10;
     $scope.section.input.logScale = true;
+    $scope.section.input.zonalAverage = true;
     $scope.section.flags = {};
     $scope.section.flags.showNow = true;
 
@@ -40,11 +41,13 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
 
     $scope.submitSectionForm = function () {
         var res = new EsrlResource();
+        console.log("=== submit section form ===", $scope.section.input);
         res.action = "section";
         res.time = $scope.section.input.time;
         res.press = $scope.section.input.press;
         res.field = $scope.section.input.field;
         res.logScale = $scope.section.input.logScale ? 'True' : 'False';
+        res.zonalAverage = $scope.section.input.zonalAverage ? 'True' : 'False';
         res.fillContour = true;
 
         if ($scope.section.input.field2) {

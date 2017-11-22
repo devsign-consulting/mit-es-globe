@@ -115,14 +115,9 @@ def splotit(th, overrideMin=False, overrideMax=False):
 
   ax.plot(lonx,latx,"#000000")
   ax.axis('tight')
-  #  plt.axis('off')
-  #  plt.axis('equal')
-  #plt.show(block=False)
 
   plt.savefig(fn+'-'+str(n)+'.png')
-  #  img=subprocess.check_output(["../pngmunge"])
-#  sys.stdout.write(img)
-#  sys.stdout.flush()
+
 
 months={"Jan":0,"Feb":1,"Mar":2,"Apr":3,"May":4,"Jun":5,"Jul":6,"Aug":7,"Sep":8,"Oct":9,"Nov":10,"Dec":11,"year":-1}
 t0=months[args.time]

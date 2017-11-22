@@ -229,7 +229,6 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 } else {
                     nm = fn;
                 }
-                ;
                 return nm;
             };
 
@@ -330,12 +329,18 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 zt = (sz / 2 - my) / (sz / 2 - 20);
                 return [xt, zt];
             };
+
             p.latlon2xy = function (latlon) {
                 lat = latlon[0];
                 lon = latlon[1];
+
+
                 if (lon < -180) lon += 360;
                 if (lon > 180) lon -= 360;
-                return [(float(lon) + 180) / 360.0 * res[0], (90 - float(lat)) / 180.0 * res[1]];
+
+                console.log("==== p.latlon2xy ====", latlon, res)
+
+                return [(parseFloat(lon) + 180) / 360.0 * res[0], (90 - parseFloat(lat)) / 180.0 * res[1]];
             };
             p.xy2latlon = function (xz) {
                 xt = xz[0];
@@ -380,8 +385,6 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 if ((msx - x00) * (msx - x00) + (msy - y00) * (msy - y00) > 16) return false;
 
                 p.clickInSphere(msx, msy);
-                var canvas = p.getcanvas();
-                console.log("=== canvas ===", canvas);
                 return false;
             };
 
@@ -448,7 +451,9 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 lat = p.rnd(latlon[0], 10);
                 lon = p.rnd(latlon[1], 10);
                 // sph.orient(lat,lon);
-                console.log("=== click ===", latlon);
+                var xy = p.latlon2xy(latlon);
+                p.drawLon(xy[0]);
+
                 $rootScope.$broadcast("latlon", {latlon: [lat, lon]});
             };
 
@@ -456,20 +461,19 @@ app.factory('globeSketch', ['p5', '$window', '$rootScope', function(p5, $window,
                 return Math.round(v * n) / n;
             };
 
-            p.drawLon = function(xp,yp,x,y){
-                canvas = document.getElementById(cn);
-                ctx = canvas.getContext("2d");
-                var img = document.getElementById(imgn);
-                ctx.drawImage(img,0,0);
-                ctx.lineJoin = ctx.lineCap = 'round';
+            p.drawLon = function(x){
+                p.loadSphere(0);
+                setTimeout(function () {
+                    var canvas = p.getcanvas();
+                    ctx = canvas.getContext('2d');
+                    ctx.strokeStyle="#550a07";
+                    ctx.lineWidth=5;
+                    ctx.beginPath();
+                    ctx.moveTo(x,0);
+                    ctx.lineTo(x,canvas.height-1);
+                    ctx.stroke();
+                }, 100);
 
-                ctx.lineWidth=20;
-                ctx.beginPath();
-                ctx.moveTo(xp,0);
-                //ctx.lineTo(x,0);
-                //ctx.lineTo(x,1024);
-                ctx.lineTo(xp,1024);
-                ctx.stroke();
             }
 
             sph = {

@@ -75,6 +75,13 @@ parser.add_argument('--fill-contour',
                     default=False,
                     help='draws a fill contour')
 
+parser.add_argument('--zonal-average',
+                    type=str2bool, nargs='?',
+                    dest="zonalaverage",
+                    const=True,
+                    default=False,
+                    help='returns the zonal average')
+
 parser.add_argument('--min',
                     action="store",
                     dest="min",
@@ -146,8 +153,15 @@ vind = np.where(level1 >= args.minpress)
 # indices for latitude, so I don't know what to do here to make this work.
 th=np.squeeze(theta[mon,vind,:,lonind])
 
+#calculate the zonal average
+th_zone = np.squeeze(theta[mon, vind, :, :])
+th_zone = np.average(th_zone, axis=2)
+
 if args.field2 != 'none':
     th2=np.squeeze(theta2[mon,vind,:,lonind])
+    #calculate the zonal average
+    th2_zone = np.squeeze(theta2[mon, vind, :, :])
+    th2_zone = np.average(th2_zone, axis=2)
 
 lev = level1[vind]
 
@@ -217,6 +231,10 @@ if args.field2 != 'none':
 def colorbarFmt(x, pos):
     return int(x)
 
+if args.zonalaverage:
+    th = th_zone
+    th2 = th2_zone
+
 # print (max, min, contour)
 if args.fillcontour:
     CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour))
@@ -235,9 +253,15 @@ if args.field2 != 'none':
     plt.clabel(CS2, CS2.levels[::2], inline=True, fmt="%0.0f", fontsize=14)
 
 if args.field2 != 'none' and args.field2 != args.field:
-    plt.title(fieldTitle + ' and ' + field2Title +' at lon ' + str(args.lon), fontsize=20)
+    if args.zonalaverage:
+        plt.title(fieldTitle + ' and ' + field2Title +' (Zonal)', fontsize=20)
+    else:
+        plt.title(fieldTitle + ' and ' + field2Title +' at lon ' + str(args.lon), fontsize=20)
 else:
-    plt.title(fieldTitle + ' at lon ' + str(args.lon), fontsize=20, y=1.02)
+    if args.zonalaverage:
+        plt.title(fieldTitle + ' (Zonal) ', fontsize=20, y=1.02)
+    else:
+        plt.title(fieldTitle + ' at lon ' + str(args.lon), fontsize=20, y=1.02)
 
 axis_font = {'fontname':'Arial', 'size':'20'}
 plt.xlabel("Latitude", **axis_font)

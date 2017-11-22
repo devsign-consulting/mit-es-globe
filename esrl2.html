@@ -75,9 +75,9 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-xs-4">
+                            <div class="col-xs-2">
                                 <div class="form-group">
-                                    <label>Min Pressure</label>
+                                    <label>Min Press.</label>
                                     <input type='number' min=0 max=1000 step=1 class="form-control sm" ng-model="section.input.press" ng-model-options="{debounce:500}" required>
                                 </div>
                             </div>
@@ -91,6 +91,12 @@
                                 <div class="form-group sm">
                                     <label class="block">Log Scale</label>
                                     <toggle type='checkbox' ng-model="section.input.logScale"></toggle>
+                                </div>
+                            </div>
+                            <div class="col-xs-2">
+                                <div class="form-group sm">
+                                    <label class="block">Zonal</label>
+                                    <toggle type='checkbox' ng-model="section.input.zonalAverage"></toggle>
                                 </div>
                             </div>
                             <!--<div class="col-xs-2">
