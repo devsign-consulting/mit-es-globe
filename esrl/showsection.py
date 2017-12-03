@@ -233,11 +233,12 @@ def colorbarFmt(x, pos):
 
 if args.zonalaverage:
     th = th_zone
-    th2 = th2_zone
+    if args.field2 == args.field:
+        th2 = th2_zone
 
 # print (max, min, contour)
 if args.fillcontour:
-    CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour))
+    CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour), cmap=plt.cm.nipy_spectral)
     if args.field2 and args.field2 != args.field:
         b = plt.colorbar(CS, orientation='vertical', format = ticker.FuncFormatter(colorbarFmt), pad=0.02)
 else:
@@ -259,9 +260,9 @@ if args.field2 != 'none' and args.field2 != args.field:
         plt.title(fieldTitle + ' and ' + field2Title +' at lon ' + str(args.lon), fontsize=20)
 else:
     if args.zonalaverage:
-        plt.title(fieldTitle + ' (Zonal) ', fontsize=20, y=1.02)
+        plt.title(fieldTitle + ' (Zonal) ', fontsize=20, y=1.04)
     else:
-        plt.title(fieldTitle + ' at lon ' + str(args.lon), fontsize=20, y=1.02)
+        plt.title(fieldTitle + ' at lon ' + str(args.lon), fontsize=20, y=1.04)
 
 axis_font = {'fontname':'Arial', 'size':'20'}
 plt.xlabel("Latitude", **axis_font)
