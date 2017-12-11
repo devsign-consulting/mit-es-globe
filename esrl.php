@@ -11,8 +11,10 @@
             $fieldInput = $_POST['field'];
             $pressInput = $_POST['press'];
             $contour = $_POST['contour'];
-            $contourDensity = $_POST['contourDensity'];
-            $fn="es".md5($timeInput.$fieldInput.$pressInput.$contour.$contourDensity);
+            $min = $_POST['min'];
+            $max = $_POST['max'];
+            $contourStep = $_POST['contourStep'];
+            $fn="es".md5($timeInput.$fieldInput.$pressInput.$contour.$contourStep);
             $time = array("Jan"=>0,"Feb"=>1,"Mar"=>2,"Apr"=>3,"May"=>4,"Jun"=>5,"Jul"=>6,"Aug"=>7,"Sep"=>8,"Oct"=>9,"Nov"=>10,"Dec"=>11,"year"=>-1);
             $t0 = $time[$_POST['time']];
             if ($t0 >= 0)
@@ -20,16 +22,16 @@
             else
                 $filename=$fn."-0.png";
 
-            if (!file_exists("./esrl/output/$filename")) {
+            //if (!file_exists("./esrl/output/$filename")) {
                 error_log("==== executing program ====");
-                $cmd = "python esrl/showclim.py --filename $fn --field $fieldInput --time $timeInput --press $pressInput";
+                $cmd = "python esrl/showclim.py --filename $fn --field $fieldInput --time $timeInput --press $pressInput --min $min --max $max";
                 if ($contour) {
-                    $cmd .= " --contour true --contour-density $contourDensity";
+                    $cmd .= " --contour true --contour-step $contourStep";
                 }
 
                 error_log($cmd);
                 exec($cmd);
-            }
+            // }
 
             echo json_encode(array(
                 "filename" => $filename,

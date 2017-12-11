@@ -76,6 +76,7 @@ div.ext {
 
 #esrl2 {
     overflow-x:hidden;
+    overflow-y: hidden;
     height: 100%;
     padding-bottom: 80px;
 }

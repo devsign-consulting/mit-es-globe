@@ -160,6 +160,16 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                 case "sectionFieldChanged":
                     $scope.messageGlobeControlsWidget({ field: newVal.field });
                     break;
+                case "sectionMinMaxChanged":
+                    console.log("== 002 min max ==", newVal);
+                    $scope.messageGlobeControlsWidget({ min: newVal.min, max: newVal.max });
+                    break;
+                case "showGlobeSettings":
+                    $scope.message({ globeInput: newVal.input });
+                    break;
+                case "saveGlobeSettings":
+                    $scope.messageGlobeControlsWidget(newVal.input);
+                    break;
             }
         }
 
