@@ -1,0 +1,31 @@
+<!doctype html>
+<html >
+    <head>
+        <title>Globe Demo</title>
+
+        <!-- Style sheets -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/main.css">
+
+        <!-- Javascript modules --->
+        <script src="p5.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+        <script src="./bower_components/angular-p5/angular-p5.js"></script>
+        <script src="js/globe.js"></script>
+    </head>
+
+    <!-- main body -->
+    <body class="main" ng-app="p5globe" ng-controller="P5GlobeCtrl">
+        <script>
+            var sph = window.sph;
+        </script>
+        <div class="container-fluid">
+            <div id="canvas-container" class="col-xs-7">
+                <p5 sketch="p5globe"></p5>
+            </div>
+            <div class="col-xs-5 container-input no-gutter">
+                <iframe style='border:0px' id='esrl2' src="index3-frame.html" height=970px width=100% style="overflow-x:hidden; overflow-y:hidden;"></iframe>
+            </div>
+        </div>
+    </body>
+</html>

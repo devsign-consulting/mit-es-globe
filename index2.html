@@ -24,36 +24,18 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.js"></script>
 
         <script src="./bower_components/angular-p5/angular-p5.js"></script>
+        <script src="js/globe.js"></script>
         <script src="js/main.js"></script>
     </head>
     <body class="main" ng-app="app" ng-controller="MainCtrl">
         <!--[if lte IE 9]>
         <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
         <![endif]-->
-        <script>
-            var sz = 950;
-            var w = 500;
-            var args = {};
-            if("res" in args) {
-                var res=args.res;
-            } else {
-                var res=[2048,1024];
-            }
-            if("map" in args){
-                var url = args.map;
-            } else {
-                var url="earth2048.jpg";
-            }
-            if("online" in args){
-                var online=1;
-            } else {
-                var online=0;
-            }
-        </script>
+
         <!--<script src="sph.js"></script>-->
         <div class="container-fluid">
             <div id="canvas-container" class="col-xs-7">
-                <p5 sketch="globeSketch"></p5>
+                <p5 sketch="p5globe"></p5>
                 <iframe scrolling="no" id='title-widget' class='widget' src="widgets/title.html"></iframe>
             </div>
             <div class="col-xs-5 container-input no-gutter">
