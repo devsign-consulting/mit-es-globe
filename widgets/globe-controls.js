@@ -13,8 +13,24 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
         hgt: "Geopotential Height",
         uwnd: "U-wind",
         vwnd: "V-wind",
-        omega: "Omega",
+        omega: "Omega"
     };
+
+    $scope.data.timeDropdown = [
+        "Movie",
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec"
+    ];
 
     $scope.esrl = {};
     $scope.esrl.input = {};
@@ -31,6 +47,8 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
     $scope.esrl.flags.delay = "1";
     $scope.esrl.flags.showNow = true;
 
+
+
     $scope.esrlInputWatchCount = 0;
 
     // Functions to execute on load
@@ -41,7 +59,6 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
             if (!oldVal)
                 return;
             if ($scope.esrl.flags.showNow) {
-                console.log("=== globeControls inputs updated ==", newVal, $scope.esrlForm);
                 // trigger a refresh
                 // restart movie if false;
                 $scope.esrl.flags.movie = false;
@@ -56,16 +73,14 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
                 if (newVal.lat !== oldVal.lat || newVal.lon !== oldVal.lon) {
                     // do nothing
                 } else {
+                    if (oldVal.field !== newVal.field || oldVal.press !== newVal.press) {
+                        $scope.setDefaults(newVal.field);
+                    }
                     if (!$scope.esrlForm.$invalid) {
-                        if (oldVal.field !== newVal.field) {
-                            $scope.setDefaults(newVal.field);
-                        }
-                        console.log("==== globeControls $scope.esrlInputWatchCount ===", $scope.esrlInputWatchCount);
                         if ($scope.esrlInputWatchCount === 0) {
                             $scope.esrlInputWatchCount++;
                             $scope.submitEsrlForm().then(function () {
                                 $scope.esrlInputWatchCount--;
-                                console.log("==== $scope.esrlInputWatchCount ===", $scope.esrlInputWatchCount);
                             });
                         }
                     }
@@ -86,17 +101,22 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
 
     $scope.setDefaults = function (input) {
         // console.log("=== 001 esrl set defaults ==", { input: input });
-        var defaultRes = defaults.getEsrlDefaults(input);
+        var defaultRes = defaults.getEsrlDefaultsByLevel(input, $scope.esrl.input.press);
         $scope.esrl.input.contourStep = defaultRes.contour;
         $scope.esrl.input.min = defaultRes.min;
         $scope.esrl.input.max = defaultRes.max;
-        // console.log("=== esrl set defaults ==", { input: input, result: $scope.esrl.input });
     };
 
     $scope.submitEsrlForm = function () {
         console.log("=== submit esrl form ===");
         var res = new EsrlResource();
-        res.time = $scope.esrl.input.time;
+
+        if ($scope.esrl.input.time === "Movie")
+            res.time = "year";
+        else {
+            res.time = $scope.esrl.input.time;
+        }
+
         res.press = $scope.esrl.input.press;
         res.field = $scope.esrl.input.field;
         res.lat= $scope.esrl.input.lat;
@@ -138,6 +158,8 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
                 $scope.isLoading = false;
             });
 
+            $scope.message({ action: "loadColorbar", colorbarFilename: results.colorbarFilename});
+
             return;
         });
 
@@ -158,15 +180,31 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
     };
 
     $scope.stepBack = function () {
-        $scope.message({
-            action: 'stepBack'
-        });
+        if ($scope.esrl.flags.movie) {
+            $scope.message({
+                action: 'stepBack'
+            });
+        } else {
+            var idx = $scope.data.timeDropdown.indexOf($scope.esrl.input.time);
+            idx--;
+            if (idx < 1)
+                idx = $scope.data.timeDropdown.length - 1;
+            $scope.esrl.input.time = $scope.data.timeDropdown[idx];
+        }
     };
 
     $scope.stepForward = function () {
-        $scope.message({
-            action: 'stepForward'
-        });
+        if ($scope.esrl.flags.movie) {
+            $scope.message({
+                action: 'stepForward'
+            });
+        } else {
+            var idx = $scope.data.timeDropdown.indexOf($scope.esrl.input.time);
+            idx++;
+            if (idx > $scope.data.timeDropdown.length - 1)
+                idx = 1;
+            $scope.esrl.input.time = $scope.data.timeDropdown[idx];
+        }
     };
 
     $scope.setDelay = function () {
@@ -203,10 +241,10 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
 
         if (message && (message.min || message.max)) {
             $timeout(function () {
-                $scope.esrl.input.min = message.min;
-                $scope.esrl.input.max = message.max;
-                $scope.esrl.input.contourStep = message.contourStep;
-                console.log("==== globe-controls from-parent===", message, $scope.esrl.input);
+                $scope.esrl.input.min = parseFloat(message.min);
+                $scope.esrl.input.max = parseFloat(message.max);
+                if (message.contourStep)
+                    $scope.esrl.input.contourStep = parseFloat(message.contourStep);
             });
         }
     });

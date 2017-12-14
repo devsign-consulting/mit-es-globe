@@ -35,6 +35,16 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
         }
     };
 
+    $scope.messageGlobeColorBarWidget = function (data) {
+        // get child scope, we do not use factory since frame is not there yet in that phase
+        $childScope = document.getElementById("globe-colorbar-widget").contentWindow.angular.element('body').scope();
+        if ($childScope) {
+            $childScope.$apply(function () {
+                $childScope.$emit('from-parent', data);
+            });
+        }
+    };
+
     $scope.timeoutLoop = function (filename) {
         $scope.input.movieLoop = setTimeout(function() {
             if (!$scope.pause) {
@@ -97,8 +107,10 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
 
     $scope.$watch('iframeMessage', function (newVal, oldVal) {
         if (newVal && newVal.form === 'esrl' && newVal.filename) {
-            // if it's a movie
             console.log("===iframeMessage esrl ===", newVal);
+            $scope.messageGlobeColorBarWidget({ colorbarFilename: newVal.colorbarFilename });
+
+            // if it's a movie
             if(newVal.movie) {
                 var filename = newVal.filename.split("-")[0];
                 $scope.input.filename = filename;
@@ -169,6 +181,10 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                     break;
                 case "saveGlobeSettings":
                     $scope.messageGlobeControlsWidget(newVal.input);
+                    break;
+                case "loadColorbar":
+                    console.log("=== loadcolorbar===", newVal);
+                    $scope.messageGlobeColorBarWidget({ colorbarFilename: newVal.colorbarFilename });
                     break;
             }
         }

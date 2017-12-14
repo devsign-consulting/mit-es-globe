@@ -35,6 +35,7 @@
 
             echo json_encode(array(
                 "filename" => $filename,
+                "colorbarFilename" => $fn."-colorbar.png",
                 "form" => "esrl",
                 "lat" => $_POST['lat'],
                 "lon" => $_POST['lon'],

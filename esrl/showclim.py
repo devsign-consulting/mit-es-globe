@@ -78,11 +78,21 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import math, json
+import matplotlib.ticker as ticker
 
 def getTheta(theta, n, lev):
     th1=np.roll(theta[n,lev,:,:],72,axis=1)
     th=np.hstack((th1,th1[:,0:1]))
     return th
+
+# color bar formatter
+def colorbarFmt(x, pos):
+    if args.field == 'omega' or args.field == 'vwnd':
+        return "%.2f" % x;
+    elif args.field == 'vwnd':
+        return "%.1f" % x;
+    else:
+        return int(x)
 
 def splotit(th, overrideMin=False, overrideMax=False):
   #  plt.figure(1,figsize=[8.125*3.253/2,6.125*3.253/2])
@@ -100,7 +110,7 @@ def splotit(th, overrideMin=False, overrideMax=False):
       max = overrideMax
 
     CS = ax.contourf(lon,lat,th, np.arange(min, max, contour), cmap=plt.cm.jet)
-    CS2 = ax.contour(lon,lat,th, np.arange(min,max, contour), colors='0.5')
+    CS2 = ax.contour(lon,lat,th, np.arange(min, max, contour), colors='0.5')
     ax.clabel(CS2, CS2.levels, inline=True, fmt="%0.0f", fontsize=9)
   else:
     ax.pcolormesh(lon,lat,th)
@@ -120,6 +130,26 @@ def splotit(th, overrideMin=False, overrideMax=False):
   ax.axis('tight')
 
   plt.savefig(fn+'-'+str(n)+'.png')
+
+  # save the color bar
+  a = np.array([[0, 1]])
+  plt.figure(figsize=(1,3))
+  plt.imshow(a, cmap=plt.cm.jet)
+  plt.gca().set_visible(False)
+  cax = plt.axes([0.2, 0.1, 0.2, 0.8])
+  cb = plt.colorbar(CS, orientation='vertical', cax=cax, format = ticker.FuncFormatter(colorbarFmt))
+
+  fg_color = 'white'
+  # set colorbar tick color
+  cb.ax.yaxis.set_tick_params(color=fg_color)
+
+  # set colorbar edgecolor
+  cb.outline.set_edgecolor(fg_color)
+  # set colorbar ticklabels
+  plt.setp(plt.getp(cb.ax.axes, 'yticklabels'), color=fg_color)
+
+  plt.savefig(fn+'-colorbar.png', transparent = True)
+
 
 
 months={"Jan":0,"Feb":1,"Mar":2,"Apr":3,"May":4,"Jun":5,"Jul":6,"Aug":7,"Sep":8,"Oct":9,"Nov":10,"Dec":11,"year":-1}
