@@ -9,9 +9,6 @@ titleWidget.controller('TitleWidgetController', function ($scope, $parentScope, 
 
     $scope.$on('from-parent', function(e, message) {
         if(message && message.title) {
-            if (message.title === "Omega") {
-                message.title += " (x 1E-3)"
-            }
             $scope.title = message.title;
         }
     });

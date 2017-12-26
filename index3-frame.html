@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+    <head>
+        <!-- Javascript modules -->
+        <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+
+        <!-- Style sheets -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="stylesheet" href="css/main.css">
+    </head>
+
+    <!-- main body -->
+    <body style="background-color: white; height: 100%; padding: 0px 20px;">
+        <script>
+            var sph = parent.sph;
+        </script>
+        <div class="row">
+            <div class="col-xs-8">
+                <h2>Demo</h2>
+                <ul>
+                    <li><a href="javascript: sph.orient(30, 120); sph.show('mp.png', '/graphics')">Surface Air Temperature</a></li>
+                    <li><a href="javascript: sph.orient(30, 120); sph.show('mp3.png', '/graphics')">OLR</a></li>
+                </ul>
+                <select id='orient' class="form-control" onChange="javascript: var lon = $('#orient').val(); sph.orient(30, lon);">
+                    <option value="">Choose </option>
+                    <option value="1">Orient 1</option>
+                    <option value="10">Orient 2</option>
+                    <option value="20">Orient 3</option>
+                </select>
+            </div>
+        </div>
+    </body>
+</html>

@@ -50,13 +50,13 @@ parser.add_argument('--contour',
                     action="store",
                     dest="contour",
                     default=5,
-                    type=int,
+                    type=float,
                     help='Contour density')
 parser.add_argument('--contour2',
                     action="store",
                     dest="contour2",
                     default=5,
-                    type=int,
+                    type=float,
                     help='Contour density')
 parser.add_argument('--filename',
                     action="store",
@@ -179,15 +179,6 @@ matplotlib.rc('ytick', labelsize=18)
 fig = plt.figure(figsize=(12, 10))
 ax = fig.add_subplot(1,1,1)
 
-# field 1 logic
-if args.field == 'omega':
-    th = th*1000
-    fieldTitle = fieldTitle + " x 1E-3"
-
-if (args.field == 'vwnd') or (args.field == 'uwnd'):
-    th = th*10
-    fieldTitle = fieldTitle + " x 1E-1"
-
 # argument min/max overrides
 if args.min:
     min = float(args.min)
@@ -199,19 +190,7 @@ if args.max:
 else:
     max = math.ceil(th.max())
 
-contour = (max - min) / args.contour
-
-
-# field 2 logic
-if args.field2 == 'omega':
-    th2 = th2*1000
-    field2Title = field2Title + " x 1E-3"
-
-if (args.field2 == 'vwnd') or (args.field2 == 'uwnd'):
-    th2 = th2*10
-    field2Title = field2Title + " x 1E-1"
-
-
+contour = args.contour
 
 if args.field2 != 'none':
     # argument min/max overrides
@@ -224,12 +203,16 @@ if args.field2 != 'none':
         max2 = float(args.max2)
     else:
         max2 = math.ceil(th2.max())
-    contour2 = (max2 - min2) / args.contour2
-
+    contour2 = args.contour2
 
 # color bar formatter
 def colorbarFmt(x, pos):
-    return int(x)
+    if args.field == 'omega' or args.field == 'vwnd':
+        return "%.2f" % x;
+    elif args.field == 'vwnd':
+        return "%.1f" % x;
+    else:
+        return int(x)
 
 if args.zonalaverage:
     th = th_zone
@@ -238,12 +221,17 @@ if args.zonalaverage:
 
 # print (max, min, contour)
 if args.fillcontour:
-    CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour), cmap=plt.cm.nipy_spectral)
+    CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour), cmap=plt.cm.jet)
     if args.field2 and args.field2 != args.field:
         b = plt.colorbar(CS, orientation='vertical', format = ticker.FuncFormatter(colorbarFmt), pad=0.02)
 else:
     CS = plt.contour(lat1[latind], lev, th, np.arange(min, max, contour))
-    plt.clabel(CS, CS.levels[::2], inline=True, fmt="%0.0f", fontsize=14)
+    fmt1 = "%0.0f"
+    if args.field == 'vwnd':
+        fmt1="%0.1f"
+    if args.field == 'omega':
+        fmt1="%0.3f"
+    plt.clabel(CS, CS.levels[::2], inline=True, fmt=fmt1, fontsize=14)
 
 plt.gca().invert_yaxis()
 
@@ -251,7 +239,12 @@ plt.gca().invert_yaxis()
 
 if args.field2 != 'none':
     CS2 = plt.contour(lat2[latind], lev, th2, np.arange(min2,max2, contour2), colors='k')
-    plt.clabel(CS2, CS2.levels[::2], inline=True, fmt="%0.0f", fontsize=14)
+    fmt2 = "%0.0f"
+    if args.field2 == 'vwnd':
+        fmt2="%0.1f"
+    if args.field2 == 'omega':
+        fmt2="%0.3f"
+    plt.clabel(CS2, CS2.levels[::2], inline=True, fmt=fmt2, fontsize=14)
 
 if args.field2 != 'none' and args.field2 != args.field:
     if args.zonalaverage:

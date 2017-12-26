@@ -1,17 +1,17 @@
 // http://plnkr.co/edit/EYpEATLGd0B54WpEr7II?p=preview
-var esrl = angular.module('app-esrl', ['ngResource', 'app-esrl.services','ui.bootstrap','ngAnimate','ui.toggle']);
+var esrl = angular.module('app-esrl', ['ngResource', 'app-esrl.services', 'app-esrl.defaults', 'ui.bootstrap','ngAnimate','ui.toggle']);
 esrl.factory('$parentScope', function ($window) {
     return $window.parent.angular.element($window.frameElement).scope();
 });
 
-esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout, $uibModal, EsrlResource) {
+esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout, $uibModal, EsrlResource, defaults) {
     $scope.data = {};
     $scope.data.fields = {
         pottmp: "Potential Temperature",
         hgt: "Geopotential Height",
         uwnd: "U-wind",
         vwnd: "V-wind",
-        omega: "Omega",
+        omega: "Omega"
     };
 
     $scope.section = {};
@@ -20,16 +20,79 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     $scope.section.input.press = 200;
     $scope.section.input.field = "pottmp";
     $scope.section.input.lon = 0;
-    $scope.section.input.contour = 10;
-    $scope.section.input.contour2 = 10;
+
     $scope.section.input.logScale = true;
     $scope.section.input.zonalAverage = true;
     $scope.section.flags = {};
     $scope.section.flags.showNow = true;
 
+    $scope.sectionInputWatchCount = 0;
+
     // Functions to execute on load
     $timeout(function () {
-        $scope.submitSectionForm();
+        $scope.setDefaults($scope.section.input.field);
+        // $scope.submitSectionForm();
+
+        /*------ Watches ----*/
+        $scope.$watchCollection('section.input', function (newVal, oldVal) {
+            console.log("===$watchCollection section.input===", newVal);
+            var submitForm = true;
+            if (oldVal && newVal) {
+                if (oldVal.field && newVal.field && oldVal.field !== newVal.field) {
+                    $scope.setDefaults(newVal.field, "field1");
+                }
+
+                if (oldVal.field2 && newVal.field2 && oldVal.field2 !== newVal.field2) {
+                    $scope.setDefaults(newVal.field2, "field2");
+                }
+
+                if (!oldVal.field2 && newVal.field2) {
+                    $scope.setDefaults(newVal.field2, "field2");
+                }
+            }
+            if (!$scope.esrlForm.$invalid) {
+                if ($scope.section.input.time) {
+                    $scope.message({
+                        action: "sectionTimeChanged",
+                        time: $scope.section.input.time
+                    });
+                }
+
+                if ($scope.section.input.field) {
+                    $scope.message({
+                        action: "sectionFieldChanged",
+                        field: $scope.section.input.field
+                    });
+                }
+
+                if (newVal && oldVal && (newVal.min !== oldVal.min || newVal.max !== oldVal.max)) {
+                    console.log("== 001 min max ==", newVal);
+                    $scope.message({
+                        action: "sectionMinMaxChanged",
+                        min: newVal.min,
+                        max: newVal.max
+                    })
+                }
+
+                // don't submit form if the lon changes and we are in zonal average
+                if (oldVal.lon && newVal.lon && oldVal.lon !== newVal.lon) {
+                    if ($scope.section.input.zonalAverage) {
+                        submitForm = false;
+                    }
+                }
+
+                if (submitForm && oldVal) {
+                    if ($scope.sectionInputWatchCount === 0) {
+                        $scope.sectionInputWatchCount++;
+                        console.log("==== $scope.sectionInputWatchCount ===", $scope.sectionInputWatchCount);
+                        $scope.submitSectionForm().then(function () {
+                            $scope.sectionInputWatchCount--;
+                            console.log("==== $scope.sectionInputWatchCount ===", $scope.sectionInputWatchCount);
+                        });
+                    }
+                }
+            }
+        });
     });
 
     $scope.section.submit = function () {
@@ -37,6 +100,30 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
             .then(function () {
                 $scope.section.flags.showNow = true;
             });
+    };
+
+
+    $scope.setDefaults = function (input, field) {
+        var defaultRes = defaults.getEsrlDefaults(input);
+        if (field && field === "field1") {
+            $scope.section.input.contour = defaultRes.contour;
+            $scope.section.input.min = defaultRes.min;
+            $scope.section.input.max = defaultRes.max;
+        } else if (field && field === "field2") {
+            $scope.section.input.contour2 = defaultRes.contour;
+            $scope.section.input.min2 = defaultRes.min;
+            $scope.section.input.max2 = defaultRes.max;
+        } else {
+            $scope.section.input.contour = defaultRes.contour;
+            $scope.section.input.min = defaultRes.min;
+            $scope.section.input.max = defaultRes.max;
+
+            $scope.section.input.contour2 = defaultRes.contour;
+            $scope.section.input.min2 = defaultRes.min;
+            $scope.section.input.max2 = defaultRes.max;
+        }
+
+        console.log("=== esrl set deaults ===", {input, field}, defaultRes, $scope.section.input);
     };
 
     $scope.submitSectionForm = function () {
@@ -93,26 +180,6 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
             $scope.section.filename = "./esrl/output/" + results.filename;
             $scope.isLoading = false;
             $scope.section.flags.showNow = true;
-
-            console.log("==== results ===", results);
-            if (results.output && results.output.field) {
-                if (results.output.field.min) {
-                    $scope.section.input.min = results.output.field.min
-                }
-
-                if (results.output.field.max) {
-                    $scope.section.input.max = results.output.field.max
-                }
-
-                if (results.output.field2 && results.output.field2.min) {
-                    $scope.section.input.min2 = results.output.field2.min
-                }
-
-                if (results.output.field2 && results.output.field2.max) {
-                    $scope.section.input.max2 = results.output.field2.max
-                }
-
-            }
             return;
         });
 
@@ -127,44 +194,6 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         downloadLink.attr('download', 'fileName.json');
         downloadLink[0].click();
     };
-
-    /*------ Watches ----*/
-    $scope.$watchCollection('section.input', function (newVal, oldVal) {
-        // console.log("===section.input===", newVal, oldVal);
-        if (oldVal && newVal) {
-            if (oldVal.field && newVal.field && oldVal.field !== newVal.field) {
-                $scope.section.input.min = null;
-                $scope.section.input.max = null;
-            }
-
-            if (oldVal.field2 && newVal.field2 && oldVal.field2 !== newVal.field2) {
-                $scope.section.input.min2 = null;
-                $scope.section.input.max2 = null;
-            }
-
-            if (!oldVal.field2 && newVal.field2) {
-                $scope.section.input.min2 = null;
-                $scope.section.input.max2 = null;
-            }
-        }
-
-        if (!$scope.esrlForm.$invalid) {
-            if ($scope.section.input.time) {
-                $scope.message({
-                    action: "sectionTimeChanged",
-                    time: $scope.section.input.time
-                });
-            }
-
-            if ($scope.section.input.field) {
-                $scope.message({
-                    action: "sectionFieldChanged",
-                    field: $scope.section.input.field
-                });
-            }
-            $scope.submitSectionForm();
-        }
-    });
 
     $scope.$on('from-parent', function(e, message) {
         console.log("== esrl from parent ==", message);
@@ -194,6 +223,10 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         if (message && message.input) {
             _.merge($scope.section.input, message.input);
         }
+
+        if (message && message.globeInput) {
+            $scope.openGlobeSettingsModal(message.globeInput)
+        }
     });
 
     $scope.message = function (data) {
@@ -208,6 +241,8 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
 
     $scope.openSettingsModal = function () {
         var input = $scope.section.input;
+        var field1 = $scope.section.input.field;
+        var field2 = $scope.section.input.field2;
         var modalInstance = $uibModal.open({
             animation: true,
             templateUrl: 'sectionSettingsModal.html',
@@ -218,24 +253,111 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
             resolve: {
                 input: function () {
                     return input;
+                },
+                field1: function () {
+                    return field1;
+                },
+                field2: function () {
+                    return field2;
                 }
             }
         });
 
-        modalInstance.result.then(function (result) {});
+        modalInstance.result.then(function (result) {
+            console.log("== section merge result ==", result)
+            _.merge($scope.section.input, result);
+        });
+    };
+
+    $scope.openGlobeSettingsModal = function (input) {
+        var field = input.field;
+        var modalInstance = $uibModal.open({
+            animation: true,
+            templateUrl: 'globeSettingsModal.html',
+            controller: 'GlobeSettingsModalCtrl',
+            controllerAs: 'ctrl',
+            size: "md",
+            appendTo: angular.element(".modal-parent"),
+            resolve: {
+                input: function () {
+                    return input;
+                },
+                field: function () {
+                    return field;
+                }
+            }
+        });
+
+        modalInstance.result.then(function (result) {
+            $scope.message({
+                action: "saveGlobeSettings",
+                input: result
+            })
+        });
     };
 
     $parentScope.esrlScope = $scope;
 
 });
 
-esrl.controller("SectionSettingsModalCtrl", function ($uibModalInstance, input) {
-    this.input = input;
+esrl.controller("SectionSettingsModalCtrl", function ($uibModalInstance, input, field1, field2, defaults) {
+    this.input = angular.copy(input);
+    this.input.globe = {};
+    this.resetDefaults = function () {
+        if (field1) {
+            var defaultRes = defaults.getEsrlDefaults(field1);
+            this.input.contour = defaultRes.contour;
+            this.input.min = defaultRes.min;
+            this.input.max = defaultRes.max;
+        }
+
+        if (field2) {
+            var defaultRes = defaults.getEsrlDefaults(field2);
+            this.input.contour2 = defaultRes.contour;
+            this.input.min2 = defaultRes.min;
+            this.input.max2 = defaultRes.max;
+        }
+    };
+
     this.ok = function () {
-        $uibModalInstance.close();
+        $uibModalInstance.close(this.input);
     };
 
     this.cancel = function () {
         $uibModalInstance.dismiss();
     };
+});
+
+esrl.controller("GlobeSettingsModalCtrl", function ($uibModalInstance, input, field, defaults) {
+    this.input = {};
+    this.input.globe = angular.copy(input);
+    console.log("==== this.input ===", this.input);
+    this.resetDefaults = function () {
+        if (field) {
+            var defaultRes = defaults.getEsrlDefaults(field);
+            this.input.globe.contourStep = defaultRes.contour;
+            this.input.globe.min = defaultRes.min;
+            this.input.globe.max = defaultRes.max;
+        }
+    };
+
+    this.ok = function () {
+        $uibModalInstance.close(this.input.globe);
+    };
+
+    this.cancel = function () {
+        $uibModalInstance.dismiss();
+    };
+});
+
+esrl.directive('errSrc', function() {
+    return {
+        link: function(scope, element, attrs) {
+            element.bind('error', function() {
+                if (attrs.src != attrs.errSrc) {
+                    attrs.$set('src', attrs.errSrc);
+                }
+            });
+        }
+    }
 });

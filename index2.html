@@ -24,39 +24,18 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.js"></script>
 
         <script src="./bower_components/angular-p5/angular-p5.js"></script>
-
+        <script src="js/globe.js"></script>
         <script src="js/main.js"></script>
-
-
     </head>
     <body class="main" ng-app="app" ng-controller="MainCtrl">
         <!--[if lte IE 9]>
         <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
         <![endif]-->
-        <script>
-            var sz = 950;
-            var w = 500;
-            var args = {};
-            if("res" in args) {
-                var res=args.res;
-            } else {
-                var res=[2048,1024];
-            }
-            if("map" in args){
-                var url = args.map;
-            } else {
-                var url="earth2048.jpg";
-            }
-            if("online" in args){
-                var online=1;
-            } else {
-                var online=0;
-            }
-        </script>
+
         <!--<script src="sph.js"></script>-->
         <div class="container-fluid">
             <div id="canvas-container" class="col-xs-7">
-                <p5 sketch="globeSketch"></p5>
+                <p5 sketch="p5globe"></p5>
                 <iframe scrolling="no" id='title-widget' class='widget' src="widgets/title.html"></iframe>
             </div>
             <div class="col-xs-5 container-input no-gutter">
@@ -78,12 +57,13 @@
                         </ul>
                     </div>
                 </nav>
-                <iframe style='border:0px' id='esrl2' src="esrl2.html" height=970px width=100% style="overflow-x:hidden;"></iframe>
+                <iframe style='border:0px' id='esrl2' src="esrl2.html" height=970px width=100% style="overflow-x:hidden; overflow-y:hidden;"></iframe>
 
             </div>
         </div>
 
         <iframe scrolling="no" id='globe-controls-widget' class='widget' src="widgets/globe-controls.html"></iframe>
+        <iframe scrolling="no" id='globe-colorbar-widget' class='widget' src="widgets/globe-color-bar.html"></iframe>
 
         <!--- Modal ---->
         <div class="modal-parent">
@@ -98,58 +78,5 @@
 
             </div>
         </script>
-
-        <!--- ESRL additional parameters input Modal ---->
-        <script type="text/ng-template" id="sectionSettingsModal.html">
-            <div class="modal-body" id="modal-body">
-                <h3>Field 1: {{ctrl.input.field}}</h3>
-                <div class="row">
-                    <div class="col-xs-6">
-                        <div class="form-group">
-                            <label for="contourDensity">Contour Density</label>
-                            <input class="form-control" id="contourDensity" ng-model="ctrl.input.contour">
-                        </div>
-                    </div>
-                    <div class="col-xs-3">
-                        <div class="form-group">
-                            <label for="contourDensity">Min</label>
-                            <input class="form-control" id="min" ng-model="ctrl.input.min">
-                        </div>
-                    </div>
-                    <div class="col-xs-3">
-                        <div class="form-group">
-                            <label for="contourDensity">Max</label>
-                            <input class="form-control" id="max" ng-model="ctrl.input.min">
-                        </div>
-                    </div>
-                </div>
-                <h3 ng-if="ctrl.input.field2">Field 2: {{ctrl.input.field}}</h3>
-                <div class="row" ng-if="ctrl.input.field2">
-                    <div class="col-xs-6">
-                        <div class="form-group">
-                            <label for="contourDensity">Contour Density</label>
-                            <input class="form-control" id="contourDensity2" ng-model="ctrl.input.contour2">
-                        </div>
-                    </div>
-                    <div class="col-xs-3">
-                        <div class="form-group">
-                            <label for="min2">Min</label>
-                            <input class="form-control" id="min2" ng-model="ctrl.input.min2">
-                        </div>
-                    </div>
-                    <div class="col-xs-3">
-                        <div class="form-group">
-                            <label for="max2">Max</label>
-                            <input class="form-control" id="max2" ng-model="ctrl.input.min2">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer" id="modal-footer">
-                <button class="btn btn-default" ng-click="ctrl.cancel()">Cancel</button>
-                <button class="btn btn-primary" ng-click="ctrl.ok()">Save</button>
-            </div>
-        </script>
-
     </body>
 </html>

@@ -1,0 +1,13 @@
+<html ng-app='globeColorBarWidget' style="overflow-x: hidden;">
+    <head>
+        <link rel="stylesheet" href="/css/main.css">
+        <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+        <script src="/widgets/globe-color-bar.js"></script>
+    </head>
+
+    <body class="iframe globe-color-bar" ng-controller="GlobeColorBarWidgetController">
+        <img src="{{input.colorbarSrc}}">
+    </body>
+</html>
