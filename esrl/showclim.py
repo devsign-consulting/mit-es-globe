@@ -79,6 +79,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import math, json
 import matplotlib.ticker as ticker
+import colorMap
 
 def getTheta(theta, n, lev):
     th1=np.roll(theta[n,lev,:,:],72,axis=1)
@@ -93,6 +94,7 @@ def colorbarFmt(x, pos):
         return "%.1f" % x;
     else:
         return int(x)
+
 
 def splotit(th, overrideMin=False, overrideMax=False):
   #  plt.figure(1,figsize=[8.125*3.253/2,6.125*3.253/2])
@@ -109,7 +111,10 @@ def splotit(th, overrideMin=False, overrideMax=False):
     if overrideMax:
       max = overrideMax
 
-    CS = ax.contourf(lon,lat,th, np.arange(min, max, contour), cmap=plt.cm.jet)
+
+    cm = colorMap.customColorMap(500, 200, 225, 950)
+
+    CS = ax.contourf(lon,lat,th, np.arange(min, max, contour), cmap=cm)
     CS2 = ax.contour(lon,lat,th, np.arange(min, max, contour), colors='0.5')
     ax.clabel(CS2, CS2.levels, inline=True, fmt="%0.0f", fontsize=9)
   else:
