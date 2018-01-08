@@ -10,6 +10,8 @@ titleWidget.controller('TitleWidgetController', function ($scope, $parentScope, 
     $scope.$on('from-parent', function(e, message) {
         if(message && message.title) {
             $scope.title = message.title;
+            $scope.level = message.level;
+            $scope.timepoint = message.timepoint;
         }
     });
 

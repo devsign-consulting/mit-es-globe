@@ -101,6 +101,7 @@ def splotit(th, overrideMin=False, overrideMax=False):
   fig=plt.figure(figsize=(20.48,10.24))
   ax=fig.add_axes((0,0,1,1))
   ax.set_axis_off()
+  cm = plt.cm.jet
 
   if args.contour:
     min = math.floor(th.min())
@@ -111,8 +112,14 @@ def splotit(th, overrideMin=False, overrideMax=False):
     if overrideMax:
       max = overrideMax
 
-
-    cm = colorMap.customColorMap(500, 200, 225, 950)
+    #if the field is potential temp, we fix the min/max to 225-950
+    if args.field == 'pottmp':
+      min = 225
+      max = 950
+      if args.press <= 100:
+        cm = colorMap.customColorMap(500, 200, 225, 950)
+      else:
+        cm = colorMap.customColorMap(280, 100, 225, 950)
 
     CS = ax.contourf(lon,lat,th, np.arange(min, max, contour), cmap=cm)
     CS2 = ax.contour(lon,lat,th, np.arange(min, max, contour), colors='0.5')

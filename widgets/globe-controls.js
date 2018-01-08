@@ -138,7 +138,9 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
 
         $scope.message({
             titleWidget: {
-                title: $scope.data.fields[res.field]
+                title: $scope.data.fields[res.field],
+                level: res.press,
+                timepoint: res.time
             }
         });
 

@@ -172,6 +172,7 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.ticker import ScalarFormatter
 import matplotlib.ticker as ticker
+import colorMap
 
 matplotlib.rc('xtick', labelsize=18)
 matplotlib.rc('ytick', labelsize=18)
@@ -221,7 +222,14 @@ if args.zonalaverage:
 
 # print (max, min, contour)
 if args.fillcontour:
-    CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour), cmap=plt.cm.jet)
+    cm = plt.cm.jet
+
+    if args.field == 'pottmp':
+        cm = colorMap.customColorMap(280, 100, 225, 950)
+        min = 225
+        max = 950
+
+    CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour), cmap=cm)
     if args.field2 and args.field2 != args.field:
         b = plt.colorbar(CS, orientation='vertical', format = ticker.FuncFormatter(colorbarFmt), pad=0.02)
 else:

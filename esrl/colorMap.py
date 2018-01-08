@@ -4,6 +4,7 @@ import numpy as np
 
 def customColorMap(vcent, vrange, vmin, vmax):
 
+    print "custom color map", vcent, vrange, vmin, vmax
     # vmin = 225
     # vmax = 950
     # vcent = 500
@@ -23,23 +24,26 @@ def customColorMap(vcent, vrange, vmin, vmax):
     v = v / 255.0
     v = v * (vmax-vmin) + vmin
 
-    print v
+    #print v
 
     tanhv = np.tanh((v-vcent)/vrange) + 1
     tanhv = (tanhv-tanhv.min())/(tanhv.max()-tanhv.min())
 
+    #print tanhv
     x_str = np.array_repr(tanhv).replace('\n', '')
-    print(x_str)
+    #print(x_str)
 
-    isc = np.floor(tanhv*255.999)
+    newMapIndexArr = np.floor(tanhv*255.999)
+    #print newMapIndexArr
     newColorList = []
 
-    for i in isc:
-        print i
-        newColorList.append(colorList[int(i-1)])
-
+    for i in newMapIndexArr:
+        if i > colorList.shape[0] - 1:
+            i = colorList.shape[0] - 1
+        newColorList.append(colorList[int(i)])
 
     newColorList = np.asarray(newColorList).tolist()
+
     cm = LinearSegmentedColormap.from_list(
         'tanh', newColorList, N=255)
 
