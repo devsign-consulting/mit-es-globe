@@ -12,6 +12,7 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', function(p5, $window, $
     factory.sketch = function (p) {
         var sz = 870;
         var w = 450;
+        scalefac=1.06;
         var args = {};
         if ("res" in args) {
             var res = args.res;
@@ -155,8 +156,8 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', function(p5, $window, $
         };
 
         p.mouse2xz = function (mx, my) {
-            xt = (mx - sz / 2) / (sz / 2 - 20);
-            zt = (sz / 2 - my) / (sz / 2 - 20);
+            xt = scalefac*(mx - sz / 2) / (sz / 2 - 20);
+            zt = scalefac*(sz / 2 - my) / (sz / 2 - 20);
             return [xt, zt];
         };
 
