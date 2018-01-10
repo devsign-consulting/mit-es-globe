@@ -45,7 +45,7 @@
                             <!-- Section plot image -->
                             <div class="col-xs-12">
                                 <a href="#" ng-click="openLightboxModal(section.filename)">
-                                    <img style='width:100%; padding: 0;'; ng-src="{{section.filename}}" err-src="/images/placeholder.jpg">
+                                    <img style='width:654px; padding: 0;'; ng-src="{{section.filename}}" err-src="/images/placeholder.jpg">
                                 </a>
                                 <span class="level-indicator" ng-class="getLevelIndicatorClass(section.input.levelIndicatorIdx)">
                                     <a class="level-up link" ng-click="levelUp()"><span class="glyphicon glyphicon-chevron-up"></span></a>
@@ -65,19 +65,9 @@
                             <div class="col-xs-4">
                                 <div class="form-group">
                                     <label>Month</label>
-                                    <select class="form-control sm" ng-model="section.input.time" ng-model-options="{debounce:500}">
-                                        <option value="Jan">Jan</option>
-                                        <option value="Feb">Feb</option>
-                                        <option value="Mar">Mar</option>
-                                        <option value="Apr">Apr</option>
-                                        <option value="May">May</option>
-                                        <option value="Jun">Jun</option>
-                                        <option value="Jul">Jul</option>
-                                        <option value="Aug">Aug</option>
-                                        <option value="Sep">Sep</option>
-                                        <option value="Oct">Oct</option>
-                                        <option value="Nov">Nov</option>
-                                        <option value="Dec">Dec</option>
+                                    <select class="form-control sm"
+                                            ng-options="time as time for time in data.timeArr"
+                                            ng-model="section.input.time" ng-model-options="{debounce:500}">
                                     </select>
                                 </div>
                             </div>
@@ -147,8 +137,13 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-xs-3">
+                            <div class="col-xs-12">
                                 <button class="btn btn-primary btn-sm" ng-click="section.submit()" ng-disabled="isLoading">Show Section <span ng-show="isLoading" class="fa fa-spin fa-spinner"></span></button>
+                                <button class="btn btn-default btn-sm"
+                                        ng-click="toggleKeyboardControl()"
+                                        ng-class="{'btn-default': !section.flags.keyboardControl, 'btn-success': section.flags.keyboardControl}">
+                                    Toggle Keyboard Control (<span ng-if="section.flags.keyboardControl">On</span><span ng-if="!section.flags.keyboardControl">Off</span>)
+                                </button>
                             </div>
                         </div>
                     </div>

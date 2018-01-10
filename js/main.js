@@ -192,6 +192,8 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                 case "loadColorbar":
                     $scope.messageGlobeColorBarWidget({ colorbarFilename: newVal.colorbarFilename });
                     break;
+                case "globeDoneLoading":
+                    $scope.message({ globeDoneLoading: true });
             }
         }
 

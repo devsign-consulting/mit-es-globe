@@ -15,6 +15,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     };
 
     $scope.data.levelArr = [1000, 925, 800, 700, 600, 500, 400, 300, 250, 200];
+    $scope.data.timeArr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     $scope.section = {};
     $scope.section.input = {};
@@ -27,23 +28,10 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     $scope.section.input.logScale = true;
     $scope.section.input.zonalAverage = true;
     $scope.section.flags = {};
+    $scope.section.flags.keyboardControl = false;
     $scope.section.flags.showNow = true;
 
     $scope.sectionInputWatchCount = 0;
-
-    angular.element(".level-indicator").bind('keyup', function (e) {
-        if (e.keyCode === 38) { // up arrow
-            $scope.levelUp();
-            $scope.$digest();
-        }
-
-        if (e.keyCode === 40) { // down arrow
-            $scope.levelDown();
-            $scope.$digest();
-        }
-
-        console.log("===$scope.section.input.levelIndicatorIdx==", $scope.section.input.levelIndicatorIdx);
-    });
 
     // Functions to execute on load
     $timeout(function () {
@@ -69,10 +57,13 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
             }
             if (!$scope.esrlForm.$invalid) {
                 if ($scope.section.input.time) {
-                    $scope.message({
-                        action: "sectionTimeChanged",
-                        time: $scope.section.input.time
-                    });
+                    $timeout.cancel($scope.section.flags.timeTimeout);
+                    $scope.section.flags.timeTimeout= $timeout(function () {
+                        $scope.message({
+                            action: "sectionTimeChanged",
+                            time: $scope.section.input.time
+                        });
+                    }, 500);
                 }
 
                 if ($scope.section.input.field) {
@@ -93,10 +84,15 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
 
                 // don't submit if we are only changing the sectionidx
                 if (typeof newVal.levelIndicatorIdx !== 'undefined' && oldVal.levelIndicatorIdx !== newVal.levelIndicatorIdx) {
-                    $scope.message({
-                        action: "sectionLevelChanged",
-                        level: $scope.data.levelArr[newVal.levelIndicatorIdx]
-                    });
+                    $timeout.cancel($scope.section.flags.levelTimeout);
+                    $scope.section.flags.levelTimeout = $timeout(function () {
+                        $scope.message({
+                            action: "sectionLevelChanged",
+                            level: $scope.data.levelArr[newVal.levelIndicatorIdx]
+                        });
+                        $scope.globeLoading = true;
+                    }, 500);
+
                     submitForm = false;
                 }
 
@@ -110,10 +106,8 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                 if (submitForm && oldVal) {
                     if ($scope.sectionInputWatchCount === 0) {
                         $scope.sectionInputWatchCount++;
-                        console.log("==== $scope.sectionInputWatchCount ===", $scope.sectionInputWatchCount);
                         $scope.submitSectionForm().then(function () {
                             $scope.sectionInputWatchCount--;
-                            console.log("==== $scope.sectionInputWatchCount ===", $scope.sectionInputWatchCount);
                         });
                     }
                 }
@@ -121,14 +115,69 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         });
     });
 
+    $scope.timePrev = function () {
+        if ($scope.isLoading)
+            return;
+        let idx = $scope.data.timeArr.indexOf($scope.section.input.time);
+        if (idx > 0) {
+            idx--;
+            $scope.section.input.time = $scope.data.timeArr[idx];
+        }
+    };
+
+    $scope.timeNext = function () {
+        if ($scope.isLoading)
+            return;
+        let idx = $scope.data.timeArr.indexOf($scope.section.input.time);
+        if (idx < $scope.data.timeArr.length - 1) {
+            idx++;
+            $scope.section.input.time = $scope.data.timeArr[idx];
+        }
+    };
+
     $scope.levelUp = function () {
+        if ($scope.isLoading || $scope.globeLoading)
+            return;
         if ($scope.section.input.levelIndicatorIdx < $scope.data.levelArr.length - 1)
             $scope.section.input.levelIndicatorIdx++;
     };
 
     $scope.levelDown = function () {
+        if ($scope.isLoading || $scope.globeLoading)
+            return;
         if ($scope.section.input.levelIndicatorIdx > 0)
             $scope.section.input.levelIndicatorIdx--;
+    };
+
+    $scope.toggleKeyboardControl = function () {
+        $scope.section.flags.keyboardControl = !$scope.section.flags.keyboardControl
+
+        if ($scope.section.flags.keyboardControl) {
+            angular.element(document).bind('keyup', function (e) {
+                console.log('=== keyup===', e.keyCode);
+                if (e.keyCode === 38) { // up arrow
+                    $scope.levelUp();
+                    $scope.$digest();
+                }
+
+                if (e.keyCode === 40) { // down arrow
+                    $scope.levelDown();
+                    $scope.$digest();
+                }
+
+                if (e.keyCode === 37) { // left arrow
+                    $scope.timePrev();
+                    $scope.$digest();
+                }
+
+                if (e.keyCode === 39) { // right arrow
+                    $scope.timeNext();
+                    $scope.$digest();
+                }
+            });
+        } else {
+            angular.element(document).unbind('keyup');
+        }
     };
 
     $scope.getLevelIndicatorClass = function (levelIdx) {
@@ -277,6 +326,10 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                 if (idx)
                     $scope.section.input.levelIndicatorIdx = idx;
             });
+        }
+
+        if (message && message.globeDoneLoading) {
+            $scope.globeLoading = false;
         }
     });
 

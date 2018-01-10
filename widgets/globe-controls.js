@@ -167,6 +167,7 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
             });
 
             $scope.message({ action: "loadColorbar", colorbarFilename: results.colorbarFilename});
+            $scope.message({ action: "globeDoneLoading" });
             
             return;
         });
