@@ -32,6 +32,8 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
         "Dec"
     ];
 
+    $scope.data.levels = [1000, 925, 800, 700, 600, 500, 400, 300, 250, 200, 150, 100, 70, 50, 30, 20, 10];
+
     $scope.esrl = {};
     $scope.esrl.input = {};
     $scope.esrl.flags = {};
@@ -43,6 +45,7 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
     $scope.esrl.input.lat = 30;
     $scope.esrl.input.lon = 0;
     $scope.esrl.input.contour = true;
+    $scope.esrl.input.press = $scope.data.levels[0];
 
     $scope.esrl.flags.delay = "1";
     $scope.esrl.flags.showNow = true;
@@ -59,6 +62,7 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
             if (!oldVal)
                 return;
             if ($scope.esrl.flags.showNow) {
+
                 // trigger a refresh
                 // restart movie if false;
                 $scope.esrl.flags.movie = false;
@@ -76,6 +80,7 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
                     if (oldVal.field !== newVal.field || oldVal.press !== newVal.press) {
                         $scope.setDefaults(newVal.field);
                     }
+
                     if (!$scope.esrlForm.$invalid) {
                         if ($scope.esrlInputWatchCount === 0) {
                             $scope.esrlInputWatchCount++;
@@ -155,7 +160,8 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
                     $scope.esrl.flags.moviePlay = true;
                 }
 
-
+                if ($scope.esrl.input.press > 100)
+                    results.press = $scope.esrl.input.press;
                 $parentScope.iframeMessage = results;
                 $scope.isLoading = false;
             });
@@ -248,6 +254,16 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
                 if (message.contourStep)
                     $scope.esrl.input.contourStep = parseFloat(message.contourStep);
             });
+        }
+
+        if (message && message.level) {
+            var matchIdx = $scope.data.levels.indexOf(message.level);
+            console.log("=== level change ===", { message, matchIdx });
+            if (matchIdx){
+                $timeout(function () {
+                    $scope.esrl.input.press = $scope.data.levels[matchIdx];
+                });
+            }
         }
     });
 

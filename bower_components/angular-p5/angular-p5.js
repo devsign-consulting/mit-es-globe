@@ -29,7 +29,6 @@ angular.module('angular-p5', [])
       if(sketch) {
         if($injector.has(sketch)) {
           sketch = $injector.get(sketch);
-          console.log("===001 sketch===", sketch);
         }
         this.instance = new p5(sketch.sketch, node);
       }

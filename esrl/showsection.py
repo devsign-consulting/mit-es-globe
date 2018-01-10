@@ -225,9 +225,9 @@ if args.fillcontour:
     cm = plt.cm.jet
 
     if args.field == 'pottmp':
-        cm = colorMap.customColorMap(280, 100, 225, 950)
         min = 225
-        max = 950
+        max = 400
+        cm = colorMap.customColorMap(250, 200, min, max)
 
     CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour), cmap=cm)
     if args.field2 and args.field2 != args.field:

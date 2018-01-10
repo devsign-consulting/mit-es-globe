@@ -14,8 +14,11 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         omega: "Omega"
     };
 
+    $scope.data.levelArr = [1000, 925, 800, 700, 600, 500, 400, 300, 250, 200];
+
     $scope.section = {};
     $scope.section.input = {};
+    $scope.section.input.levelIndicatorIdx = 0;
     $scope.section.input.time = "Jan";
     $scope.section.input.press = 200;
     $scope.section.input.field = "pottmp";
@@ -27,6 +30,20 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     $scope.section.flags.showNow = true;
 
     $scope.sectionInputWatchCount = 0;
+
+    angular.element(".level-indicator").bind('keyup', function (e) {
+        if (e.keyCode === 38) { // up arrow
+            $scope.levelUp();
+            $scope.$digest();
+        }
+
+        if (e.keyCode === 40) { // down arrow
+            $scope.levelDown();
+            $scope.$digest();
+        }
+
+        console.log("===$scope.section.input.levelIndicatorIdx==", $scope.section.input.levelIndicatorIdx);
+    });
 
     // Functions to execute on load
     $timeout(function () {
@@ -74,6 +91,15 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                     })
                 }
 
+                // don't submit if we are only changing the sectionidx
+                if (typeof newVal.levelIndicatorIdx !== 'undefined' && oldVal.levelIndicatorIdx !== newVal.levelIndicatorIdx) {
+                    $scope.message({
+                        action: "sectionLevelChanged",
+                        level: $scope.data.levelArr[newVal.levelIndicatorIdx]
+                    });
+                    submitForm = false;
+                }
+
                 // don't submit form if the lon changes and we are in zonal average
                 if (oldVal.lon && newVal.lon && oldVal.lon !== newVal.lon) {
                     if ($scope.section.input.zonalAverage) {
@@ -94,6 +120,25 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
             }
         });
     });
+
+    $scope.levelUp = function () {
+        if ($scope.section.input.levelIndicatorIdx < $scope.data.levelArr.length - 1)
+            $scope.section.input.levelIndicatorIdx++;
+    };
+
+    $scope.levelDown = function () {
+        if ($scope.section.input.levelIndicatorIdx > 0)
+            $scope.section.input.levelIndicatorIdx--;
+    };
+
+    $scope.getLevelIndicatorClass = function (levelIdx) {
+        const indicatorClass = {};
+        const level = $scope.data.levelArr[levelIdx];
+        indicatorClass[`level${level}`] = true;
+        indicatorClass['log'] = true;
+
+        return indicatorClass;
+    };
 
     $scope.section.submit = function () {
         $scope.submitSectionForm()
@@ -196,8 +241,6 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     };
 
     $scope.$on('from-parent', function(e, message) {
-        console.log("== esrl from parent ==", message);
-
         if (message && message.frame) {
             $scope.loop = message.frame;
         }
@@ -226,6 +269,14 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
 
         if (message && message.globeInput) {
             $scope.openGlobeSettingsModal(message.globeInput)
+        }
+
+        if (message && message.press) {
+            $timeout(function () {
+                const idx = $scope.data.levelArr.indexOf(message.press);
+                if (idx)
+                    $scope.section.input.levelIndicatorIdx = idx;
+            });
         }
     });
 

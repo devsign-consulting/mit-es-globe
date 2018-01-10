@@ -114,12 +114,15 @@ def splotit(th, overrideMin=False, overrideMax=False):
 
     #if the field is potential temp, we fix the min/max to 225-950
     if args.field == 'pottmp':
-      min = 225
-      max = 950
-      if args.press <= 100:
-        cm = colorMap.customColorMap(500, 200, 225, 950)
+
+      if int(args.press) <= 100:
+        min = 225
+        max = 950
+        cm = colorMap.customColorMap(500, 300, min, max)
       else:
-        cm = colorMap.customColorMap(280, 100, 225, 950)
+          min = 225
+          max = 400
+          cm = colorMap.customColorMap(250, 200, min, max)
 
     CS = ax.contourf(lon,lat,th, np.arange(min, max, contour), cmap=cm)
     CS2 = ax.contour(lon,lat,th, np.arange(min, max, contour), colors='0.5')

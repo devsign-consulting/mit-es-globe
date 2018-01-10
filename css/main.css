@@ -29,6 +29,10 @@ body {
     padding: 0;
 }
 
+.link {
+    cursor: pointer;
+}
+
 .gutter-sm [class^="col-"]{
     padding: 0px 5px;
 }
@@ -201,4 +205,65 @@ input.show-controls::-webkit-inner-spin-button {
 .movie-month-text {
     margin-top: -1px;
     font-size: 11px;
+}
+
+.level-indicator {
+    position: absolute;
+    width: 88%;
+    height: 4px;
+    background-color: red;
+    left: 12%;
+    opacity: 0.6;
+}
+
+.level-indicator.log.level1000 {
+    bottom: 46px;
+}
+
+.level-indicator.log.level925 {
+    bottom: 85px;
+}
+
+.level-indicator.log.level800 {
+    bottom: 110px;
+}
+
+.level-indicator.log.level700 {
+    bottom: 150px;
+}
+
+.level-indicator.log.level600 {
+    bottom: 195px;
+}
+
+.level-indicator.log.level500 {
+    bottom: 250px;
+}
+
+.level-indicator.log.level400 {
+    bottom: 315px;
+}
+
+.level-indicator.log.level300 {
+    bottom: 400px;
+}
+
+.level-indicator.log.level250 {
+    bottom: 460px;
+}
+
+.level-indicator.log.level200 {
+    bottom: 518px;
+}
+
+.level-indicator .level-up {
+    position: absolute;
+    right: 0px;
+    top: -15px;
+}
+
+.level-indicator .level-down {
+    position: absolute;
+    right: 0px;
+    top: 5px;
 }

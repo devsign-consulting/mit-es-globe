@@ -47,6 +47,10 @@
                                 <a href="#" ng-click="openLightboxModal(section.filename)">
                                     <img style='width:100%; padding: 0;'; ng-src="{{section.filename}}" err-src="/images/placeholder.jpg">
                                 </a>
+                                <span class="level-indicator" ng-class="getLevelIndicatorClass(section.input.levelIndicatorIdx)">
+                                    <a class="level-up link" ng-click="levelUp()"><span class="glyphicon glyphicon-chevron-up"></span></a>
+                                    <a class="level-down link" ng-click="levelDown()"><span class="glyphicon glyphicon-chevron-down"></span></a>
+                                </span>
                             </div>
                         </div>
                         <div class="row" ng-if="section.filename">
@@ -55,6 +59,7 @@
                                 <a ng-if="section.input.field2" href="{{section.filename}}" download="{{section.input.field}}-{{section.input.field2}}-{{section.input.time}}-{{section.input.press}}-lon{{section.input.lon}}.png">Download Image</a>
                             </div>
                         </div>
+
 
                         <div class="row">
                             <div class="col-xs-4">

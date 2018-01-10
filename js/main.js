@@ -130,6 +130,10 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                     $scope.message({ field: newVal.field });
                 }
 
+                if (newVal.press) {
+                    $scope.message( { press: newVal.press });
+                }
+
                 p5globe.sph.show(newVal.filename);
                 if (!newVal.bypassOrient)
                     p5globe.sph.orient(newVal.lat, newVal.lon);
@@ -176,6 +180,9 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                     console.log("== 002 min max ==", newVal);
                     $scope.messageGlobeControlsWidget({ min: newVal.min, max: newVal.max });
                     break;
+                case "sectionLevelChanged":
+                    $scope.messageGlobeControlsWidget({ level: newVal.level });
+                    break;
                 case "showGlobeSettings":
                     $scope.message({ globeInput: newVal.input });
                     break;
@@ -183,7 +190,6 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                     $scope.messageGlobeControlsWidget(newVal.input);
                     break;
                 case "loadColorbar":
-                    console.log("=== loadcolorbar===", newVal);
                     $scope.messageGlobeColorBarWidget({ colorbarFilename: newVal.colorbarFilename });
                     break;
             }
