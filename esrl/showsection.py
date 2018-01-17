@@ -225,9 +225,21 @@ if args.fillcontour:
     cm = plt.cm.jet
 
     if args.field == 'pottmp':
-        min = 225
-        max = 400
-        cm = colorMap.customColorMap(250, 200, min, max)
+        if args.minpress == 500:
+            min = 225
+            max = 350
+        elif args.minpress == 10:
+            min = 225
+            max = 1200
+        else:
+            min = 225
+            max = 500
+
+    if args.field == args.field2:
+        min2 = min
+        max2 = max
+
+    cm = colorMap.customColorMap(250, 200, min, max)
 
     CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour), cmap=cm)
     if args.field2 and args.field2 != args.field:
@@ -272,7 +284,13 @@ plt.ylabel("Pressure", **axis_font)
 if args.logscale:
     ax1 = plt.axes()
     ax1.set_yscale('log')
-    ax1.set_yticks([200, 300, 400, 500, 600, 700, 800, 900, 1000])
+    if args.minpress == 100:
+        ax1.set_yticks([100, 200, 300, 400, 500, 600, 700, 800, 900, 1000])
+    elif args.minpress == 10:
+        ax1.set_yticks([10, 100, 200, 300, 400, 500])
+    elif args.minpress == 500:
+        ax1.set_yticks([500, 600, 700, 800, 900, 1000])
+
     ax1.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     # https://stackoverflow.com/questions/46498157/overlapping-axis-tick-labels-in-logarithmic-plots/46498658#46498658
     ax1.minorticks_off()

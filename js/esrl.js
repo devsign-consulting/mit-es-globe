@@ -21,7 +21,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     $scope.section.input = {};
     $scope.section.input.levelIndicatorIdx = 0;
     $scope.section.input.time = "Jan";
-    $scope.section.input.press = 200;
+    $scope.section.input.press = "100";
     $scope.section.input.field = "pottmp";
     $scope.section.input.lon = 0;
 
@@ -53,6 +53,18 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
 
                 if (!oldVal.field2 && newVal.field2) {
                     $scope.setDefaults(newVal.field2, "field2");
+                }
+
+                if (oldVal.press !== newVal.press) {
+                    if ($scope.section.input.field === "pottmp" && !$scope.section.input.field2) {
+                        console.log("== update pressure defaults ===", $scope.section.input);
+                        if (newVal.press === "10") {
+                            // set contour default ot 20
+                            $scope.section.input.contour = 20;
+                        } else {
+                            $scope.setDefaults(newVal.field, "field1");
+                        }
+                    }
                 }
             }
             if (!$scope.esrlForm.$invalid) {
@@ -217,7 +229,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
             $scope.section.input.max2 = defaultRes.max;
         }
 
-        console.log("=== esrl set deaults ===", {input, field}, defaultRes, $scope.section.input);
+        console.log("=== esrl set deaults ===", { input, field }, defaultRes, $scope.section.input);
     };
 
     $scope.submitSectionForm = function () {
