@@ -55,6 +55,8 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                     $scope.setDefaults(newVal.field2, "field2");
                 }
 
+
+                // pressure change
                 if (oldVal.press !== newVal.press) {
                     if ($scope.section.input.field === "pottmp" && !$scope.section.input.field2) {
                         console.log("== update pressure defaults ===", $scope.section.input);
@@ -65,7 +67,14 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                             $scope.setDefaults(newVal.field, "field1");
                         }
                     }
+                    $scope.setLevelIndicator();
                 }
+
+                // log change
+                if (oldVal.logScale !== newVal.logScale) {
+                    $scope.setLevelIndicator();
+                }
+
             }
             if (!$scope.esrlForm.$invalid) {
                 if ($scope.section.input.time) {
@@ -103,6 +112,12 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                             level: $scope.data.levelArr[newVal.levelIndicatorIdx]
                         });
                         $scope.globeLoading = true;
+
+                        // timeout the globeLoading after 2 seconds, so we don't freeze the UI
+                        $timeout(function () {
+                            $scope.globeLoading = false;
+                        }, 2000);
+
                     }, 500);
 
                     submitForm = false;
@@ -127,6 +142,76 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         });
     });
 
+    /**
+     *
+     * @param options
+     * options.pixels = { start, end }
+     * options.values = { start, end }
+     * options.scale = log/linear
+     * options.target = value
+     */
+    $scope.interpolate = function (options) {
+        // get the % advance of the target value.
+        const fullRange = -1 * (options.values.end - options.values.start);
+        const pixelRange = options.pixels.end - options.pixels.start;
+        const valRangeFrac = -1 * (options.targetValue - options.values.start) / fullRange;
+
+        let output = 0;
+
+        if (options.scale === "log") {
+            const log = Math.log10(options.targetValue);
+            const logStart = Math.log10(options.values.start);
+            const logEnd = Math.log10(options.values.end);
+            const logRange = logStart - logEnd;
+
+            // normalizes the log range from 0 - 1
+            const normalizedLogFrac = -1 * (log - logStart)/(logRange);
+            console.log("interpolate", {options, fullRange, log, valRangeFrac, normalizedLogFrac, output });
+            output = options.pixels.start + (pixelRange * normalizedLogFrac);
+        } else {
+            output = options.pixels.start + valRangeFrac * pixelRange;
+        }
+
+        return output;
+
+
+    };
+
+    $scope.interpolatePixelRange = function (type) {
+        if ($scope.section.input.press === "10") {
+            return {
+                start: 118,
+                end: 520
+            }
+        } else if (typeof type === "undefined") {
+            return {
+                start: 45,
+                end: 520
+            }
+        }
+    };
+
+    $scope.interpolateValueRange = function () {
+        if ($scope.section.input.press === "10") {
+            return {
+                start: 500,
+                end: 10
+            }
+        } else if ($scope.section.input.press === "100") {
+            return {
+                start: 1000,
+                end: 100
+            }
+        } else if ($scope.section.input.press === "500") {
+            return {
+                start: 1000,
+                end: 500
+            }
+        } else {
+            return {};
+        }
+    };
+
     $scope.timePrev = function () {
         if ($scope.isLoading)
             return;
@@ -148,10 +233,14 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     };
 
     $scope.levelUp = function () {
+        console.log("== scope ==", $scope);
         if ($scope.isLoading || $scope.globeLoading)
             return;
         if ($scope.section.input.levelIndicatorIdx < $scope.data.levelArr.length - 1)
             $scope.section.input.levelIndicatorIdx++;
+
+        // get the level
+        $scope.setLevelIndicator();
     };
 
     $scope.levelDown = function () {
@@ -159,6 +248,25 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
             return;
         if ($scope.section.input.levelIndicatorIdx > 0)
             $scope.section.input.levelIndicatorIdx--;
+
+        // get the level
+        $scope.setLevelIndicator();
+    };
+
+    $scope.setLevelIndicator = function () {
+        // get the defaults
+        const level = $scope.data.levelArr[$scope.section.input.levelIndicatorIdx];
+        const pixels = $scope.interpolatePixelRange();
+        const values = $scope.interpolateValueRange();
+        const pxOutput = $scope.interpolate({
+            targetValue: level,
+            pixels,
+            values,
+            scale: $scope.section.input.logScale ? "log" : "linear"
+        });
+
+        // I know you shouldn't do DOM manipulation in the controller, todo: move to directive
+        angular.element(".level-indicator").css("bottom", `${pxOutput}px`);
     };
 
     $scope.toggleKeyboardControl = function () {
@@ -337,6 +445,8 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                 const idx = $scope.data.levelArr.indexOf(message.press);
                 if (idx)
                     $scope.section.input.levelIndicatorIdx = idx;
+
+                $scope.setLevelIndicator();
             });
         }
 
