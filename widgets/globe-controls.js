@@ -134,6 +134,7 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
         res.action = "esrl";
         res.min = $scope.esrl.input.min;
         res.max = $scope.esrl.input.max;
+        res.pressureRange = $scope.esrl.input.pressRange;
 
         res.contour = true;
         res.contourStep = $scope.esrl.input.contourStep;
@@ -159,9 +160,7 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
                     $scope.esrl.flags.movie = true;
                     $scope.esrl.flags.moviePlay = true;
                 }
-
-                if ($scope.esrl.input.press > 100)
-                    results.press = $scope.esrl.input.press;
+                results.press = $scope.esrl.input.press;
                 $parentScope.iframeMessage = results;
                 $scope.isLoading = false;
             });
@@ -228,6 +227,24 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
             $scope.loop = message.frame;
         }
 
+        console.log("=== 001 globe control message ===", message);
+        if (message && message.press) {
+            console.log("===002 globe control pres chnaged===", message);
+            $timeout(function () {
+                $scope.esrl.input.pressRange = message.press;
+                if (message.press === '1') {
+                    var matchIdx = $scope.data.levels.indexOf(100);
+                    $scope.esrl.input.press = $scope.data.levels[matchIdx];
+                }
+
+                if (message.press === '10') {
+                    var matchIdx = $scope.data.levels.indexOf(500);
+                    $scope.esrl.input.press = $scope.data.levels[matchIdx];
+                }
+
+            });
+        }
+
         if (message && message.latlon) {
             // set the lat and lon to where the user clicked
             var latlon = message.latlon.latlon;
@@ -266,6 +283,7 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
                 });
             }
         }
+
     });
 
     $scope.message = function (data) {

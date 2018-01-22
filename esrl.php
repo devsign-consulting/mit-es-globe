@@ -13,8 +13,9 @@
             $contour = $_POST['contour'];
             $min = $_POST['min'];
             $max = $_POST['max'];
+            $pressureRange = $_POST['pressureRange'];
             $contourStep = $_POST['contourStep'];
-            $fn="es".md5($timeInput.$fieldInput.$pressInput.$contour.$contourStep);
+            $fn="es".md5($timeInput.$fieldInput.$pressInput.$contour.$contourStep.$pressureRange);
             $time = array("Jan"=>0,"Feb"=>1,"Mar"=>2,"Apr"=>3,"May"=>4,"Jun"=>5,"Jul"=>6,"Aug"=>7,"Sep"=>8,"Oct"=>9,"Nov"=>10,"Dec"=>11,"year"=>-1);
             $t0 = $time[$_POST['time']];
             if ($t0 >= 0)
@@ -27,6 +28,10 @@
                 $cmd = "python esrl/showclim.py --filename $fn --field $fieldInput --time $timeInput --press $pressInput --min $min --max $max";
                 if ($contour) {
                     $cmd .= " --contour true --contour-step $contourStep";
+                }
+
+                if ($pressureRange) {
+                    $cmd .= " --press-range $pressureRange";
                 }
 
                 error_log($cmd);

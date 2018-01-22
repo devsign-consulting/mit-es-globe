@@ -170,6 +170,9 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                 case "lightboxModal":
                     $scope.openLightboxModal(newVal.input, newVal.filename);
                     break;
+                case "pressureChanged":
+                    $scope.messageGlobeControlsWidget({ press: newVal.press });
+                    break;
                 case "sectionTimeChanged":
                     $scope.messageGlobeControlsWidget({ time: newVal.time });
                     break;
@@ -177,7 +180,6 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                     $scope.messageGlobeControlsWidget({ field: newVal.field });
                     break;
                 case "sectionMinMaxChanged":
-                    console.log("== 002 min max ==", newVal);
                     $scope.messageGlobeControlsWidget({ min: newVal.min, max: newVal.max });
                     break;
                 case "sectionLevelChanged":

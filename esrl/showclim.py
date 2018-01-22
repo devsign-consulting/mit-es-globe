@@ -46,6 +46,11 @@ parser.add_argument('--contour-step',
                     dest="contour_step",
                     default=10,
                     help='contour line step')
+parser.add_argument('--press-range',
+                    action="store",
+                    dest="press_range",
+                    default=100,
+                    help='pressure range, defines the colormap')
 parser.add_argument('--min',
                     action="store",
                     dest="min",
@@ -114,15 +119,32 @@ def splotit(th, overrideMin=False, overrideMax=False):
 
     #if the field is potential temp, we fix the min/max to 225-950
     if args.field == 'pottmp':
+        cmap_center = 250
+        cmap_range = 250
 
-      if int(args.press) <= 100:
-        min = 225
-        max = 950
-        cm = colorMap.customColorMap(500, 300, min, max)
-      else:
-          min = 225
-          max = 400
-          cm = colorMap.customColorMap(250, 200, min, max)
+        if args.press_range == '500':
+            min = 225
+            max = 350
+        elif args.press_range == '10':
+            min = 225
+            max = 1200
+            cmap_center = 300
+            cmap_range = 250
+        elif args.press_range == '1':
+            min = 225
+            max = 1200
+            cmap_center = 600
+            cmap_range = 300
+        else:
+            min = 225
+            max = 500
+
+        cm = colorMap.customColorMap(cmap_center, cmap_range, min, max)
+
+    if args.field == 'uwnd':
+        min = -15
+        max = 50
+        cm = colorMap.customColorMap(5, 100, min, max)
 
     CS = ax.contourf(lon,lat,th, np.arange(min, max, contour), cmap=cm)
     CS2 = ax.contour(lon,lat,th, np.arange(min, max, contour), colors='0.5')

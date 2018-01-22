@@ -146,7 +146,12 @@ lv = min(lon2)
 lonind = lon2.tolist().index(lv)
 
 level1 = np.asarray(level1)
-vind = np.where(level1 >= args.minpress)
+
+# if minpress is 1, that's the upper stratosphere
+if args.minpress == 1:
+    vind = np.where(level1 <= 100)
+else:
+    vind = np.where(level1 >= args.minpress)
 
 # the expression below only works if the 2nd and 3rd argument have the same dimensions
 # However, the 2nd argument is an array of indicies for the pressure, and the 3rd argument is an array of
@@ -224,22 +229,39 @@ if args.zonalaverage:
 if args.fillcontour:
     cm = plt.cm.jet
 
+    cmap_center = 250
+    cmap_range = 250
+
     if args.field == 'pottmp':
+        cmap_center = 250
+        cmap_range = 250
+
         if args.minpress == 500:
             min = 225
             max = 350
         elif args.minpress == 10:
             min = 225
             max = 1200
+            cmap_center = 300
+            cmap_range = 250
+        elif args.minpress == 1:
+            min = 225
+            max = 1200
+            cmap_center = 600
+            cmap_range = 300
         else:
             min = 225
             max = 500
+        cm = colorMap.customColorMap(cmap_center, cmap_range, min, max)
+
+    if args.field == 'uwnd':
+        min = -15
+        max = 50
+        cm = colorMap.customColorMap(5, 100, min, max)
 
     if args.field == args.field2:
         min2 = min
         max2 = max
-
-    cm = colorMap.customColorMap(250, 200, min, max)
 
     CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour), cmap=cm)
     if args.field2 and args.field2 != args.field:
@@ -288,6 +310,8 @@ if args.logscale:
         ax1.set_yticks([100, 200, 300, 400, 500, 600, 700, 800, 900, 1000])
     elif args.minpress == 10:
         ax1.set_yticks([10, 100, 200, 300, 400, 500])
+    elif args.minpress == 1:
+        ax1.set_yticks([10, 20, 30, 40, 50, 60, 70, 80, 90, 100])
     elif args.minpress == 500:
         ax1.set_yticks([500, 600, 700, 800, 900, 1000])
 

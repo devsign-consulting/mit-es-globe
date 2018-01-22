@@ -14,7 +14,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         omega: "Omega"
     };
 
-    $scope.data.levelArr = [1000, 925, 800, 700, 600, 500, 400, 300, 250, 200];
+    $scope.data.levelArr = [1000, 925, 800, 700, 600, 500, 400, 300, 250, 200, 150, 100, 70, 50, 30, 20, 10];
     $scope.data.timeArr = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
     $scope.section = {};
@@ -63,6 +63,9 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                         if (newVal.press === "10") {
                             // set contour default ot 20
                             $scope.section.input.contour = 20;
+                        } else if (newVal.press === "1") {
+                            // set contour default ot 20
+                            $scope.section.input.contour = 20;
                         } else {
                             $scope.setDefaults(newVal.field, "field1");
                         }
@@ -77,9 +80,9 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
 
             }
             if (!$scope.esrlForm.$invalid) {
-                if ($scope.section.input.time) {
+                if (newVal && oldVal && newVal.time !== oldVal.time) {
                     $timeout.cancel($scope.section.flags.timeTimeout);
-                    $scope.section.flags.timeTimeout= $timeout(function () {
+                    $scope.section.flags.timeTimeout = $timeout(function () {
                         $scope.message({
                             action: "sectionTimeChanged",
                             time: $scope.section.input.time
@@ -87,7 +90,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                     }, 500);
                 }
 
-                if ($scope.section.input.field) {
+                if (newVal && oldVal && newVal.field !== oldVal.field) {
                     $scope.message({
                         action: "sectionFieldChanged",
                         field: $scope.section.input.field
@@ -100,6 +103,13 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                         action: "sectionMinMaxChanged",
                         min: newVal.min,
                         max: newVal.max
+                    })
+                }
+
+                if (newVal && oldVal && newVal.press !== oldVal.press) {
+                    $scope.message({
+                        action: "pressureChanged",
+                        press: newVal.press
                     })
                 }
 
@@ -172,6 +182,14 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
             output = options.pixels.start + valRangeFrac * pixelRange;
         }
 
+        if (output > options.pixels.end) {
+            output = options.pixels.end
+        }
+
+        if (output < options.pixels.start) {
+            output = options.pixels.start;
+        }
+
         return output;
 
 
@@ -183,7 +201,12 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                 start: 118,
                 end: 520
             }
-        } else if (typeof type === "undefined") {
+        } else if ($scope.section.input.press === "1") {
+            return {
+                start: 45,
+                end: 530
+            }
+        }  else if (typeof type === "undefined") {
             return {
                 start: 45,
                 end: 520
@@ -195,6 +218,11 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         if ($scope.section.input.press === "10") {
             return {
                 start: 500,
+                end: 10
+            }
+        } else if ($scope.section.input.press === "1") {
+            return {
+                start: 100,
                 end: 10
             }
         } else if ($scope.section.input.press === "100") {
