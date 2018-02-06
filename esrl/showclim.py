@@ -142,9 +142,18 @@ def splotit(th, overrideMin=False, overrideMax=False):
         cm = colorMap.customColorMap(cmap_center, cmap_range, min, max)
 
     if args.field == 'uwnd':
-        min = -15
-        max = 50
-        cm = colorMap.customColorMap(5, 100, min, max)
+        [min, max, vcenter, vrange] = colorMap.uwndColorMap(args.press_range)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
+    if args.field == 'vwnd':
+        [min, max, vcenter, vrange] = colorMap.vwndColorMap(args.press_range)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
+    if args.field == 'omega':
+        [min, max, vcenter, vrange] = colorMap.omegaColorMap(args.press_range)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
+
+    if args.field == 'hgt':
+        [min, max, vcenter, vrange] = colorMap.heightColorMap(args.press_range)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
 
     CS = ax.contourf(lon,lat,th, np.arange(min, max, contour), cmap=cm)
     CS2 = ax.contour(lon,lat,th, np.arange(min, max, contour), colors='0.5')

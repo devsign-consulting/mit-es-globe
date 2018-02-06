@@ -48,3 +48,61 @@ def customColorMap(vcent, vrange, vmin, vmax):
         'tanh', newColorList, N=255)
 
     return cm
+
+def uwndColorMap(press_range):
+    if int(press_range) == 500:
+        min = -20
+        max = 40
+        vcenter = 5
+        vrange = 50
+    else:
+        min = -50
+        max = 80
+        vcenter = 5
+        vrange = 100
+
+    return [min, max, vcenter, vrange]
+
+
+def vwndColorMap(press_range):
+    if int(press_range) == 500:
+        min = -15
+        max = 15
+        vcenter = 0
+        vrange = 30
+    else:
+        min = -15
+        max = 15
+        vcenter = 0
+        vrange = 30
+
+    return [min, max, vcenter, vrange]
+
+def omegaColorMap(press_range):
+    if int(press_range) == 500:
+        min = -0.1
+        max = 0.15
+        vcenter = 0
+        vrange = 100
+    else:
+        min = -0.1
+        max = 0.15
+        vcenter = 0
+        vrange = 100
+
+    return [min, max, vcenter, vrange]
+
+
+def heightColorMap(press_range):
+    if int(press_range) == 500:
+        min = -500
+        max = 8000
+        vcenter = 2000
+        vrange = 10000
+    else:
+        min = -500
+        max = 30000
+        vcenter = 10000
+        vrange = 10000
+
+    return [min, max, vcenter, vrange]

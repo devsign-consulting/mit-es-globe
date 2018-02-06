@@ -134,7 +134,7 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
         res.action = "esrl";
         res.min = $scope.esrl.input.min;
         res.max = $scope.esrl.input.max;
-        res.pressureRange = $scope.esrl.input.pressRange;
+        res.pressureRange = $scope.esrl.input.pressRange || 100;
 
         res.contour = true;
         res.contourStep = $scope.esrl.input.contourStep;

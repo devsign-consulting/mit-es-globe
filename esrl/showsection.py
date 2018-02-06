@@ -255,9 +255,20 @@ if args.fillcontour:
         cm = colorMap.customColorMap(cmap_center, cmap_range, min, max)
 
     if args.field == 'uwnd':
-        min = -15
-        max = 50
-        cm = colorMap.customColorMap(5, 100, min, max)
+        [min, max, vcenter, vrange] = colorMap.uwndColorMap(args.minpress)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
+
+    if args.field == 'vwnd':
+        [min, max, vcenter, vrange] = colorMap.vwndColorMap(args.minpress)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
+
+    if args.field == 'omega':
+        [min, max, vcenter, vrange] = colorMap.omegaColorMap(args.minpress)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
+
+    if args.field == 'hgt':
+        [min, max, vcenter, vrange] = colorMap.heightColorMap(args.minpress)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
 
     if args.field == args.field2:
         min2 = min

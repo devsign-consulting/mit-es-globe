@@ -32,7 +32,7 @@ angular.module('app-esrl.defaults', []).factory('defaults', function() {
                 break;
             case "omega":
                 return {
-                    contour: 0.005,
+                    contour: 0.01,
                     min: -0.03,
                     max: 0.04
                 };
