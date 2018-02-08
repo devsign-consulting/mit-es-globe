@@ -163,7 +163,7 @@ if args.minpress == 1:
 else:
     vind = np.where(level1 >= args.minpress)
 
-if args.field == 'rhum' or args.field == 'shum':
+if args.field == 'rhum' or args.field == 'shum' or args.field2 == 'rhum' or args.field2 == 'shum':
     vind = np.where(level1 >= 300)
 
 # the expression below only works if the 2nd and 3rd argument have the same dimensions
@@ -235,8 +235,7 @@ def colorbarFmt(x, pos):
 
 if args.zonalaverage:
     th = th_zone
-    if args.field2 == args.field:
-        th2 = th2_zone
+    th2 = th2_zone
 
 # print (max, min, contour)
 if args.fillcontour:
@@ -326,7 +325,7 @@ plt.ylabel("Pressure", **axis_font)
 if args.logscale:
     ax1 = plt.axes()
     ax1.set_yscale('log')
-    if args.field == 'rhum' or args.field == 'shum':
+    if args.field == 'rhum' or args.field == 'shum' or args.field2 == 'rhum' or args.field2 =='shum':
         ax1 = plt.axes()
         ax1.set_yticks([300, 400, 500, 600, 700, 800, 900, 1000])
     elif args.minpress == 100:

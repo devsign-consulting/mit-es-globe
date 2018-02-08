@@ -420,6 +420,12 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
             res.fillContour = $scope.section.input.fillContour
         }
 
+        // if either Field1 or Field2 is shum or rhum, we set the Pressure Range to 500
+        if ($scope.section.input.field === 'shum' || $scope.section.input.field === 'rhum' || $scope.section.input.field2 === 'shum' || $scope.section.input.field2 === 'rhum') {
+            if ($scope.section.input.press === '100')
+                $scope.section.input.press = '500';
+        }
+
         $scope.isLoading = true;
 
         return res.$submitForm().then(function (results) {
