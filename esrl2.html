@@ -113,11 +113,13 @@
                                 <div class="form-group">
                                     <label>Field</label>
                                     <select class="form-control sm" name="field" id="field" ng-model="section.input.field" ng-model-options="{debounce:500}">
-                                        <option selected value="pottmp">Potential Temperature</option>
+                                        <option value='{{key}}' ng-repeat="(key, val) in data.fields">{{val}}</option>
+                                        <!--<option selected value="pottmp">Potential Temperature</option>
                                         <option value="hgt">Geopotential Height</option>
                                         <option value="uwnd">U-wind</option>
                                         <option value="vwnd">V-wind</option>
                                         <option value="omega">Omega</option>
+                                        <option value="air">Air Temperature</option>-->
                                     </select>
                                 </div>
                             </div>
@@ -125,11 +127,7 @@
                                 <div class="form-group">
                                     <label>Second Field <span ng-if="section.input.field2">(<a href="#" ng-click="section.input.field2=null">clear</a>)</span></label>
                                     <select class="form-control sm" name="field2" id="field2" ng-model="section.input.field2" ng-model-options="{debounce:500}">
-                                        <option selected value="pottmp">Potential Temperature</option>
-                                        <option value="hgt">Geopotential Height</option>
-                                        <option value="uwnd">U-wind</option>
-                                        <option value="vwnd">V-wind</option>
-                                        <option value="omega">Omega</option>
+                                        <option value='{{key}}' ng-repeat="(key, val) in data.fields">{{val}}</option>
                                     </select>
                                 </div>
                             </div>

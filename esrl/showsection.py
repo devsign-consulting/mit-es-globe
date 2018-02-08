@@ -5,6 +5,7 @@ import os, argparse
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 from scipy.io.netcdf import netcdf_file
+from netCDF4 import Dataset
 import json
 
 
@@ -110,23 +111,32 @@ fn='./output/' + args.fn
 months={"Jan":0,"Feb":1,"Mar":2,"Apr":3,"May":4,"Jun":5,"Jul":6,"Aug":7,"Sep":8,"Oct":9,"Nov":10,"Dec":11,"year":-1}
 mon=months[args.month_str]
 
-titles = { "pottmp": "Potential Temperature (K)", "omega": "Omega", "hgt":"Geopotential Height", "uwnd":"UWND", "vwnd":"VWND" }
+titles = {
+    "pottmp": "Potential Temperature (K)",
+    "omega": "Omega",
+    "hgt":"Geopotential Height",
+    "uwnd":"UWND",
+    "vwnd":"VWND",
+    "air": "Air Temperature (C)",
+    "shum": "Specific Humidity",
+    "rhum": "Relative Humidity",
+    "wspd": "Wind Speed"
+
+}
+
 fieldTitle = titles[args.field]
 
 if args.field2 != 'none':
     field2Title = titles[args.field2]
 
 def read_nc(type):
-    nc0=netcdf_file('ESRL-'+type+'.mon.1981-2010.ltm.nc','r')
+    nc0=Dataset('ESRL-'+type+'.mon.1981-2010.ltm.nc')
     nc=nc0.variables
     lat=nc['lat'][:]
     lon=nc['lon'][:]
     level=nc['level'][:]
     yrday=nc['time'][:]
     theta=nc[type][:,:,:,:]
-
-    #for dimobj in nc0.dimensions.values():
-    #    print (dimobj)
 
     nc0.close()
     return [lat, lon, level, theta]
@@ -152,6 +162,9 @@ if args.minpress == 1:
     vind = np.where(level1 <= 100)
 else:
     vind = np.where(level1 >= args.minpress)
+
+if args.field == 'rhum' or args.field == 'shum':
+    vind = np.where(level1 >= 300)
 
 # the expression below only works if the 2nd and 3rd argument have the same dimensions
 # However, the 2nd argument is an array of indicies for the pressure, and the 3rd argument is an array of
@@ -229,30 +242,25 @@ if args.zonalaverage:
 if args.fillcontour:
     cm = plt.cm.jet
 
-    cmap_center = 250
-    cmap_range = 250
-
     if args.field == 'pottmp':
-        cmap_center = 250
-        cmap_range = 250
+        [min, max, vcenter, vrange] = colorMap.pottmpColorMap(args.minpress)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
 
-        if args.minpress == 500:
-            min = 225
-            max = 350
-        elif args.minpress == 10:
-            min = 225
-            max = 1200
-            cmap_center = 300
-            cmap_range = 250
-        elif args.minpress == 1:
-            min = 225
-            max = 1200
-            cmap_center = 600
-            cmap_range = 300
-        else:
-            min = 225
-            max = 500
-        cm = colorMap.customColorMap(cmap_center, cmap_range, min, max)
+    if args.field == 'air':
+        [min, max, vcenter, vrange] = colorMap.airColorMap(args.minpress)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
+
+    if args.field == 'shum':
+        [min, max, vcenter, vrange] = colorMap.shumColorMap(args.minpress)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
+
+    if args.field == 'rhum':
+        [min, max, vcenter, vrange] = colorMap.rhumColorMap(args.minpress)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
+
+    if args.field == 'wspd':
+        [min, max, vcenter, vrange] = colorMap.wspdColorMap(args.minpress)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
 
     if args.field == 'uwnd':
         [min, max, vcenter, vrange] = colorMap.uwndColorMap(args.minpress)
@@ -273,6 +281,7 @@ if args.fillcontour:
     if args.field == args.field2:
         min2 = min
         max2 = max
+
 
     CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour), cmap=cm)
     if args.field2 and args.field2 != args.field:
@@ -317,7 +326,10 @@ plt.ylabel("Pressure", **axis_font)
 if args.logscale:
     ax1 = plt.axes()
     ax1.set_yscale('log')
-    if args.minpress == 100:
+    if args.field == 'rhum' or args.field == 'shum':
+        ax1 = plt.axes()
+        ax1.set_yticks([300, 400, 500, 600, 700, 800, 900, 1000])
+    elif args.minpress == 100:
         ax1.set_yticks([100, 200, 300, 400, 500, 600, 700, 800, 900, 1000])
     elif args.minpress == 10:
         ax1.set_yticks([10, 100, 200, 300, 400, 500])
@@ -329,6 +341,8 @@ if args.logscale:
     ax1.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     # https://stackoverflow.com/questions/46498157/overlapping-axis-tick-labels-in-logarithmic-plots/46498658#46498658
     ax1.minorticks_off()
+
+
 
 plt.savefig(fn, bbox_inches='tight', transparent = True)
 

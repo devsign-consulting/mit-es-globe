@@ -13,7 +13,11 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
         hgt: "Geopotential Height",
         uwnd: "U-wind",
         vwnd: "V-wind",
-        omega: "Omega"
+        omega: "Omega",
+        air: "Air Temperature",
+        shum: "Specific Humidity",
+        rhum: "Relative Humidity",
+        wspd: "Wind Speed"
     };
 
     $scope.data.timeDropdown = [

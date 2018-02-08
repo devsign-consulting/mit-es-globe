@@ -49,6 +49,60 @@ def customColorMap(vcent, vrange, vmin, vmax):
 
     return cm
 
+def airColorMap(press_range):
+    min = -100
+    max = 80
+    vcenter = 0
+    vrange = 200
+
+    return [min, max, vcenter, vrange]
+
+def shumColorMap(press_range):
+    min = 0
+    max = 40
+    vcenter = -10
+    vrange = 20
+
+    return [min, max, vcenter, vrange]
+
+def rhumColorMap(press_range):
+    min = 0
+    max = 125
+    vcenter = 50
+    vrange = 100
+    return [min, max, vcenter, vrange]
+
+def wspdColorMap(press_range):
+    min = 0
+    max = 80
+    vcenter = 5
+    vrange = 50
+
+    return [min, max, vcenter, vrange]
+
+def pottmpColorMap(press_range):
+    vcenter = 250
+    vrange = 250
+
+    if int(press_range) == 500:
+        min = 225
+        max = 350
+    elif int(press_range) == 10:
+        min = 225
+        max = 1200
+        vcenter = 300
+        vrange = 250
+    elif int(press_range) == 1:
+        min = 225
+        max = 1200
+        vcenter = 600
+        vrange = 300
+    else:
+        min = 225
+        max = 500
+
+    return [min, max, vcenter, vrange]
+
 def uwndColorMap(press_range):
     if int(press_range) == 500:
         min = -20

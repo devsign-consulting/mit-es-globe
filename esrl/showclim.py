@@ -2,6 +2,7 @@
 import numpy as np
 import os
 from scipy.io.netcdf import netcdf_file
+from netCDF4 import Dataset
 import argparse
 
 abspath = os.path.abspath(__file__)
@@ -31,7 +32,7 @@ parser.add_argument('--field',
                     action="store",
                     dest="field",
                     default="pottmp",
-                    help='pottmp, hgt, uwnd, vwnd, omega')
+                    help='pottmp, hgt, uwnd, vwnd, omega, air')
 parser.add_argument('--filename',
                     action="store",
                     help='Output filename',
@@ -63,7 +64,7 @@ parser.add_argument('--max',
 args = parser.parse_args()
 execfile("map.py")
 
-nc0=netcdf_file('ESRL-'+args.field+'.mon.1981-2010.ltm.nc','r')
+nc0=Dataset('ESRL-'+args.field+'.mon.1981-2010.ltm.nc')
 nc=nc0.variables
 lat=nc['lat'][:]
 lon=nc['lon'][:]
@@ -119,27 +120,23 @@ def splotit(th, overrideMin=False, overrideMax=False):
 
     #if the field is potential temp, we fix the min/max to 225-950
     if args.field == 'pottmp':
-        cmap_center = 250
-        cmap_range = 250
+        [min, max, vcenter, vrange] = colorMap.pottmpColorMap(args.press_range)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
+    if args.field == 'air':
+        [min, max, vcenter, vrange] = colorMap.airColorMap(args.press_range)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
 
-        if args.press_range == '500':
-            min = 225
-            max = 350
-        elif args.press_range == '10':
-            min = 225
-            max = 1200
-            cmap_center = 300
-            cmap_range = 250
-        elif args.press_range == '1':
-            min = 225
-            max = 1200
-            cmap_center = 600
-            cmap_range = 300
-        else:
-            min = 225
-            max = 500
+    if args.field == 'shum':
+        [min, max, vcenter, vrange] = colorMap.shumColorMap(args.press_range)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
 
-        cm = colorMap.customColorMap(cmap_center, cmap_range, min, max)
+    if args.field == 'rhum':
+        [min, max, vcenter, vrange] = colorMap.rhumColorMap(args.press_range)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
+
+    if args.field == 'wspd':
+        [min, max, vcenter, vrange] = colorMap.wspdColorMap(args.press_range)
+        cm = colorMap.customColorMap(vcenter, vrange, min, max)
 
     if args.field == 'uwnd':
         [min, max, vcenter, vrange] = colorMap.uwndColorMap(args.press_range)
@@ -150,12 +147,13 @@ def splotit(th, overrideMin=False, overrideMax=False):
     if args.field == 'omega':
         [min, max, vcenter, vrange] = colorMap.omegaColorMap(args.press_range)
         cm = colorMap.customColorMap(vcenter, vrange, min, max)
-
     if args.field == 'hgt':
         [min, max, vcenter, vrange] = colorMap.heightColorMap(args.press_range)
         cm = colorMap.customColorMap(vcenter, vrange, min, max)
 
-    CS = ax.contourf(lon,lat,th, np.arange(min, max, contour), cmap=cm)
+    if args.field != 'hgt':
+        CS = ax.contourf(lon,lat,th, np.arange(min, max, contour), cmap=cm)
+
     CS2 = ax.contour(lon,lat,th, np.arange(min, max, contour), colors='0.5')
     ax.clabel(CS2, CS2.levels, inline=True, fmt="%0.0f", fontsize=9)
   else:
@@ -183,16 +181,18 @@ def splotit(th, overrideMin=False, overrideMax=False):
   plt.imshow(a, cmap=plt.cm.jet)
   plt.gca().set_visible(False)
   cax = plt.axes([0.2, 0.1, 0.2, 0.8])
-  cb = plt.colorbar(CS, orientation='vertical', cax=cax, format = ticker.FuncFormatter(colorbarFmt))
 
-  fg_color = 'white'
-  # set colorbar tick color
-  cb.ax.yaxis.set_tick_params(color=fg_color)
+  if args.field != 'hgt':
+      cb = plt.colorbar(CS, orientation='vertical', cax=cax, format = ticker.FuncFormatter(colorbarFmt))
 
-  # set colorbar edgecolor
-  cb.outline.set_edgecolor(fg_color)
-  # set colorbar ticklabels
-  plt.setp(plt.getp(cb.ax.axes, 'yticklabels'), color=fg_color)
+      fg_color = 'white'
+      # set colorbar tick color
+      cb.ax.yaxis.set_tick_params(color=fg_color)
+
+      # set colorbar edgecolor
+      cb.outline.set_edgecolor(fg_color)
+      # set colorbar ticklabels
+      plt.setp(plt.getp(cb.ax.axes, 'yticklabels'), color=fg_color)
 
   plt.savefig(fn+'-colorbar.png', transparent = True)
 

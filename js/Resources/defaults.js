@@ -9,6 +9,34 @@ angular.module('app-esrl.defaults', []).factory('defaults', function() {
                     max: 450
                 };
                 break;
+            case "air":
+                return {
+                    contour: 5,
+                    min: -100,
+                    max: 200
+                };
+                break;
+            case "shum":
+                return {
+                    contour: 1,
+                    min: 0,
+                    max: 50
+                };
+                break;
+            case "rhum":
+                return {
+                    contour: 8,
+                    min: 0,
+                    max: 100
+                };
+                break;
+            case "wspd":
+                return {
+                    contour: 3,
+                    min: 0,
+                    max: 50
+                };
+                break;
             case "hgt":
                 return {
                     contour: 1000,
@@ -38,7 +66,11 @@ angular.module('app-esrl.defaults', []).factory('defaults', function() {
                 };
                 break;
             default:
-                return {};
+                return {
+                    contour: 1,
+                    min: 0,
+                    max: 100
+                };
         }
     };
 

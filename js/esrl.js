@@ -11,7 +11,11 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         hgt: "Geopotential Height",
         uwnd: "U-wind",
         vwnd: "V-wind",
-        omega: "Omega"
+        omega: "Omega",
+        air: "Air Temperature",
+        shum: "Specific Humidity",
+        rhum: "Relative Humidity",
+        wspd: "Wind Speed"
     };
 
     $scope.data.levelArr = [1000, 925, 800, 700, 600, 500, 400, 300, 250, 200, 150, 100, 70, 50, 30, 20, 10];
@@ -176,7 +180,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
 
             // normalizes the log range from 0 - 1
             const normalizedLogFrac = -1 * (log - logStart)/(logRange);
-            console.log("interpolate", {options, fullRange, log, valRangeFrac, normalizedLogFrac, output });
+            // console.log("interpolate", {options, fullRange, log, valRangeFrac, normalizedLogFrac, output });
             output = options.pixels.start + (pixelRange * normalizedLogFrac);
         } else {
             output = options.pixels.start + valRangeFrac * pixelRange;
@@ -471,7 +475,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         if (message && message.press) {
             $timeout(function () {
                 const idx = $scope.data.levelArr.indexOf(message.press);
-                if (idx)
+                if (idx != -1)
                     $scope.section.input.levelIndicatorIdx = idx;
 
                 $scope.setLevelIndicator();

@@ -22,11 +22,7 @@
                         <div class="form-group">
                             <label>Field</label>
                             <select class="form-control sm" name="field" id="field" ng-model="esrl.input.field" ng-model-options="{debounce:500}">
-                                <option selected value="pottmp">Potential Temperature</option>
-                                <option value="hgt">Geopotential Height</option>
-                                <option value="uwnd">U-wind</option>
-                                <option value="vwnd">V-wind</option>
-                                <option value="omega">Omega</option>
+                                <option value='{{key}}' ng-repeat="(key, val) in data.fields">{{val}}</option>
                             </select>
 
                         </div>
