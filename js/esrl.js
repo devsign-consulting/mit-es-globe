@@ -200,7 +200,13 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     };
 
     $scope.interpolatePixelRange = function (type) {
-        if ($scope.section.input.press === "10") {
+        if ($scope.section.input.field === 'rhum' || $scope.section.input.field === 'shum' || $scope.section.input.field2 === 'rhum' || $scope.section.input.field2 === 'shum') {
+            return {
+                start: 45,
+                end: 520
+            }
+        }
+        else if ($scope.section.input.press === "10") {
             return {
                 start: 118,
                 end: 520
@@ -219,7 +225,13 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     };
 
     $scope.interpolateValueRange = function () {
-        if ($scope.section.input.press === "10") {
+        if ($scope.section.input.field === 'rhum' || $scope.section.input.field === 'shum' || $scope.section.input.field2 === 'rhum' || $scope.section.input.field2 === 'shum') {
+            return {
+                start: 1000,
+                end: 300
+            }
+        }
+        else if ($scope.section.input.press === "10") {
             return {
                 start: 500,
                 end: 10
