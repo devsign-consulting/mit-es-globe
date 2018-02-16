@@ -1,0 +1,72 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="apple-touch-icon" href="icon.png">
+    <!-- Place favicon.ico in the root directory -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../css/main.css">
+
+    <script>document.write('<base href="' + document.location + '" />');</script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js"></script>
+    <script src="../bower_components/p5/p5.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.5.0/ui-bootstrap-tpls.js"></script>
+
+    <script src="../bower_components/angular-p5/angular-p5.js"></script>
+    <script src="../js/globe.js"></script>
+    <script src="./main.js"></script>
+</head>
+<body class="main" ng-app="app" ng-controller="MainCtrl as ctrl">
+    <!--[if lte IE 9]>
+    <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+    <![endif]-->
+
+    <!--<script src="sph.js"></script>-->
+    <div class="container-fluid">
+        <div id="canvas-container" class="col-xs-7">
+            <p5 sketch="p5globe"></p5>
+        </div>
+        <div class="col-xs-5 container-input no-gutter">
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <ul class="nav navbar-nav">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">ESRL Climatology</a>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">Marshall & Plumb<span class="caret"></span></a>
+                            <ul class="dropdown-menu" role="menu">
+                                <li><a ng-click="showGlobeImage('mp.png')">Surface Air Temperature</a></li>
+                                <li><a ng-click="showGlobeImage('mp3.png')">OLR</a></li>
+                                <li><a ng-click="showGlobeImage('mp3a.png')">OLR(2048)</a></li>
+                                <li><a ng-click="showGlobeImage('mp4.jpg')">SSH</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <div class="container">
+                <div class="row margin-top-10px">
+                    <div class="col-xs-12">
+                        <button type="button" class="btn btn-default" ng-click="clickedTrajectory()">Show Trajectory</button>
+                    </div>
+                </div>
+            </div>
+            <!--<iframe style='border:0px' id='esrl2' src="esrl2.html" height=970px width=100% style="overflow-x:hidden; overflow-y:hidden;"></iframe>-->
+
+        </div>
+    </div>
+
+</body>
+</html>

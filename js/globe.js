@@ -94,7 +94,7 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', function(p5, $window, $
         p.loadSphere = function (j) {
             imgnum = j + 1;
             skp = sph.skip;
-            console.log(p.convfn(url, j + 1));
+            //console.log(p.convfn(url, j + 1));
             if (j == 0 || movie) {
                 p.loadImage(p.convfn(url, j + 1), p.checkSphere, p.stopSphere);
             }
@@ -169,7 +169,7 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', function(p5, $window, $
             if (lon < -180) lon += 360;
             if (lon > 180) lon -= 360;
 
-            console.log("==== p.latlon2xy ====", latlon, res)
+            // console.log("==== p.latlon2xy ====", latlon, res)
 
             return [(parseFloat(lon) + 180) / 360.0 * res[0], (90 - parseFloat(lat)) / 180.0 * res[1]];
         };
@@ -193,7 +193,7 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', function(p5, $window, $
                 xz = p.mouse2xz(x0, y0);
                 p.mouseDown(xz, p.xy2latlon(xz));
             }
-            console.log("mouse pressed", evt);
+            // console.log("mouse pressed", evt);
             return true;
         };
 
@@ -274,22 +274,76 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', function(p5, $window, $
             playing = true;
         };
 
-        p.showcanvas = function (c) {
-            pg.elt = c;
-        };
+
 
         p.doclick = function (xy, latlon) {
             lat = p.rnd(latlon[0], 10);
             lon = p.rnd(latlon[1], 10);
-            // sph.orient(lat,lon);
-            var xy = p.latlon2xy(latlon);
-            p.drawLon(xy[0]);
 
-            $rootScope.$broadcast("latlon", {latlon: [lat, lon]});
+            if (lat !==0 && lon !== 0) {
+                p.clickedCoord = [ lat, lon ];
+                console.log("doclick", p.clickedCoord);
+                var xy = p.latlon2xy(latlon);
+                p.drawLon(xy[0]);
+
+                $rootScope.$broadcast("latlon", {latlon: [lat, lon]});
+            }
+
+            // sph.orient(lat,lon);
+
         };
 
         p.rnd = function (v, n) {
             return Math.round(v * n) / n;
+        };
+
+        p.drawTrajectory = function(x) {
+            p.loadSphere(0);
+            var xy = p.latlon2xy(p.clickedCoord);
+            var x1 = xy[0];
+            var y1 = xy[1];
+            var x2 = x1;
+            var y2 = y1;
+
+            function getRandomArbitrary(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var drawLoop = function (ctx, color) {
+                ctx.strokeStyle = color;
+                setTimeout(function () {
+                    ctx.beginPath();
+                    var randx = getRandomArbitrary(-3, 3.5);
+                    var randy = getRandomArbitrary(-3.5, 3);
+                    x2 = x1 + randx;
+                    y2 = y1 + randy;
+
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.stroke();
+                    x1 = x2;
+                    y1 = y2;
+                    drawLoop(ctx, color);
+                }, 50);
+            };
+
+            var canvas = p.getcanvas();
+            var ctx = canvas.getContext('2d');
+            const colors = [
+                '#FFFFFF',
+                '#5aff75',
+                '#ff9f84',
+                '#9d9eff',
+                '#ff5ffc',
+                '#e6ff5f',
+                '#ffcc97',
+                '#85ffe7',
+                '#ecff8d',
+                '#ff7c00'
+            ];
+            var color = colors[Math.round(getRandomArbitrary(0, colors.length - 1), 0)];
+            ctx.lineWidth=2;
+            drawLoop(ctx, color);
         };
 
         p.drawLon = function(x){
@@ -320,7 +374,7 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', function(p5, $window, $
             url: url,
             online: online,
             res: res,
-            showcanvas: p.showcanvas
+            drawTrajectory: p.drawTrajectory
         };
         factory.sph = sph;
         return p;
