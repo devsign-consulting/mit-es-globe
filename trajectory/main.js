@@ -1,73 +1,139 @@
 var app = angular.module('app', ['p5globe', 'ui.bootstrap']);
 
-app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout, $uibModal, p5globe, preloader) {
+function getRandomArbitrary(min, max) {
+    return Math.random() * (max - min) + min;
+}
+
+app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout, $q, $uibModal, p5globe, preloader) {
     $scope.loop = {};
     $scope.input = {};
     $scope.config = {
         startFrame: 1,
-        endFrame: 10
-    }
-    $scope.input.delay = 1000;
+        endFrame: 263
+    };
+
+    $scope.input.timestep = 50;
+    $scope.input.filenames = [];
 
     // todo, implement preloader: https://medium.com/@dabit3/easily-preload-images-in-your-angular-app-9659640efa74
-
     $timeout(() => {
-        $scope.preloadImages = $scope.generateImageNames();
-        console.log("==001 preloa===");
-        preloader.preloadImages($scope.preloadImages)
-            .then(() => {
-                console.log("==images preloaded");
-                $scope.loop.i = 0
-                $scope.timeoutLoop();
-            });
-        $scope.showGlobeImage('am3-0001.jpg')
+        const preloadIdx = 0;
+        const preloadChunks = $scope.generatePreloadChunks();
+        // $scope.preloadLoop(preloadIdx, preloadChunks);
+        // $scope.drawTrajectory();
     });
 
+    $scope.preloadLoop = function (preloadIdx, preloadChunks) {
+        if (preloadIdx < preloadChunks.length - 1) {
+            const chunk = preloadChunks[preloadIdx];
+            $scope.input.preloadLoopTimeout = $timeout(function () {
+                $scope.generateImageNames(chunk)
+                    .then(results => {
+                        console.log("== loading chunk===", chunk);
+                        return preloader.preloadImages(results)
+                    })
+                    .then(() => {
+                        $scope.input.maxPreloadIndex = _.last(chunk);
+                        console.log("=== $scope.input.maxPreloadIndex ===", $scope.input.maxPreloadIndex);
+                        if (preloadIdx === 0) {
+                            $scope.loop.movieIdx = 0;
+                            $scope.runMovieLoop()
+                        }
+                        preloadIdx++;
+                        $scope.preloadLoop(preloadIdx, preloadChunks);
+                    });
+            })
+        } else {
+            $timeout.cancel($scope.input.preloadLoopTimeout);
+        }
+    };
 
-    $scope.timeoutLoop = function (filename) {
+    $scope.generatePreloadChunks = function () {
+        const numArr = [];
+        for(let i = 1; i < $scope.config.endFrame; i++) {
+            numArr.push(i);
+        }
+        return _.chunk(numArr, 25);
+    };
+
+    $scope.runMovieLoop = function () {
         $scope.input.movieLoop = setTimeout(function() {
-            if (!$scope.pause) {
-                var filename = $scope.filenames[$scope.loop.i];
-                $scope.showGlobeImage(filename);
-                $scope.loop.i++;
+            if (!$scope.pause && $scope.loop.movieIdx < $scope.input.maxPreloadIndex) {
+                var filename = $scope.input.filenames[$scope.loop.movieIdx];
+                if (filename) {
+                    // $scope.showGlobeImage(filename);
+                    $scope.drawTrajectory(filename, $scope.input.initXY, $scope.input.trajectory, $scope.loop.movieIdx);
+                    $scope.loop.movieIdx++;
+                } else {
+                    clearTimeout($scope.input.movieLoop);
+                }
+            } else {
+                clearTimeout($scope.input.movieLoop);
             }
 
-            if ($scope.loop.i === $scope.config.endFrame - 1)
-                $scope.loop.i = 0;
-
             if (!$scope.pause)
-                $scope.timeoutLoop(filename);
+                $scope.runMovieLoop();
             else {
                 clearTimeout($scope.input.movieLoop);
             }
-        }, 500);
+        }, $scope.input.timestep);
     };
 
-    $scope.generateImageNames = function () {
+    $scope.generateImageNames = function (idxArray) {
         const filenames = [];
-        $scope.filenames = [];
-        for (let i = $scope.config.startFrame; i < $scope.config.endFrame; i++) {
-            filenames.push(`/trajectory/images/am3-${$scope._pad(i, 4)}.jpg`);
+        for (let i = 0; i < idxArray.length - 1; i++) {
+            filenames.push(`/trajectory/images/am3-${$scope._pad(idxArray[i], 4)}.jpg`);
 
             // store the filenames separate from the full path needed for preloading
-            $scope.filenames.push(`am3-${$scope._pad(i, 4)}.jpg`);
+            $scope.input.filenames.push(`am3-${$scope._pad(idxArray[i], 4)}.jpg`);
         }
 
-        return filenames;
-    }
+        return $q.resolve(filenames)
+    };
 
-    $scope.message = function (data) {
-        // get child scope, we do not use factory since frame is not there yet in that phase
-        $childScope = document.getElementById("esrl2").contentWindow.angular.element('body').scope();
-        if ($childScope) {
-            $childScope.$apply(function () {
-                $childScope.$emit('from-parent', data);
-            });
+    $scope.generateRandomWalk = function () {
+        const trajectory = [];
+        for (let i = 0; i < $scope.config.endFrame; i++) {
+            trajectory.push([getRandomArbitrary(-6, 6), getRandomArbitrary(-5, 4)])
         }
+        return trajectory;
+    };
+
+    $scope.drawTrajectory = function (filename, initXY, trajectory, idx) {
+        setTimeout(function () {
+            const canvas = p5globe.sph.getcanvas();
+            // console.log("== canvas ==", canvas);
+            var ctx = canvas.getContext('2d');
+            var img = new Image();
+
+            var x1 = initXY[0];
+            var y1 = initXY[1];
+            var x2 = x1;
+            var y2 = y1;
+
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = '#FF0000';
+
+            img.onload = function () {
+                ctx.drawImage(img, 0, 0);
+                for (let i = 0; i < idx; i ++ ) {
+                    const val = trajectory[i];
+                    ctx.beginPath();
+                    ctx.moveTo(x1, y1);
+                    x2 = x1 + val[0];
+                    y2 = y2 + val[1];
+                    ctx.lineTo(x2, y2);
+                    x1 = x2;
+                    y1 = y2;
+                    ctx.stroke();
+                }
+            };
+            img.src = `/trajectory/images/${filename}`;
+        }, 10);
     };
 
     $scope.clickedTrajectory = function () {
-        p5globe.sph.drawTrajectory();
+        // p5globe.sph.drawTrajectory();
     };
 
     $scope.showGlobeImage = function (filename) {
@@ -111,6 +177,16 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
             $ctrl.selected = selectedItem;
         });
     };
+
+    $rootScope.$on("latlon", function (event, data) {
+        $timeout.cancel($scope.input.preloadLoopTimeout);
+        clearTimeout($scope.input.movieLoop);
+        
+        $scope.input.initXY = data.xy;
+        $scope.input.trajectory = $scope.generateRandomWalk();
+        const preloadChunks = $scope.generatePreloadChunks();
+        $scope.preloadLoop(0, preloadChunks);
+    });
 
     $scope.$watch('iframeMessage', function (newVal, oldVal) {
 

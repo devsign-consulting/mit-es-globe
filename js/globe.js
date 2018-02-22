@@ -322,7 +322,7 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', function(p5, $window, $
                     x1 = x2;
                     y1 = y2;
                     drawLoop(ctx, color);
-                }, 50);
+                }, 100);
             };
 
             var canvas = p.getcanvas();

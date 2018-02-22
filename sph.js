@@ -62,7 +62,7 @@ function loadSphere(j) {
     skp=sph.skip;
     console.log(convfn(url,j+1));
     if(j==0 || movie){
-	loadImage(convfn(url,j+1), checkSphere, stopSphere);
+	    loadImage(convfn(url,j+1), checkSphere, stopSphere);
     };
 }
 

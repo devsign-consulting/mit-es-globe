@@ -6,7 +6,7 @@ globe.controller('P5GlobeCtrl', function ($scope, $rootScope, $log, $window, $ti
     });
 });
 
-globe.factory('p5globe', ['p5', '$window', '$rootScope', function(p5, $window, $rootScope) {
+globe.factory('p5globe', ['p5', '$window', '$rootScope', '$timeout', function(p5, $window, $rootScope, $timeout) {
     var factory = {};
     var sph = {};
     factory.sketch = function (p) {
@@ -100,6 +100,7 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', function(p5, $window, $
             }
         };
 
+
         p.getcanvas = function(c) {
             if(!pg) return false;
             return pg.elt;
@@ -125,7 +126,7 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', function(p5, $window, $
                 r = sph.sphereDrag(xz, latlon);
                 if (!r) return;
             }
-            ;
+
             theta += 0.005 * (mx - x0);
             phi += 0.005 * (my - y0);
             rottheta = 0;
@@ -231,6 +232,8 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', function(p5, $window, $
             p.ortho(-p.width / 2, p.width / 2, -p.height / 2, p.height / 2, -1000, 1000);
             pg = p.createGraphics(res[0], res[1]);
             p.loadSphere(0);
+            console.log("==broadcast p5globe loaded===");
+            $rootScope.$broadcast("p5globe:loaded");
             //    maincanvas.elt.addEventListener('keydown', myevent, false);
         };
 
@@ -274,6 +277,8 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', function(p5, $window, $
             playing = true;
         };
 
+        p.showWithCallback
+
         p.doclick = function (xy, latlon) {
             lat = p.rnd(latlon[0], 10);
             lon = p.rnd(latlon[1], 10);
@@ -284,7 +289,7 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', function(p5, $window, $
                 var xy = p.latlon2xy(latlon);
                 p.drawLon(xy[0]);
 
-                $rootScope.$broadcast("latlon", {latlon: [lat, lon]});
+                $rootScope.$broadcast("latlon", {latlon: [lat, lon], xy: [xy[0], xy[1]]});
             }
 
             // sph.orient(lat,lon);
@@ -361,6 +366,8 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', function(p5, $window, $
 
         sph = {
             rot: p.rot,
+            getcanvas: p.getcanvas,
+            loadSphere: p.loadSphere,
             tilt: p.tilt,
             orient: p.orient,
             show: p.show,
