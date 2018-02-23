@@ -1,10 +1,11 @@
 // http://plnkr.co/edit/EYpEATLGd0B54WpEr7II?p=preview
 var esrl = angular.module('app-esrl', ['ngResource', 'app-esrl.services', 'app-esrl.defaults', 'ui.bootstrap','ngAnimate','ui.toggle']);
+
 esrl.factory('$parentScope', function ($window) {
     return $window.parent.angular.element($window.frameElement).scope();
 });
 
-esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout, $uibModal, EsrlResource, defaults) {
+esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout, $uibModal, $location, EsrlResource, defaults) {
     $scope.data = {};
     $scope.data.fields = {
         pottmp: "Potential Temperature",
@@ -44,7 +45,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
 
         /*------ Watches ----*/
         $scope.$watchCollection('section.input', function (newVal, oldVal) {
-            console.log("===$watchCollection section.input===", newVal);
+            // console.log("===$watchCollection section.input===", newVal);
             var submitForm = true;
             if (oldVal && newVal) {
                 if (oldVal.field && newVal.field && oldVal.field !== newVal.field) {
@@ -101,8 +102,15 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                     });
                 }
 
+                if (newVal && oldVal && newVal.field2 !== oldVal.field2) {
+                    $scope.message({
+                        action: "sectionField2Changed",
+                        field: $scope.section.input.field2
+                    });
+                }
+
                 if (newVal && oldVal && (newVal.min !== oldVal.min || newVal.max !== oldVal.max)) {
-                    console.log("== 001 min max ==", newVal);
+                    // console.log("== 001 min max ==", newVal);
                     $scope.message({
                         action: "sectionMinMaxChanged",
                         min: newVal.min,
@@ -145,6 +153,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                 }
 
                 if (submitForm && oldVal) {
+                    console.log("==submit esrl form ===", $scope.sectionInputWatchCount, $scope.section.input)
                     if ($scope.sectionInputWatchCount === 0) {
                         $scope.sectionInputWatchCount++;
                         $scope.submitSectionForm().then(function () {
@@ -200,26 +209,30 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     };
 
     $scope.interpolatePixelRange = function (type) {
+        let endOffset = 0;
+        if ($scope.section.input.field !== $scope.section.field2) {
+            endOffset = 25;
+        }
         if ($scope.section.input.field === 'rhum' || $scope.section.input.field === 'shum' || $scope.section.input.field2 === 'rhum' || $scope.section.input.field2 === 'shum') {
             return {
                 start: 45,
-                end: 520
+                end: 520 + endOffset
             }
         }
         else if ($scope.section.input.press === "10") {
             return {
                 start: 118,
-                end: 520
+                end: 520 + endOffset
             }
         } else if ($scope.section.input.press === "1") {
             return {
                 start: 45,
-                end: 530
+                end: 530 + endOffset
             }
         }  else if (typeof type === "undefined") {
             return {
                 start: 45,
-                end: 520
+                end: 520 + endOffset
             }
         }
     };
@@ -381,7 +394,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
             $scope.section.input.max2 = defaultRes.max;
         }
 
-        console.log("=== esrl set deaults ===", { input, field }, defaultRes, $scope.section.input);
+        // console.log("=== esrl set deaults ===", { input, field }, defaultRes, $scope.section.input);
     };
 
     $scope.submitSectionForm = function () {
@@ -460,6 +473,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     };
 
     $scope.$on('from-parent', function(e, message) {
+        console.log("===esrl from-parent===", message);
         if (message && message.frame) {
             $scope.loop = message.frame;
         }
@@ -471,15 +485,21 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         }
 
         if (message && message.time) {
-            $timeout(function () {
+            // $timeout(function () {
                 $scope.section.input.time = message.time;
-            });
+            // });
         }
 
         if (message && message.field) {
-            $timeout(function () {
+            // $timeout(function () {
                 $scope.section.input.field = message.field;
-            });
+            // });
+        }
+
+        if (message && message.field2) {
+            // $timeout(function () {
+                $scope.section.input.field2 = message.field2;
+            // });
         }
 
         if (message && message.input) {
@@ -491,17 +511,21 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         }
 
         if (message && message.press) {
-            $timeout(function () {
+            // $timeout(function () {
                 const idx = $scope.data.levelArr.indexOf(message.press);
                 if (idx != -1)
                     $scope.section.input.levelIndicatorIdx = idx;
 
                 $scope.setLevelIndicator();
-            });
+            // });
         }
 
         if (message && message.globeDoneLoading) {
             $scope.globeLoading = false;
+        }
+
+        if (_.isObject(message)) {
+            $scope.$apply();
         }
     });
 

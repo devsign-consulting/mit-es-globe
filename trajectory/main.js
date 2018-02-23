@@ -181,7 +181,7 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
     $rootScope.$on("latlon", function (event, data) {
         $timeout.cancel($scope.input.preloadLoopTimeout);
         clearTimeout($scope.input.movieLoop);
-        
+
         $scope.input.initXY = data.xy;
         $scope.input.trajectory = $scope.generateRandomWalk();
         const preloadChunks = $scope.generatePreloadChunks();

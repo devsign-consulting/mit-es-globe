@@ -231,9 +231,9 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
             $scope.loop = message.frame;
         }
 
-        console.log("=== 001 globe control message ===", message);
+        // console.log("=== 001 globe control message ===", message);
         if (message && message.press) {
-            console.log("===002 globe control pres chnaged===", message);
+            // console.log("===002 globe control pres chnaged===", message);
             $timeout(function () {
                 $scope.esrl.input.pressRange = message.press;
                 if (message.press === '1') {
@@ -258,34 +258,35 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
         }
 
         if (message && message.time) {
-            $timeout(function () {
-                $scope.esrl.input.time = message.time;
-            });
+            //$timeout(function () {
+            $scope.esrl.input.time = message.time;
+            //});
         }
 
         if (message && message.field) {
-            $timeout(function () {
-                $scope.esrl.input.field = message.field;
-            });
+            //$timeout(function () {
+            $scope.esrl.input.field = message.field;
+            //});
         }
 
         if (message && (message.min || message.max)) {
-            $timeout(function () {
+
                 $scope.esrl.input.min = parseFloat(message.min);
                 $scope.esrl.input.max = parseFloat(message.max);
                 if (message.contourStep)
                     $scope.esrl.input.contourStep = parseFloat(message.contourStep);
-            });
+
         }
 
         if (message && message.level) {
             var matchIdx = $scope.data.levels.indexOf(message.level);
-            console.log("=== level change ===", { message, matchIdx });
             if (matchIdx){
-                $timeout(function () {
-                    $scope.esrl.input.press = $scope.data.levels[matchIdx];
-                });
+                $scope.esrl.input.press = $scope.data.levels[matchIdx];
             }
+        }
+
+        if (_.isObject(message)) {
+            $scope.$apply();
         }
 
     });

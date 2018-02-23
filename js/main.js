@@ -1,8 +1,54 @@
-var app = angular.module('app', ['p5globe', 'ui.bootstrap']);
-app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout, $uibModal, p5globe) {
+var app = angular.module('app', ['p5globe', 'ui.bootstrap'])
+    .config(function($locationProvider) {
+        $locationProvider.html5Mode({
+            enabled: true,
+            requireBase: false
+        });
+    });
+
+app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout, $uibModal, $location, p5globe) {
     $scope.loop = {};
     $scope.input = {};
     $scope.input.delay = 1000;
+    $scope.qs = $location.search();
+
+    // initialize query string options if any exist
+    $timeout(function () {
+        if ($scope.qs && $scope.qs.field1) {
+            $scope.messageGlobeControlsWidget({
+                field: $scope.qs.field1,
+                level: parseInt($scope.qs.level)
+            });
+            $scope.message({
+                field: $scope.qs.field1,
+                field2: $scope.qs.field2,
+                time: $scope.qs.time
+            });
+
+            /*$scope.message({ field2: $scope.qs.field2 })
+            $scope.messageGlobeControlsWidget({ level: parseInt($scope.qs.level) })
+            $scope.message({ time: $scope.qs.time });*/
+        }
+
+        /*if ($scope.qs && $scope.qs.field2) {
+            $timeout(() => {
+                $scope.message({ field2: $scope.qs.field2 })
+            }, 1000)
+        }
+
+        if ($scope.qs && $scope.qs.level) {
+            $timeout(() => {
+                $scope.messageGlobeControlsWidget({ level: parseInt($scope.qs.level) })
+            }, 1500)
+        }
+
+        if ($scope.qs && $scope.qs.time) {
+            $timeout(() => {
+                $scope.message({ time: $scope.qs.time });
+            }, 2000)
+        }*/
+
+    }, 1000);
 
     $scope.message = function (data) {
         // get child scope, we do not use factory since frame is not there yet in that phase
@@ -100,14 +146,20 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
         });
     };
 
+    /*---------------------------------
+    ----------- WATCHES ---------------
+    ----------------------------------*/
     $rootScope.$on('latlon', function(event, data) {
         // console.log("===latlon angular data===", data);
         $scope.message({ latlon: data});
     });
 
+    $scope.$watch('qs', function(newVal, oldVal) {
+        $location.search(newVal);
+    }, true);
+
     $scope.$watch('iframeMessage', function (newVal, oldVal) {
         if (newVal && newVal.form === 'esrl' && newVal.filename) {
-            console.log("===iframeMessage esrl ===", newVal);
             $scope.messageGlobeColorBarWidget({ colorbarFilename: newVal.colorbarFilename });
 
             // if it's a movie
@@ -174,15 +226,21 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                     $scope.messageGlobeControlsWidget({ press: newVal.press });
                     break;
                 case "sectionTimeChanged":
+                    $scope.qs.time = newVal.time;
                     $scope.messageGlobeControlsWidget({ time: newVal.time });
                     break;
                 case "sectionFieldChanged":
+                    $scope.qs.field1 = newVal.field;
                     $scope.messageGlobeControlsWidget({ field: newVal.field });
+                    break;
+                case "sectionField2Changed":
+                    $scope.qs.field2 = newVal.field;
                     break;
                 case "sectionMinMaxChanged":
                     $scope.messageGlobeControlsWidget({ min: newVal.min, max: newVal.max });
                     break;
                 case "sectionLevelChanged":
+                    $scope.qs.level = newVal.level;
                     $scope.messageGlobeControlsWidget({ level: newVal.level });
                     break;
                 case "showGlobeSettings":
