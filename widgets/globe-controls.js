@@ -33,7 +33,8 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
         "Sep",
         "Oct",
         "Nov",
-        "Dec"
+        "Dec",
+        "Year"
     ];
 
     $scope.data.levels = [1000, 925, 800, 700, 600, 500, 400, 300, 250, 200, 150, 100, 70, 50, 30, 20, 10];

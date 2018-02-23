@@ -24,30 +24,7 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                 field2: $scope.qs.field2,
                 time: $scope.qs.time
             });
-
-            /*$scope.message({ field2: $scope.qs.field2 })
-            $scope.messageGlobeControlsWidget({ level: parseInt($scope.qs.level) })
-            $scope.message({ time: $scope.qs.time });*/
         }
-
-        /*if ($scope.qs && $scope.qs.field2) {
-            $timeout(() => {
-                $scope.message({ field2: $scope.qs.field2 })
-            }, 1000)
-        }
-
-        if ($scope.qs && $scope.qs.level) {
-            $timeout(() => {
-                $scope.messageGlobeControlsWidget({ level: parseInt($scope.qs.level) })
-            }, 1500)
-        }
-
-        if ($scope.qs && $scope.qs.time) {
-            $timeout(() => {
-                $scope.message({ time: $scope.qs.time });
-            }, 2000)
-        }*/
-
     }, 1000);
 
     $scope.message = function (data) {

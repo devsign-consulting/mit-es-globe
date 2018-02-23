@@ -108,8 +108,13 @@ args = parser.parse_args()
 
 fn='./output/' + args.fn
 
-months={"Jan":0,"Feb":1,"Mar":2,"Apr":3,"May":4,"Jun":5,"Jul":6,"Aug":7,"Sep":8,"Oct":9,"Nov":10,"Dec":11,"year":-1}
+months={"Jan":0,"Feb":1,"Mar":2,"Apr":3,"May":4,"Jun":5,"Jul":6,"Aug":7,"Sep":8,"Oct":9,"Nov":10,"Dec":11,"Year":-1}
 mon=months[args.month_str]
+yearAverage = False
+
+if mon == -1:
+    yearAverage = True
+    mon = 0
 
 titles = {
     "pottmp": "Potential Temperature (K)",
@@ -171,15 +176,35 @@ if args.field == 'rhum' or args.field == 'shum' or args.field2 == 'rhum' or args
 # indices for latitude, so I don't know what to do here to make this work.
 th=np.squeeze(theta[mon,vind,:,lonind])
 
-#calculate the zonal average
-th_zone = np.squeeze(theta[mon, vind, :, :])
-th_zone = np.average(th_zone, axis=2)
+if args.zonalaverage:
+    #calculate the zonal average
+    if yearAverage != True:
+        th = np.squeeze(theta[mon, vind, :, :])
+        th = np.average(th, axis=2)
+    if yearAverage == True:
+        print('th dim', th.shape)
+
+        th = np.squeeze(theta[:, vind, :, :])
+        print('th dim2', th.shape)
+
+        th = np.average(th, axis=3)
+        print('th dim3', th.shape)
+
+        th = np.average(th, axis=0)
+        print('th dim4', th.shape)
 
 if args.field2 != 'none':
     th2=np.squeeze(theta2[mon,vind,:,lonind])
-    #calculate the zonal average
-    th2_zone = np.squeeze(theta2[mon, vind, :, :])
-    th2_zone = np.average(th2_zone, axis=2)
+
+    if args.zonalaverage:
+        #calculate the zonal average
+        if yearAverage != True:
+            th2 = np.squeeze(theta2[mon, vind, :, :])
+            th2 = np.average(th2, axis=2)
+        if yearAverage == True:
+            th2 = np.squeeze(theta2[:, vind, :, :])
+            th2 = np.average(th2, axis=3)
+            th2 = np.average(th2, axis=0)
 
 lev = level1[vind]
 
@@ -232,10 +257,6 @@ def colorbarFmt(x, pos):
         return "%.1f" % x;
     else:
         return int(x)
-
-if args.zonalaverage:
-    th = th_zone
-    th2 = th2_zone
 
 # print (max, min, contour)
 if args.fillcontour:
