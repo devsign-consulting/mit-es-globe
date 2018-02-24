@@ -10,22 +10,37 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
     $scope.loop = {};
     $scope.input = {};
     $scope.input.delay = 1000;
+    $scope.input.loaders = {
+        sectionInitialLoad: false,
+        globeInitialLoad: false
+    };
+
     $scope.qs = $location.search();
 
-    // initialize query string options if any exist
-    $timeout(function () {
-        if ($scope.qs && $scope.qs.field1) {
-            $scope.messageGlobeControlsWidget({
-                field: $scope.qs.field1,
-                level: parseInt($scope.qs.level)
-            });
-            $scope.message({
-                field: $scope.qs.field1,
-                field2: $scope.qs.field2,
-                time: $scope.qs.time
-            });
-        }
-    }, 1000);
+    $scope.loadInitialQueryString = function () {
+        // initialize query string options if any exist
+        $timeout(function () {
+            if ($scope.qs && $scope.qs.field1) {
+                $scope.messageGlobeControlsWidget({
+                    field: $scope.qs.field1,
+                    level: parseInt($scope.qs.level),
+                    time: $scope.qs.time
+                });
+                $scope.message({
+                    field: $scope.qs.field1,
+                    field2: $scope.qs.field2,
+                    time: $scope.qs.time,
+                    pressRange: $scope.qs.press,
+                    lon: $scope.qs.lon
+                });
+            }
+
+            $scope.$watch('qs', function(newVal, oldVal) {
+                $location.search(newVal);
+            }, true);
+
+        });
+    };
 
     $scope.message = function (data) {
         // get child scope, we do not use factory since frame is not there yet in that phase
@@ -127,13 +142,21 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
     ----------- WATCHES ---------------
     ----------------------------------*/
     $rootScope.$on('latlon', function(event, data) {
-        // console.log("===latlon angular data===", data);
+        $scope.qs.lon = null;
+        $timeout(() => {
+            $scope.qs.lon = Math.round(data.latlon[1], 1);
+        });
+
         $scope.message({ latlon: data});
     });
 
-    $scope.$watch('qs', function(newVal, oldVal) {
-        $location.search(newVal);
-    }, true);
+    $scope.$watch(function () {
+        return $scope.input.loaders.sectionInitialLoad && $scope.input.loaders.globeInitialLoad;
+    }, function(newVal, oldVal) {
+        if (newVal && newVal !== oldVal) {
+            $scope.loadInitialQueryString();
+        }
+    });
 
     $scope.$watch('iframeMessage', function (newVal, oldVal) {
         if (newVal && newVal.form === 'esrl' && newVal.filename) {
@@ -200,6 +223,7 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                     $scope.openLightboxModal(newVal.input, newVal.filename);
                     break;
                 case "pressureChanged":
+                    $scope.qs.press = newVal.press;
                     $scope.messageGlobeControlsWidget({ press: newVal.press });
                     break;
                 case "sectionTimeChanged":
@@ -212,6 +236,11 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                     break;
                 case "sectionField2Changed":
                     $scope.qs.field2 = newVal.field;
+                    break;
+                case "sectionLonChanged":
+                    $scope.qs.lon = newVal.lon;
+                    var latlng = p5globe.sph.latlon2xy([0, newVal.lon]);
+                    p5globe.sph.drawLon(latlng[0]);
                     break;
                 case "sectionMinMaxChanged":
                     $scope.messageGlobeControlsWidget({ min: newVal.min, max: newVal.max });
@@ -229,8 +258,12 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                 case "loadColorbar":
                     $scope.messageGlobeColorBarWidget({ colorbarFilename: newVal.colorbarFilename });
                     break;
+                case "sectionInitialLoad":
+                    $scope.input.loaders.sectionInitialLoad = true;
+                    break;
                 case "globeDoneLoading":
                     $scope.message({ globeDoneLoading: true });
+                    $scope.input.loaders.globeInitialLoad = true;
             }
         }
 

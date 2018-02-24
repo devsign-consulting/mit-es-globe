@@ -36,6 +36,8 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     $scope.section.flags.keyboardControl = false;
     $scope.section.flags.showNow = true;
 
+    $scope.initialLoad = true;
+
     $scope.sectionInputWatchCount = 0;
 
     // Functions to execute on load
@@ -59,7 +61,6 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                 if (!oldVal.field2 && newVal.field2) {
                     $scope.setDefaults(newVal.field2, "field2");
                 }
-
 
                 // pressure change
                 if (oldVal.press !== newVal.press) {
@@ -106,6 +107,13 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                     $scope.message({
                         action: "sectionField2Changed",
                         field: $scope.section.input.field2
+                    });
+                }
+
+                if (newVal && oldVal && newVal.lon !== oldVal.lon) {
+                    $scope.message({
+                        action: "sectionLonChanged",
+                        lon: $scope.section.input.lon
                     });
                 }
 
@@ -210,7 +218,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
 
     $scope.interpolatePixelRange = function (type) {
         let endOffset = 0;
-        if ($scope.section.input.field !== $scope.section.field2) {
+        if ($scope.section.input.field !== $scope.section.input.field2) {
             endOffset = 25;
         }
         if ($scope.section.input.field === 'rhum' || $scope.section.input.field === 'shum' || $scope.section.input.field2 === 'rhum' || $scope.section.input.field2 === 'shum') {
@@ -232,7 +240,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         }  else if (typeof type === "undefined") {
             return {
                 start: 45,
-                end: 520 + endOffset
+                end: 520
             }
         }
     };
@@ -457,6 +465,13 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
             $scope.section.filename = "./esrl/output/" + results.filename;
             $scope.isLoading = false;
             $scope.section.flags.showNow = true;
+            if ($scope.initialLoad) {
+                $scope.message({
+                    action: "sectionInitialLoad"
+                });
+            } else {
+                $scope.initialLoad = false;
+            }
             return;
         });
 
@@ -484,6 +499,12 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
             $scope.section.input.lon = Math.round(latlon[1]);
         }
 
+        if (message && message.lon) {
+            // set the lat and lon to where the user clicked
+            console.log("===lon ==", message);
+            $scope.section.input.lon = parseInt(message.lon);
+        }
+
         if (message && message.time) {
             // $timeout(function () {
                 $scope.section.input.time = message.time;
@@ -499,6 +520,12 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         if (message && message.field2) {
             // $timeout(function () {
                 $scope.section.input.field2 = message.field2;
+            // });
+        }
+
+        if (message && message.pressRange) {
+            // $timeout(function () {
+            $scope.section.input.press = message.pressRange;
             // });
         }
 
@@ -522,10 +549,6 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
 
         if (message && message.globeDoneLoading) {
             $scope.globeLoading = false;
-        }
-
-        if (_.isObject(message)) {
-            $scope.$apply();
         }
     });
 

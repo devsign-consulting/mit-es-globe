@@ -121,12 +121,7 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
         console.log("=== submit esrl form ===");
         var res = new EsrlResource();
 
-        if ($scope.esrl.input.time === "Movie")
-            res.time = "year";
-        else {
-            res.time = $scope.esrl.input.time;
-        }
-
+        res.time = $scope.esrl.input.time;
         res.press = $scope.esrl.input.press;
         res.field = $scope.esrl.input.field;
         res.lat= $scope.esrl.input.lat;
@@ -160,7 +155,7 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
                 if ($scope.esrl.flags.showNow)
                     results.bypassOrient = true;
 
-                if ($scope.esrl.input.time === "year") {
+                if ($scope.esrl.input.time === "Movie") {
                     results.movie = true;
                     $scope.esrl.flags.movie = true;
                     $scope.esrl.flags.moviePlay = true;
@@ -228,67 +223,65 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
     };
 
     $scope.$on('from-parent', function(e, message) {
-        if (message && message.frame) {
-            $scope.loop = message.frame;
-        }
-
-        // console.log("=== 001 globe control message ===", message);
-        if (message && message.press) {
-            // console.log("===002 globe control pres chnaged===", message);
-            $timeout(function () {
-                $scope.esrl.input.pressRange = message.press;
-                if (message.press === '1') {
-                    var matchIdx = $scope.data.levels.indexOf(100);
-                    $scope.esrl.input.press = $scope.data.levels[matchIdx];
-                }
-
-                if (message.press === '10') {
-                    var matchIdx = $scope.data.levels.indexOf(500);
-                    $scope.esrl.input.press = $scope.data.levels[matchIdx];
-                }
-
-            });
-        }
-
-        if (message && message.latlon) {
-            // set the lat and lon to where the user clicked
-            var latlon = message.latlon.latlon;
-            $scope.esrl.input.lat = latlon[0];
-            $scope.esrl.input.lon = latlon[1];
-            $scope.section.input.lon = Math.round(latlon[1]);
-        }
-
-        if (message && message.time) {
-            //$timeout(function () {
-            $scope.esrl.input.time = message.time;
-            //});
-        }
-
-        if (message && message.field) {
-            //$timeout(function () {
-            $scope.esrl.input.field = message.field;
-            //});
-        }
-
-        if (message && (message.min || message.max)) {
-
-                $scope.esrl.input.min = parseFloat(message.min);
-                $scope.esrl.input.max = parseFloat(message.max);
-                if (message.contourStep)
-                    $scope.esrl.input.contourStep = parseFloat(message.contourStep);
-
-        }
-
-        if (message && message.level) {
-            var matchIdx = $scope.data.levels.indexOf(message.level);
-            if (matchIdx){
-                $scope.esrl.input.press = $scope.data.levels[matchIdx];
+        $timeout(() => {
+            if (message && message.frame) {
+                $scope.loop = message.frame;
             }
-        }
 
-        if (_.isObject(message)) {
-            $scope.$apply();
-        }
+            // console.log("=== 001 globe control message ===", message);
+            if (message && message.press) {
+                // console.log("===002 globe control pres chnaged===", message);
+                $timeout(function () {
+                    $scope.esrl.input.pressRange = message.press;
+                    if (message.press === '1') {
+                        var matchIdx = $scope.data.levels.indexOf(100);
+                        $scope.esrl.input.press = $scope.data.levels[matchIdx];
+                    }
+
+                    if (message.press === '10') {
+                        var matchIdx = $scope.data.levels.indexOf(500);
+                        $scope.esrl.input.press = $scope.data.levels[matchIdx];
+                    }
+
+                });
+            }
+
+            if (message && message.latlon) {
+                // set the lat and lon to where the user clicked
+                var latlon = message.latlon.latlon;
+                $scope.esrl.input.lat = latlon[0];
+                $scope.esrl.input.lon = latlon[1];
+                $scope.section.input.lon = Math.round(latlon[1]);
+            }
+
+            if (message && message.time) {
+                //$timeout(function () {
+                $scope.esrl.input.time = message.time;
+                //});
+            }
+
+            if (message && message.field) {
+                //$timeout(function () {
+                $scope.esrl.input.field = message.field;
+                //});
+            }
+
+            if (message && (message.min || message.max)) {
+
+                    $scope.esrl.input.min = parseFloat(message.min);
+                    $scope.esrl.input.max = parseFloat(message.max);
+                    if (message.contourStep)
+                        $scope.esrl.input.contourStep = parseFloat(message.contourStep);
+
+            }
+
+            if (message && message.level) {
+                var matchIdx = $scope.data.levels.indexOf(message.level);
+                if (matchIdx){
+                    $scope.esrl.input.press = $scope.data.levels[matchIdx];
+                }
+            }
+        });
 
     });
 

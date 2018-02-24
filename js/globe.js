@@ -366,6 +366,8 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', function(p5, $window, $
             show: p.show,
             skip: 1,
             sphereClick: p.doclick,
+            latlon2xy: p.latlon2xy,
+            drawLon: p.drawLon,
             sphereDrag: null,
             mouseDown: null,
             mouseUp: null,

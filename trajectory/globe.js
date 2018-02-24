@@ -291,9 +291,7 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', '$timeout', function(p5
 
                 $rootScope.$broadcast("latlon", {latlon: [lat, lon], xy: [xy[0], xy[1]]});
             }
-
             // sph.orient(lat,lon);
-
         };
 
         p.rnd = function (v, n) {
@@ -379,6 +377,7 @@ globe.factory('p5globe', ['p5', '$window', '$rootScope', '$timeout', function(p5
             url: url,
             online: online,
             res: res,
+            latlng2xy: p.latlng2xy,
             drawTrajectory: p.drawTrajectory
         };
         factory.sph = sph;

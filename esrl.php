@@ -16,7 +16,7 @@
             $pressureRange = $_POST['pressureRange'];
             $contourStep = $_POST['contourStep'];
             $fn="es".md5($timeInput.$fieldInput.$pressInput.$contour.$contourStep.$pressureRange);
-            $time = array("Jan"=>0,"Feb"=>1,"Mar"=>2,"Apr"=>3,"May"=>4,"Jun"=>5,"Jul"=>6,"Aug"=>7,"Sep"=>8,"Oct"=>9,"Nov"=>10,"Dec"=>11,"year"=>-1);
+            $time = array("Jan"=>0,"Feb"=>1,"Mar"=>2,"Apr"=>3,"May"=>4,"Jun"=>5,"Jul"=>6,"Aug"=>7,"Sep"=>8,"Oct"=>9,"Nov"=>10,"Dec"=>11,"Movie"=>-1,"Year"=>-2);
             $t0 = $time[$_POST['time']];
             if ($t0 >= 0)
                 $filename=$fn."-".$t0.".png";
@@ -64,7 +64,7 @@
             $lon = $_POST['lon'];
 
             $fn="section-".md5($press.$time.$field.$contour.$lon.$field2.$contour2.$logscale.$max.$min.$max2.$min2.$fillcontour.$zonalaverage).".png";
-            if (!file_exists("./esrl/output/$fn")) {
+            // if (!file_exists("./esrl/output/$fn")) {
                 error_log("===== executing program=====");
                 $cmd = "python esrl/showsection.py --filename $fn --field $field --month $time --minpress $press --lon $lon --contour $contour --logscale $logscale --zonal-average $zonalaverage";
 
@@ -88,7 +88,7 @@
                 $output = exec($cmd);
                 $output = json_decode($output);
 
-            }
+            // }
 
             echo json_encode(array(
                 "filename" =>$fn,

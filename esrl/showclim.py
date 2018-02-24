@@ -88,7 +88,13 @@ import matplotlib.ticker as ticker
 import colorMap
 
 def getTheta(theta, n, lev):
-    th1=np.roll(theta[n,lev,:,:],72,axis=1)
+    if yearAverage:
+        theta1 = theta[:, lev, :, :]
+        theta1 = np.average(theta1, axis=0)
+    else:
+        theta1 = theta[n,lev,:,:]
+
+    th1=np.roll(theta1,72,axis=1)
     th=np.hstack((th1,th1[:,0:1]))
     return th
 
@@ -174,6 +180,7 @@ def splotit(th, overrideMin=False, overrideMax=False):
   ax.axis('tight')
 
   plt.savefig(fn+'-'+str(n)+'.png')
+  print fn+'-'+str(n)+'.png'
 
   # save the color bar
   a = np.array([[0, 1]])
@@ -198,39 +205,37 @@ def splotit(th, overrideMin=False, overrideMax=False):
 
 
 
-months={"Jan":0,"Feb":1,"Mar":2,"Apr":3,"May":4,"Jun":5,"Jul":6,"Aug":7,"Sep":8,"Oct":9,"Nov":10,"Dec":11,"year":-1}
+months={"Jan":0,"Feb":1,"Mar":2,"Apr":3,"May":4,"Jun":5,"Jul":6,"Aug":7,"Sep":8,"Oct":9,"Nov":10,"Dec":11,"Movie":-1, "Year":-2}
 t0=months[args.time]
-if t0<0:
+
+if t0 == -2:
+    yearAverage = True
+    t0=0
+else:
+    yearAverage = False
+
+if t0 == -1:
   t0=0
   t1=11
 else:
   t1=t0
 
-if args.press=="vertical movie":
-  lev0=0
-  lev1=len(level)
-else:
-  press=int(args.press)
-  lev0=np.argmin(np.abs(level-press))
-  lev1=-1
-if lev1<0:
-  nr=range(t0,t1+1)
-  for n in nr:
+
+press=int(args.press)
+lev0=np.argmin(np.abs(level-press))
+
+nr=range(t0,t1+1)
+for n in nr:
     if t1 > 0 and n == 0:
         th = getTheta(theta,n,lev0)
         min = float(args.min)
         max = float(args.max)
         splotit(th, min, max)
-    else:
-        th = getTheta(theta,n,lev0)
-        min = float(args.min)
-        max = float(args.max)
-        splotit(th, min, max)
 else:
-  nr=range(lev0,lev1)
-  for lev in nr:
-    th = getTheta(theta,t0,lev)
-    splotit(th)
+    th = getTheta(theta,n,lev0)
+    min = float(args.min)
+    max = float(args.max)
+    splotit(th, min, max)
 
 print (json.dumps({
     'output': 'ok'

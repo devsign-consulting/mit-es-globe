@@ -171,40 +171,32 @@ else:
 if args.field == 'rhum' or args.field == 'shum' or args.field2 == 'rhum' or args.field2 == 'shum':
     vind = np.where(level1 >= 300)
 
-# the expression below only works if the 2nd and 3rd argument have the same dimensions
-# However, the 2nd argument is an array of indicies for the pressure, and the 3rd argument is an array of
-# indices for latitude, so I don't know what to do here to make this work.
-th=np.squeeze(theta[mon,vind,:,lonind])
 
-if args.zonalaverage:
-    #calculate the zonal average
-    if yearAverage != True:
-        th = np.squeeze(theta[mon, vind, :, :])
-        th = np.average(th, axis=2)
-    if yearAverage == True:
-        print('th dim', th.shape)
 
-        th = np.squeeze(theta[:, vind, :, :])
-        print('th dim2', th.shape)
-
-        th = np.average(th, axis=3)
-        print('th dim3', th.shape)
-
-        th = np.average(th, axis=0)
-        print('th dim4', th.shape)
-
-if args.field2 != 'none':
-    th2=np.squeeze(theta2[mon,vind,:,lonind])
-
+def get_th(theta):
+    th = np.squeeze(theta[mon,vind,:,lonind])
     if args.zonalaverage:
         #calculate the zonal average
-        if yearAverage != True:
-            th2 = np.squeeze(theta2[mon, vind, :, :])
-            th2 = np.average(th2, axis=2)
-        if yearAverage == True:
-            th2 = np.squeeze(theta2[:, vind, :, :])
-            th2 = np.average(th2, axis=3)
-            th2 = np.average(th2, axis=0)
+        if yearAverage:
+            th = np.squeeze(theta[:, vind, :, :])
+            th = np.average(th, axis=3) # axis 3 is longitudes
+            th = np.average(th, axis=0) # axis 0 is month
+        else:
+            th = np.squeeze(theta[mon, vind, :, :])
+            th = np.average(th, axis=2)
+    else:
+        #calculate the zonal average
+        if yearAverage:
+            th = np.squeeze(theta[:, vind, :, lonind])
+            th = np.average(th, axis=1) # axis 1 is month
+        else:
+            th = np.squeeze(theta[mon, vind, :, lonind])
+
+    return th
+
+th = get_th(theta)
+if args.field2 != 'none':
+    th2 = get_th(theta2)
 
 lev = level1[vind]
 
