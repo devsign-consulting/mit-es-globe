@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import numpy as np
-import os
+import os, re
+import zipfile
 from scipy.io.netcdf import netcdf_file
 from netCDF4 import Dataset
 import argparse
@@ -42,6 +43,15 @@ parser.add_argument('--contour',
                     const=True,
                     default=False,
                     help='plot contour')
+
+parser.add_argument('--save-data',
+                    type=str2bool, nargs='?',
+                    dest="saveData",
+                    const=True,
+                    default=False,
+                    help='write data to file')
+
+
 parser.add_argument('--contour-step',
                     action="store",
                     dest="contour_step",
@@ -106,7 +116,6 @@ def colorbarFmt(x, pos):
         return "%.1f" % x;
     else:
         return int(x)
-
 
 def splotit(th, overrideMin=False, overrideMax=False):
   #  plt.figure(1,figsize=[8.125*3.253/2,6.125*3.253/2])
@@ -180,7 +189,6 @@ def splotit(th, overrideMin=False, overrideMax=False):
   ax.axis('tight')
 
   plt.savefig(fn+'-'+str(n)+'.png')
-  print fn+'-'+str(n)+'.png'
 
   # save the color bar
   a = np.array([[0, 1]])
@@ -203,7 +211,28 @@ def splotit(th, overrideMin=False, overrideMax=False):
 
   plt.savefig(fn+'-colorbar.png', transparent = True)
 
+  if args.saveData:
+    writeData()
 
+
+def purge(dir, pattern):
+  for f in os.listdir(dir):
+    if re.search(pattern, f):
+      os.remove(os.path.join(dir, f))
+
+def writeData():
+  #save the csv
+  np.savetxt(fn + '.lat.csv', lat, delimiter=',')
+  np.savetxt(fn + '.lon.csv', lon, delimiter=',')
+  np.savetxt(fn + '.data.csv', th, delimiter=',')
+
+  output_zip = zipfile.ZipFile(fn+'.zip', 'w')
+  output_zip.write(fn + '.lat.csv', compress_type=zipfile.ZIP_DEFLATED)
+  output_zip.write(fn + '.lon.csv', compress_type=zipfile.ZIP_DEFLATED)
+  output_zip.write(fn + '.data.csv', compress_type=zipfile.ZIP_DEFLATED)
+  output_zip.close()
+
+  purge('./output/', args.fn + '(.+)(.csv)')
 
 months={"Jan":0,"Feb":1,"Mar":2,"Apr":3,"May":4,"Jun":5,"Jul":6,"Aug":7,"Sep":8,"Oct":9,"Nov":10,"Dec":11,"Movie":-1, "Year":-2}
 t0=months[args.time]

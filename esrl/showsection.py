@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import numpy as np
 import logging, sys
+import zipfile, re
 import os, argparse
 
 logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
@@ -76,9 +77,9 @@ parser.add_argument('--fill-contour',
                     default=False,
                     help='draws a fill contour')
 
-parser.add_argument('--return-data',
+parser.add_argument('--save-data',
                     type=str2bool, nargs='?',
-                    dest="returnData",
+                    dest="saveData",
                     const=True,
                     default=False,
                     help='draws a fill contour')
@@ -303,6 +304,7 @@ if args.fillcontour:
 
 
     CS = plt.contourf(lat1[latind], lev, th, np.arange(min, max, contour), cmap=cm)
+
     if args.field2 and args.field2 != args.field:
         b = plt.colorbar(CS, orientation='vertical', format = ticker.FuncFormatter(colorbarFmt), pad=0.02)
 else:
@@ -361,9 +363,32 @@ if args.logscale:
     # https://stackoverflow.com/questions/46498157/overlapping-axis-tick-labels-in-logarithmic-plots/46498658#46498658
     ax1.minorticks_off()
 
-
-
 plt.savefig(fn, bbox_inches='tight', transparent = True)
+
+def purge(dir, pattern):
+  for f in os.listdir(dir):
+    if re.search(pattern, f):
+      print "purge MATCH", f
+      os.remove(os.path.join(dir, f))
+
+def writeData():
+  #save the csv
+  np.savetxt(fn + '.lat.csv', lat1[latind], delimiter=',')
+  np.savetxt(fn + '.levels.csv', lev, delimiter=',')
+  np.savetxt(fn + '.data.csv', th, delimiter=',')
+
+  output_zip = zipfile.ZipFile(fn+'.zip', 'w')
+  output_zip.write(fn + '.lat.csv', compress_type=zipfile.ZIP_DEFLATED)
+  output_zip.write(fn + '.levels.csv', compress_type=zipfile.ZIP_DEFLATED)
+  output_zip.write(fn + '.data.csv', compress_type=zipfile.ZIP_DEFLATED)
+  output_zip.close()
+
+  purge('./output/', args.fn + '(.+)(.csv)')
+
+
+if args.saveData:
+  writeData()
+
 
 if args.field2 != 'none':
     print (json.dumps({

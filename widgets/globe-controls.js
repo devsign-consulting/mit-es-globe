@@ -135,6 +135,8 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
         res.min = $scope.esrl.input.min;
         res.max = $scope.esrl.input.max;
         res.pressureRange = $scope.esrl.input.pressRange || 100;
+        if ($scope.esrl.input.saveData)
+            res.saveData = true;
 
         res.contour = true;
         res.contourStep = $scope.esrl.input.contourStep;
@@ -167,8 +169,10 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
 
             $scope.message({ action: "loadColorbar", colorbarFilename: results.colorbarFilename});
             $scope.message({ action: "globeDoneLoading" });
-            
-            return;
+
+            delete $scope.esrl.input.saveData;
+
+            return results;
         });
 
     };
@@ -222,6 +226,30 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
         });
     };
 
+    $scope.downloadFile = function (filename, type) {
+        //Initialize file format you want csv or xls
+        var uri = `/esrl/output/${filename}.zip`;
+
+        console.log("===globe download file ===", uri);
+
+        //this trick will generate a temp <a /> tag
+        var link = document.createElement("a");
+        link.href = uri;
+
+        //set the visibility hidden so it will not effect on your web-layout
+        link.style = "visibility:hidden";
+
+        var field = $scope.esrl.input.field;
+        var time = $scope.esrl.input.time;
+        var level = $scope.esrl.input.press;
+        link.download = `globeData-${field}-${time}-level${level}.zip`; //this is an example file to download, use yours
+
+        //this part will append the anchor tag and remove it after automatic click
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
     $scope.$on('from-parent', function(e, message) {
         $timeout(() => {
             if (message && message.frame) {
@@ -244,6 +272,14 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
                     }
 
                 });
+            }
+
+            if (message && message.downloadData) {
+                $scope.esrl.input.saveData = true;
+                $scope.submitEsrlForm()
+                    .then(function (results) {
+                        $scope.downloadFile(results.base_filename)
+                    });
             }
 
             if (message && message.latlon) {

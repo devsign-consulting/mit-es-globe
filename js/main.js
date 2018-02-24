@@ -20,14 +20,14 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
     $scope.loadInitialQueryString = function () {
         // initialize query string options if any exist
         $timeout(function () {
-            if ($scope.qs && $scope.qs.field1) {
+            if ($scope.qs && $scope.qs.field) {
                 $scope.messageGlobeControlsWidget({
                     field: $scope.qs.field1,
                     level: parseInt($scope.qs.level),
                     time: $scope.qs.time
                 });
                 $scope.message({
-                    field: $scope.qs.field1,
+                    field: $scope.qs.field,
                     field2: $scope.qs.field2,
                     time: $scope.qs.time,
                     pressRange: $scope.qs.press,
@@ -39,7 +39,7 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                 $location.search(newVal);
             }, true);
 
-        });
+        }, 1000);
     };
 
     $scope.message = function (data) {
@@ -153,6 +153,7 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
     $scope.$watch(function () {
         return $scope.input.loaders.sectionInitialLoad && $scope.input.loaders.globeInitialLoad;
     }, function(newVal, oldVal) {
+        console.log("=== initial load watch===", $scope.input.loaders.sectionInitialLoad, $scope.input.loaders.globeInitialLoad)
         if (newVal && newVal !== oldVal) {
             $scope.loadInitialQueryString();
         }
@@ -235,7 +236,9 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                     $scope.messageGlobeControlsWidget({ field: newVal.field });
                     break;
                 case "sectionField2Changed":
-                    $scope.qs.field2 = newVal.field;
+                    $scope.qs.field2 = newVal.field2;
+                    $scope.qs.field = newVal.field;
+
                     break;
                 case "sectionLonChanged":
                     $scope.qs.lon = newVal.lon;
@@ -251,6 +254,9 @@ app.controller('MainCtrl', function ($scope, $rootScope, $log, $window, $timeout
                     break;
                 case "showGlobeSettings":
                     $scope.message({ globeInput: newVal.input });
+                    break;
+                case "sectionDownloadGlobeData":
+                    $scope.messageGlobeControlsWidget({ downloadData: true});
                     break;
                 case "saveGlobeSettings":
                     $scope.messageGlobeControlsWidget(newVal.input);

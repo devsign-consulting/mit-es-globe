@@ -14,6 +14,7 @@
             $min = $_POST['min'];
             $max = $_POST['max'];
             $pressureRange = $_POST['pressureRange'];
+            $saveData = $_POST['saveData'];
             $contourStep = $_POST['contourStep'];
             $fn="es".md5($timeInput.$fieldInput.$pressInput.$contour.$contourStep.$pressureRange);
             $time = array("Jan"=>0,"Feb"=>1,"Mar"=>2,"Apr"=>3,"May"=>4,"Jun"=>5,"Jul"=>6,"Aug"=>7,"Sep"=>8,"Oct"=>9,"Nov"=>10,"Dec"=>11,"Movie"=>-1,"Year"=>-2);
@@ -23,11 +24,15 @@
             else
                 $filename=$fn."-0.png";
 
-            if (!file_exists("./esrl/output/$filename")) {
+            if (!file_exists("./esrl/output/$filename") || $saveData) {
                 error_log("==== executing program ====");
                 $cmd = "python esrl/showclim.py --filename $fn --field $fieldInput --time $timeInput --press $pressInput --min $min --max $max";
                 if ($contour) {
                     $cmd .= " --contour true --contour-step $contourStep";
+                }
+
+                if ($saveData) {
+                    $cmd .= " --save-data";
                 }
 
                 if ($pressureRange) {
@@ -40,6 +45,7 @@
 
             echo json_encode(array(
                 "filename" => $filename,
+                "base_filename" => $fn,
                 "colorbarFilename" => $fn."-colorbar.png",
                 "form" => "esrl",
                 "lat" => $_POST['lat'],
@@ -60,17 +66,19 @@
             $max = $_POST['max'];
             $min2 = $_POST['min2'];
             $max2 = $_POST['max2'];
-            $returnData = $_POST['returnData'];
+            $saveData = $_POST['saveData'];
 
             $lon = $_POST['lon'];
 
             $fn="section-".md5($press.$time.$field.$contour.$lon.$field2.$contour2.$logscale.$max.$min.$max2.$min2.$fillcontour.$zonalaverage).".png";
-            if (!file_exists("./esrl/output/$fn")) {
+            if (!file_exists("./esrl/output/$fn") || $saveData) {
                 error_log("===== executing program=====");
-                $cmd = "python esrl/showsection.py --filename $fn --field $field --month $time --minpress $press --lon $lon --contour $contour --logscale $logscale --zonal-average $zonalaverage";
+                $cmd = "python esrl/showsection.py --filename $fn --field $field --month $time --minpress $press --contour $contour --logscale $logscale --zonal-average $zonalaverage";
 
                 if ($min)
                     $cmd .= " --min $min";
+                if ($lon)
+                    $cmd .= " --lon $lon";
                 if ($max)
                     $cmd .= " --max $max";
                 if ($fillcontour)
@@ -85,8 +93,8 @@
                         $cmd .= " --max2 $max2";
                 }
 
-                if ($returnData) {
-                    $cmd .= " --return-data";
+                if ($saveData) {
+                    $cmd .= " --save-data";
                 }
 
                 error_log($cmd);

@@ -55,8 +55,11 @@
                         </div>
                         <div class="row" ng-if="section.filename">
                             <div class="col-xs-12">
-                                <a ng-if="!section.input.field2" href="{{section.filename}}" download="{{section.input.field}}-{{section.input.time}}-{{section.input.press}}-lon{{section.input.lon}}.png">Download Image</a>
-                                <a ng-if="section.input.field2" href="{{section.filename}}" download="{{section.input.field}}-{{section.input.field2}}-{{section.input.time}}-{{section.input.press}}-lon{{section.input.lon}}.png">Download Image</a>
+                                <a ng-if="!section.input.field2" href="{{section.filename}}" download="{{section.input.field}}-{{section.input.time}}-{{section.input.press}}-lon{{section.input.lon}}.png">Download Image |</a>
+                                <a ng-if="section.input.field2" href="{{section.filename}}" download="{{section.input.field}}-{{section.input.field2}}-{{section.input.time}}-{{section.input.press}}-lon{{section.input.lon}}.png">Download Image |</a>
+
+                                <a href="#" ng-click="downloadSectionData()">Download Section Data</a> |
+                                <a href="#" ng-click="downloadGlobeData()">Download Globe Data</a>
                             </div>
                         </div>
 

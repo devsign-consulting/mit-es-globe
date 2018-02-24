@@ -106,15 +106,18 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                 if (newVal && oldVal && newVal.field2 !== oldVal.field2) {
                     $scope.message({
                         action: "sectionField2Changed",
-                        field: $scope.section.input.field2
+                        field2: $scope.section.input.field2,
+                        field: $scope.section.input.field
                     });
                 }
 
                 if (newVal && oldVal && newVal.lon !== oldVal.lon) {
-                    $scope.message({
-                        action: "sectionLonChanged",
-                        lon: $scope.section.input.lon
-                    });
+                    $timeout(function() {
+                        $scope.message({
+                            action: "sectionLonChanged",
+                            lon: $scope.section.input.lon
+                        });
+                    }, 1000);
                 }
 
                 if (newVal && oldVal && (newVal.min !== oldVal.min || newVal.max !== oldVal.max)) {
@@ -173,6 +176,44 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         });
     });
 
+    $scope.downloadSectionData = function () {
+        $scope.section.input.saveData = true;
+        $scope.submitSectionForm()
+            .then(result => {
+                console.log("=== download section data result ==", result);
+                $scope.downloadFile(result.filename)
+            })
+    };
+
+    $scope.downloadGlobeData = function () {
+        $scope.message({
+            action: 'sectionDownloadGlobeData'
+        });
+    };
+
+    $scope.downloadFile = function (filename, type) {
+        //Initialize file format you want csv or xls
+        var uri = `esrl/output/${filename}.zip`;
+
+        //this trick will generate a temp <a /> tag
+        var link = document.createElement("a");
+        link.href = uri;
+
+        //set the visibility hidden so it will not effect on your web-layout
+        link.style = "visibility:hidden";
+
+
+        var field = $scope.section.input.field;
+        var lon = $scope.section.input.lon;
+        var time = $scope.section.input.time;
+        link.download = `sectionData-${field}-${time}-lon${lon}.zip`; //this is an example file to download, use yours
+
+        //this part will append the anchor tag and remove it after automatic click
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
     /**
      *
      * @param options
@@ -218,29 +259,33 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
 
     $scope.interpolatePixelRange = function (type) {
         let endOffset = 0;
-        if ($scope.section.input.field !== $scope.section.input.field2) {
-            endOffset = 25;
+        const field = $scope.section.input.field;
+        const field2 = $scope.section.input.field2;
+        let scalebarVisible = false;
+        if (field2 && field && field != field2) {
+            scalebarVisible = true;
         }
+
         if ($scope.section.input.field === 'rhum' || $scope.section.input.field === 'shum' || $scope.section.input.field2 === 'rhum' || $scope.section.input.field2 === 'shum') {
             return {
                 start: 45,
-                end: 520 + endOffset
+                end: scalebarVisible ? 545: 520
             }
         }
         else if ($scope.section.input.press === "10") {
             return {
                 start: 118,
-                end: 520 + endOffset
+                end: scalebarVisible ? 545: 520
             }
         } else if ($scope.section.input.press === "1") {
             return {
                 start: 45,
-                end: 530 + endOffset
+                end: scalebarVisible ? 545: 530
             }
         }  else if (typeof type === "undefined") {
             return {
                 start: 45,
-                end: 520
+                end: scalebarVisible ? 545: 520
             }
         }
     };
@@ -415,6 +460,8 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
         res.logScale = $scope.section.input.logScale ? 'True' : 'False';
         res.zonalAverage = $scope.section.input.zonalAverage ? 'True' : 'False';
         res.fillContour = true;
+        if ($scope.section.input.saveData)
+            res.saveData = true;
 
         if ($scope.section.input.field2) {
             res.field2 = $scope.section.input.field2;
@@ -465,6 +512,9 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
             $scope.section.filename = "./esrl/output/" + results.filename;
             $scope.isLoading = false;
             $scope.section.flags.showNow = true;
+
+            delete $scope.section.input.saveData;
+
             if ($scope.initialLoad) {
                 $scope.message({
                     action: "sectionInitialLoad"
@@ -472,19 +522,9 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
             } else {
                 $scope.initialLoad = false;
             }
-            return;
+            return results;
         });
 
-    };
-
-    $scope.downloadSection = function (){
-        $scope.toJSON = '';
-        $scope.toJSON = angular.toJson($scope.data);
-        var blob = new Blob([$scope.toJSON], { type:"application/json;charset=utf-8;" });
-        var downloadLink = angular.element('<a></a>');
-        downloadLink.attr('href',window.URL.createObjectURL(blob));
-        downloadLink.attr('download', 'fileName.json');
-        downloadLink[0].click();
     };
 
     $scope.$on('from-parent', function(e, message) {
@@ -501,7 +541,6 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
 
         if (message && message.lon) {
             // set the lat and lon to where the user clicked
-            console.log("===lon ==", message);
             $scope.section.input.lon = parseInt(message.lon);
         }
 
