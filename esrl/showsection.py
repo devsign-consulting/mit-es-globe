@@ -76,6 +76,13 @@ parser.add_argument('--fill-contour',
                     default=False,
                     help='draws a fill contour')
 
+parser.add_argument('--return-data',
+                    type=str2bool, nargs='?',
+                    dest="returnData",
+                    const=True,
+                    default=False,
+                    help='draws a fill contour')
+
 parser.add_argument('--zonal-average',
                     type=str2bool, nargs='?',
                     dest="zonalaverage",

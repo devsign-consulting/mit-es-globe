@@ -118,7 +118,7 @@ globeControlsWidget.controller('GlobeControlsWidgetController', function ($scope
     };
 
     $scope.submitEsrlForm = function () {
-        console.log("=== submit esrl form ===");
+        // console.log("=== submit esrl form ===");
         var res = new EsrlResource();
 
         res.time = $scope.esrl.input.time;

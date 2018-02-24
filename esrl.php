@@ -60,11 +60,12 @@
             $max = $_POST['max'];
             $min2 = $_POST['min2'];
             $max2 = $_POST['max2'];
+            $returnData = $_POST['returnData'];
 
             $lon = $_POST['lon'];
 
             $fn="section-".md5($press.$time.$field.$contour.$lon.$field2.$contour2.$logscale.$max.$min.$max2.$min2.$fillcontour.$zonalaverage).".png";
-            // if (!file_exists("./esrl/output/$fn")) {
+            if (!file_exists("./esrl/output/$fn")) {
                 error_log("===== executing program=====");
                 $cmd = "python esrl/showsection.py --filename $fn --field $field --month $time --minpress $press --lon $lon --contour $contour --logscale $logscale --zonal-average $zonalaverage";
 
@@ -84,11 +85,15 @@
                         $cmd .= " --max2 $max2";
                 }
 
+                if ($returnData) {
+                    $cmd .= " --return-data";
+                }
+
                 error_log($cmd);
                 $output = exec($cmd);
                 $output = json_decode($output);
 
-            // }
+            }
 
             echo json_encode(array(
                 "filename" =>$fn,

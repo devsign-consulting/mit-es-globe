@@ -161,7 +161,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
                 }
 
                 if (submitForm && oldVal) {
-                    console.log("==submit esrl form ===", $scope.sectionInputWatchCount, $scope.section.input)
+                    // console.log("==submit esrl form ===", $scope.sectionInputWatchCount, $scope.section.input)
                     if ($scope.sectionInputWatchCount === 0) {
                         $scope.sectionInputWatchCount++;
                         $scope.submitSectionForm().then(function () {
@@ -488,7 +488,7 @@ esrl.controller('EsrlChildController', function ($scope, $parentScope, $timeout,
     };
 
     $scope.$on('from-parent', function(e, message) {
-        console.log("===esrl from-parent===", message);
+        // console.log("===esrl from-parent===", message);
         if (message && message.frame) {
             $scope.loop = message.frame;
         }
